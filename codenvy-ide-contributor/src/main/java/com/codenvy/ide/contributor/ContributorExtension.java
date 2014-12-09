@@ -22,7 +22,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
 /**
- * @author 
+ * @author Stephane Tournie
  */
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")

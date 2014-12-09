@@ -21,5 +21,6 @@ public class ContributorGinModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+
     }
 }
