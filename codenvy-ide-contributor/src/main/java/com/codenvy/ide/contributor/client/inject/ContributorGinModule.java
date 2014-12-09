@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.contributor.inject;
+package com.codenvy.ide.contributor.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.google.gwt.inject.client.AbstractGinModule;
