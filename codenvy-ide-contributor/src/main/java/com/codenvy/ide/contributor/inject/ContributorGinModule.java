@@ -10,6 +10,16 @@
  *******************************************************************************/
 package com.codenvy.ide.contributor.inject;
 
-public class ContributorGinModule {
+import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.google.gwt.inject.client.AbstractGinModule;
 
+/**
+ * Gin module definition for the contributor extension.
+ */
+@ExtensionGinModule
+public class ContributorGinModule extends AbstractGinModule {
+
+    @Override
+    protected void configure() {
+    }
 }
