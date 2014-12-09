@@ -67,9 +67,9 @@ public class ContributorExtension {
 
         Map<String, List<String>> attributes = event.getProject().getAttributes();
 
-//        if (attributes != null && attributes.containsKey("contribute")) {
-//            String contributeAttribute = attributes.get("contribute").get(0);
-//            if (Integer.parseInt(contributeAttribute) == 1) {
+        if (attributes != null && attributes.containsKey("contribute")) {
+            String contributeAttribute = attributes.get("contribute").get(0);
+            if (Integer.parseInt(contributeAttribute) == 1) {
                 
                 actionManager.registerAction("Contribute", contributeAction);
                 
@@ -78,9 +78,9 @@ public class ContributorExtension {
                 actionManager.registerAction(GROUP_MAIN_TOOLBAR, contributeToolbarGroup);
                 contributeToolbarGroup.add(contributeAction);
                 mainToolbarGroup.add(contributeToolbarGroup, new Constraints(Anchor.AFTER, GROUP_RUN_TOOLBAR));
-//            }
-//        } else {
-//
-//        }
+            }
+        } else {
+
+        }
     }
 }
