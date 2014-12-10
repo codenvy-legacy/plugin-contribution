@@ -18,7 +18,7 @@ public class ContributeAction extends ProjectAction {
     
     @Inject
     public ContributeAction(ContributeResources contributeResources, ContributorLocalizationConstant localConstant) {
-        super(localConstant.contributorButtonName(), localConstant.contributorButtonTitle(), contributeResources.contributeButton());
+        super(localConstant.contributorButtonName(), localConstant.contributorButtonDescription(), contributeResources.contributeButton());
     }
     
     @Override

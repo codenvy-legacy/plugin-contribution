@@ -7,6 +7,6 @@ public interface ContributorLocalizationConstant extends Messages {
     @Key("contributor.button.name")
     String contributorButtonName();
     
-    @Key("contributor.button.title")
-    String contributorButtonTitle();
+    @Key("contributor.button.description")
+    String contributorButtonDescription();
 }
