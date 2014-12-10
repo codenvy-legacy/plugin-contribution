@@ -34,53 +34,66 @@ import com.google.web.bindery.event.shared.EventBus;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
-    
-    private final ActionManager actionManager;
+
+    private final ActionManager    actionManager;
     private final ContributeAction contributeAction;
-    
+    private final ContributorLocalizationConstant localConstant;
+
+    private DefaultActionGroup     contributeToolbarGroup;
+    private DefaultActionGroup     mainToolbarGroup;
+
     @Inject
-    public ContributorExtension(EventBus eventBus, ActionManager actionManager, ContributeAction contributeAction, ProjectServiceClient projectServiceClient) {
-        
+    public ContributorExtension(EventBus eventBus,
+                                ActionManager actionManager,
+                                ContributeAction contributeAction,
+                                ProjectServiceClient projectServiceClient,
+                                ContributorLocalizationConstant localConstant) {
+
         this.actionManager = actionManager;
         this.contributeAction = contributeAction;
-        
+        this.localConstant = localConstant;
+
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
             public void onProjectOpened(ProjectActionEvent event) {
-                loadData(event);
+                initContributeMode(event);
             }
 
             @Override
             public void onProjectClosed(ProjectActionEvent projectActionEvent) {
-
+                exitContributeMode();
             }
         });
     }
 
     /**
-     * Load the data for the given project
+     * Initialize contribution button & operations
      *
-     * @param event
-     *         the load event
+     * @param event the load event
      */
-    protected void loadData(ProjectActionEvent event) {
+    private void initContributeMode(ProjectActionEvent event) {
 
         Map<String, List<String>> attributes = event.getProject().getAttributes();
 
         if (attributes != null && attributes.containsKey("contribute")) {
             String contributeAttribute = attributes.get("contribute").get(0);
             if (Integer.parseInt(contributeAttribute) == 1) {
-                
-                actionManager.registerAction("Contribute", contributeAction);
-                
-                DefaultActionGroup mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
-                DefaultActionGroup contributeToolbarGroup = new DefaultActionGroup(GROUP_MAIN_TOOLBAR, false, actionManager);
+
+                // register & display contribute button
+                actionManager.registerAction(localConstant.contributorButtonName(), contributeAction);
+                mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
+                contributeToolbarGroup = new DefaultActionGroup(GROUP_MAIN_TOOLBAR, false, actionManager);
                 actionManager.registerAction(GROUP_MAIN_TOOLBAR, contributeToolbarGroup);
                 contributeToolbarGroup.add(contributeAction);
                 mainToolbarGroup.add(contributeToolbarGroup, new Constraints(Anchor.AFTER, GROUP_RUN_TOOLBAR));
             }
-        } else {
+        }
+    }
 
+    private void exitContributeMode() {
+        actionManager.unregisterAction(localConstant.contributorButtonName());
+        if (mainToolbarGroup != null && contributeToolbarGroup != null) {
+            mainToolbarGroup.remove(contributeToolbarGroup);
         }
     }
 }

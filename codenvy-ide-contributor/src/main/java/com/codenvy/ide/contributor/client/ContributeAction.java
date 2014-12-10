@@ -17,8 +17,8 @@ import com.google.inject.Inject;
 public class ContributeAction extends ProjectAction {
     
     @Inject
-    public ContributeAction(ContributeResources contributeResources) {
-        super("Contribute", "Contribute", contributeResources.contributeButton());
+    public ContributeAction(ContributeResources contributeResources, ContributorLocalizationConstant localConstant) {
+        super(localConstant.contributorButtonName(), localConstant.contributorButtonTitle(), contributeResources.contributeButton());
     }
     
     @Override
