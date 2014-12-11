@@ -14,6 +14,7 @@ import com.codenvy.api.user.gwt.client.UserServiceClient;
 import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
@@ -38,6 +39,7 @@ public class ContributeAction extends ProjectAction {
     private final DialogFactory          dialogFactory;
     private final String                 baseUrl;
     private final GitAgent               gitAgent;
+    private final AppContext             appContext;
 
     private UserDescriptor               userDescriptor;
 
@@ -49,7 +51,8 @@ public class ContributeAction extends ProjectAction {
                             NotificationManager notificationManager,
                             DialogFactory dialogFactory,
                             @Named("restContext") String baseUrl,
-                            GitAgent gitAgent) {
+                            GitAgent gitAgent,
+                            AppContext appContext) {
         super(localConstant.contributorButtonName(), localConstant.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.userServiceClient = userServiceClient;
@@ -58,6 +61,7 @@ public class ContributeAction extends ProjectAction {
         this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
         this.gitAgent = gitAgent;
+        this.appContext = appContext;
     }
 
     @Override
@@ -71,23 +75,26 @@ public class ContributeAction extends ProjectAction {
     }
 
     private void getCurrentUserInfo() {
-        // get current user's Codenvy account
-        userServiceClient.getCurrentUser(
-                         new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
-                             @Override
-                             protected void onSuccess(UserDescriptor user) {
-                                 userDescriptor = user;
-                                 // TODO if user is anonymous create a Codenvy account
-                                 // get current user's associated github account
-                                 getVCSUserInfo();
-                             }
+        if (appContext.getCurrentUser().isUserPermanent()) {
+            // get current user's Codenvy account
+            userServiceClient.getCurrentUser(
+                             new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
+                                 @Override
+                                 protected void onSuccess(UserDescriptor user) {
+                                     userDescriptor = user;
+                                     // get current user's associated github account
+                                     getVCSUserInfo();
+                                 }
 
-                             @Override
-                             protected void onFailure(Throwable exception) {
-                                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                                 @Override
+                                 protected void onFailure(Throwable exception) {
+                                     notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                                 }
                              }
-                         }
-                         );
+                             );
+        } else {
+            // TODO as user is temporary create a Codenvy account
+        }
     }
 
     private void getVCSUserInfo() {
