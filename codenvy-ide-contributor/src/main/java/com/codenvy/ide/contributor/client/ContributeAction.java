@@ -15,9 +15,8 @@ import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.api.notification.Notification.Status;
-import com.codenvy.ide.ext.github.client.GitHubClientService;
+import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -33,32 +32,32 @@ import com.google.inject.name.Named;
 
 public class ContributeAction extends ProjectAction {
 
-    private final GitHubClientService    gitHubClientService;
     private final UserServiceClient      userServiceClient;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
     private final NotificationManager    notificationManager;
     private final DialogFactory          dialogFactory;
     private final String                 baseUrl;
+    private final GitAgent               gitAgent;
 
     private UserDescriptor               userDescriptor;
 
     @Inject
     public ContributeAction(ContributeResources contributeResources,
                             ContributorLocalizationConstant localConstant,
-                            GitHubClientService gitHubClientService,
                             UserServiceClient userServiceClient,
                             DtoUnmarshallerFactory dtoUnmarshallerFactory,
                             NotificationManager notificationManager,
                             DialogFactory dialogFactory,
-                            @Named("restContext") String baseUrl) {
+                            @Named("restContext") String baseUrl,
+                            GitAgent gitAgent) {
         super(localConstant.contributorButtonName(), localConstant.contributorButtonDescription(), contributeResources.contributeButton());
 
-        this.gitHubClientService = gitHubClientService;
         this.userServiceClient = userServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.notificationManager = notificationManager;
         this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
+        this.gitAgent = gitAgent;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class ContributeAction extends ProjectAction {
                                  userDescriptor = user;
                                  // TODO if user is anonymous create a Codenvy account
                                  // get current user's associated github account
-                                 getGithubUserInfo();
+                                 getVCSUserInfo();
                              }
 
                              @Override
@@ -91,30 +90,28 @@ public class ContributeAction extends ProjectAction {
                          );
     }
 
-    private void getGithubUserInfo() {
-        gitHubClientService.getUserInfo(
-                           new AsyncRequestCallback<GitHubUser>() {
-                               @Override
-                               protected void onSuccess(GitHubUser result) {
-                                   onGithubUserAuthenticated();
-                               }
+    private void getVCSUserInfo() {
+        gitAgent.getUserInfo(new AsyncRequestCallback<GitHubUser>() {
+            @Override
+            protected void onSuccess(GitHubUser result) {
+                onVCSUserAuthenticated();
+            }
 
-                               @Override
-                               protected void onFailure(Throwable exception) {
-                                   if (exception.getMessage().contains("Bad credentials")) {
-                                       // get user's Github account authenticated as it is not already
-                                       dialogFactory.createConfirmDialog("GitHub",
-                                                                         "Codenvy requests authorization through OAuth2 protocol",
-                                                                         new ConfirmCallback() {
-                                                                             @Override
-                                                                             public void accepted() {
-                                                                                 showAuthWindow();
-                                                                             }
-                                                                         }, null).show();
-                                   }
-                               }
-                           }
-                           );
+            @Override
+            protected void onFailure(Throwable exception) {
+                if (exception.getMessage().contains("Bad credentials")) {
+                    // get user's Github account authenticated as it is not already
+                    dialogFactory.createConfirmDialog("GitHub",
+                                                      "Codenvy requests authorization through OAuth2 protocol",
+                                                      new ConfirmCallback() {
+                                                          @Override
+                                                          public void accepted() {
+                                                              showAuthWindow();
+                                                          }
+                                                      }, null).show();
+                }
+            }
+        });
     }
 
     private void showAuthWindow() {
@@ -129,14 +126,14 @@ public class ContributeAction extends ProjectAction {
 
             @Override
             public void onAuthenticated(OAuthStatus authStatus) {
-                onGithubUserAuthenticated();
+                onVCSUserAuthenticated();
             }
 
         });
         authWindow.loginWithOAuth();
     }
 
-    private void onGithubUserAuthenticated() {
+    private void onVCSUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
 
         // TODO check if user has a fork already existing for origin repo. if not we create the fork
