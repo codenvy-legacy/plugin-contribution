@@ -68,27 +68,27 @@ public class ContributeAction extends ProjectAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getCurrentUserAuthenticated();
+        getCurrentUserInfo();
     }
 
-    private void getCurrentUserAuthenticated() {
+    private void getCurrentUserInfo() {
         // get current user's Codenvy account
         userServiceClient.getCurrentUser(
-                                         new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
-                                             @Override
-                                             protected void onSuccess(UserDescriptor user) {
-                                                 userDescriptor = user;
-                                                 // get current user's associated github account
-                                                 getGithubUserInfo();
-                                             }
+                         new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
+                             @Override
+                             protected void onSuccess(UserDescriptor user) {
+                                 userDescriptor = user;
+                                 // TODO if user is anonymous create a Codenvy account
+                                 // get current user's associated github account
+                                 getGithubUserInfo();
+                             }
 
-                                             @Override
-                                             protected void onFailure(Throwable exception) {
-                                                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                                                 // TODO create a Codenvy account for current user & getGithubUserInfo()
-                                             }
-                                         }
-                                         );
+                             @Override
+                             protected void onFailure(Throwable exception) {
+                                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                             }
+                         }
+                         );
     }
 
     private void getGithubUserInfo() {
@@ -96,7 +96,7 @@ public class ContributeAction extends ProjectAction {
                            new AsyncRequestCallback<GitHubUser>() {
                                @Override
                                protected void onSuccess(GitHubUser result) {
-                                   onUserAuthenticated();
+                                   onGithubUserAuthenticated();
                                }
 
                                @Override
@@ -129,16 +129,16 @@ public class ContributeAction extends ProjectAction {
 
             @Override
             public void onAuthenticated(OAuthStatus authStatus) {
-                onUserAuthenticated();
+                onGithubUserAuthenticated();
             }
 
         });
         authWindow.loginWithOAuth();
     }
 
-    private void onUserAuthenticated() {
+    private void onGithubUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
-        
+
         // TODO check if user has a fork already existing for origin repo. if not we create the fork
         // TODO open wizard to configure PR (branch name, descr, review)
         // TODO rename local branch with name given in PR config
