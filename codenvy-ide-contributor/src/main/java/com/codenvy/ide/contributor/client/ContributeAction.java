@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.contributor.client;
 
+import java.util.List;
+
 import com.codenvy.api.user.gwt.client.UserServiceClient;
 import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
@@ -18,6 +20,8 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
+import com.codenvy.ide.ext.github.shared.GitHubRepository;
+import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -27,6 +31,7 @@ import com.codenvy.ide.security.oauth.OAuthStatus;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
+import com.codenvy.ide.util.loging.Log;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -71,30 +76,36 @@ public class ContributeAction extends ProjectAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getCurrentUserInfo();
+        if (appContext.getCurrentUser().isUserPermanent()) {
+            getCurrentUserInfo();
+        } else {
+            // TODO as user is temporary create a Codenvy account and then getCurrentUserInfo
+            notificationManager.showNotification(new Notification("Current user isn't permanent.", Notification.Type.ERROR, Status.FINISHED));
+        }
+
+        // TODO open wizard to configure PR (branch name, descr, review)
+        // TODO rename local branch with name given in PR config
+        // TODO push local branch to forked repo on GitHub
     }
 
     private void getCurrentUserInfo() {
-        if (appContext.getCurrentUser().isUserPermanent()) {
-            // get current user's Codenvy account
-            userServiceClient.getCurrentUser(
-                             new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
-                                 @Override
-                                 protected void onSuccess(UserDescriptor user) {
-                                     userDescriptor = user;
-                                     // get current user's associated github account
-                                     getVCSUserInfo();
-                                 }
-
-                                 @Override
-                                 protected void onFailure(Throwable exception) {
-                                     notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                                 }
+        // get current user's Codenvy account
+        userServiceClient.getCurrentUser(
+                         new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
+                             @Override
+                             protected void onSuccess(UserDescriptor user) {
+                                 userDescriptor = user;
+                                 // get current user's associated github account
+                                 getVCSUserInfo();
                              }
-                             );
-        } else {
-            // TODO as user is temporary create a Codenvy account
-        }
+
+                             @Override
+                             protected void onFailure(Throwable exception) {
+                                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                                 Log.error(ContributeAction.class, exception.getMessage());
+                             }
+                         }
+                         );
     }
 
     private void getVCSUserInfo() {
@@ -106,8 +117,8 @@ public class ContributeAction extends ProjectAction {
 
             @Override
             protected void onFailure(Throwable exception) {
+                // authenticate user's Github account
                 if (exception.getMessage().contains("Bad credentials")) {
-                    // get user's Github account authenticated as it is not already
                     dialogFactory.createConfirmDialog("GitHub",
                                                       "Codenvy requests authorization through OAuth2 protocol",
                                                       new ConfirmCallback() {
@@ -142,10 +153,5 @@ public class ContributeAction extends ProjectAction {
 
     private void onVCSUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
-
-        // TODO check if user has a fork already existing for origin repo. if not we create the fork
-        // TODO open wizard to configure PR (branch name, descr, review)
-        // TODO rename local branch with name given in PR config
-        // TODO push local branch to forked repo on GitHub
     }
 }
