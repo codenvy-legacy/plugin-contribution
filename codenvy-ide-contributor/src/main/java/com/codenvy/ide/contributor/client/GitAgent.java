@@ -14,6 +14,7 @@ import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
 import com.codenvy.ide.ext.git.shared.Branch;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
+import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
@@ -41,5 +42,9 @@ public class GitAgent {
 
     public void getUserInfo(AsyncRequestCallback<GitHubUser> callback) {
         gitHubClientService.getUserInfo(callback);
+    }
+
+    public void getRepositoriesList(AsyncRequestCallback<GitHubRepositoryList> callback) {
+        gitHubClientService.getRepositoriesList(callback);
     }
 }
