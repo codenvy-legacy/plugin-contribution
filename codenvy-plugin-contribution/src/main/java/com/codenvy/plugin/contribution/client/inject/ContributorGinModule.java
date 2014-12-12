@@ -10,10 +10,13 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.inject;
 
+import javax.inject.Singleton;
+
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
+import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcshost.GithubHost;
@@ -36,5 +39,8 @@ public class ContributorGinModule extends AbstractGinModule {
         install(new GinFactoryModuleBuilder().build(PreContributeWizardPresenterFactory.class));
         // bind the configure dialog view
         bind(PreContributeWizardView.class).to(PreContributeWizardViewImpl.class);
+
+        // the contribution context singleton
+        bind(Context.class).in(Singleton.class);
     }
 }

@@ -31,6 +31,7 @@ import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.Notification.Type;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -46,6 +47,7 @@ import com.google.web.bindery.event.shared.EventBus;
 public class ContributorExtension {
 
     private final ActionManager                   actionManager;
+    private final Context context;
     private final ContributeAction                contributeAction;
     private final ContributeMessages messages;
     private final NotificationManager             notificationManager;
@@ -55,7 +57,8 @@ public class ContributorExtension {
     private DefaultActionGroup mainToolbarGroup;
 
     @Inject
-    public ContributorExtension(final EventBus eventBus,
+    public ContributorExtension(final Context context,
+                                final EventBus eventBus,
                                 final ActionManager actionManager,
                                 final ContributeAction contributeAction,
                                 final ProjectServiceClient projectServiceClient,
@@ -64,6 +67,7 @@ public class ContributorExtension {
                                 final VcsService gitAgent) {
 
         this.actionManager = actionManager;
+        this.context = context;
         this.contributeAction = contributeAction;
         this.messages = messages;
         this.notificationManager = notificationManager;
@@ -90,6 +94,7 @@ public class ContributorExtension {
     private void initContributeMode(final ProjectActionEvent event) {
 
         ProjectDescriptor project = event.getProject();
+        this.context.setProject(project);
         Map<String, List<String>> attributes = event.getProject().getAttributes();
 
         if (attributes != null && attributes.containsKey("contribute")) {
@@ -109,6 +114,7 @@ public class ContributorExtension {
                 final Date today = new Date();
                 final DateTimeFormat timeFormat = DateTimeFormat.getFormat("MMddyyyy");
                 final String workingBranchName = "contrib-" + timeFormat.format(today) + "-" + String.valueOf(Math.random()).substring(8);
+                this.context.setWorkBranchName(workingBranchName);
                 final Notification notification = new Notification("Creating a new working branch " + workingBranchName + "...", Type.INFO,
                                                                    Status.PROGRESS);
                 notificationManager.showNotification(notification);
