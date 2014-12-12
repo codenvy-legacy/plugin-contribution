@@ -147,7 +147,10 @@ public class ContributeAction extends ProjectAction {
     private void onVCSUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
 
+        /* parallel with the other items */
         // TODO check if user has a fork already existing for origin repo & fork if not
+        
+        /* sequential */
         // TODO open wizard to configure PR (branch name, descr, review)
         // TODO rename local branch with name given in PR config
         // TODO push local branch to forked repo on GitHub
