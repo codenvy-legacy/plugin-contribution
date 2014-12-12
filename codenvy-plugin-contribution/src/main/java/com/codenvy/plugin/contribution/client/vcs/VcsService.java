@@ -21,4 +21,6 @@ public interface VcsService {
     void createBranch(@Nonnull ProjectDescriptor project, String name, String startPoint, AsyncCallback<Branch> callback);
 
     void getBranchName(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<String> callback);
+
+    void renameBranch(@Nonnull ProjectDescriptor project, String oldName, String newName, AsyncCallback<Void> callback);
 }

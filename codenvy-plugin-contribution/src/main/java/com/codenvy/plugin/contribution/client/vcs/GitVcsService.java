@@ -77,4 +77,23 @@ public class GitVcsService implements VcsService {
             }
         });
     }
+
+    @Override
+    public void renameBranch(final ProjectDescriptor project,
+                             final String oldName,
+                             final String newName,
+                             final AsyncCallback<Void> callback) {
+
+        service.branchRename(project, oldName, newName, new AsyncRequestCallback<String>() {
+            @Override
+            protected void onSuccess(final String result) {
+                callback.onSuccess(null);
+            }
+
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
+    }
 }
