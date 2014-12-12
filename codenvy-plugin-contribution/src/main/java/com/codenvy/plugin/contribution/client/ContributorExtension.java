@@ -47,7 +47,7 @@ public class ContributorExtension {
 
     private final ActionManager                   actionManager;
     private final ContributeAction                contributeAction;
-    private final ContributorLocalizationConstant localConstant;
+    private final ContributeMessages messages;
     private final NotificationManager             notificationManager;
     private final VcsService                      vcsService;
 
@@ -59,13 +59,13 @@ public class ContributorExtension {
                                 final ActionManager actionManager,
                                 final ContributeAction contributeAction,
                                 final ProjectServiceClient projectServiceClient,
-                                final ContributorLocalizationConstant localConstant,
+                                final ContributeMessages messages,
                                 final NotificationManager notificationManager,
                                 final VcsService gitAgent) {
 
         this.actionManager = actionManager;
         this.contributeAction = contributeAction;
-        this.localConstant = localConstant;
+        this.messages = messages;
         this.notificationManager = notificationManager;
         this.vcsService = gitAgent;
 
@@ -98,7 +98,7 @@ public class ContributorExtension {
 
                 // branch specified in factory.json has been already checkout at this point
                 // register & display contribute button
-                actionManager.registerAction(localConstant.contributorButtonName(), contributeAction);
+                actionManager.registerAction(messages.contributorButtonName(), contributeAction);
                 mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
                 contributeToolbarGroup = new DefaultActionGroup(GROUP_MAIN_TOOLBAR, false, actionManager);
                 actionManager.registerAction(GROUP_MAIN_TOOLBAR, contributeToolbarGroup);
@@ -135,7 +135,7 @@ public class ContributorExtension {
 
     private void exitContributeMode() {
         // remove contribute button
-        actionManager.unregisterAction(localConstant.contributorButtonName());
+        actionManager.unregisterAction(messages.contributorButtonName());
         if (mainToolbarGroup != null && contributeToolbarGroup != null) {
             mainToolbarGroup.remove(contributeToolbarGroup);
         }

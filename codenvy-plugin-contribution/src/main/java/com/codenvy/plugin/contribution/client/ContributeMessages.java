@@ -31,4 +31,10 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Cancel")
     String cancelButton();
+
+    @Key("contributor.button.name")
+    String contributorButtonName();
+
+    @Key("contributor.button.description")
+    String contributorButtonDescription();
 }

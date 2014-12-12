@@ -49,14 +49,14 @@ public class ContributeAction extends ProjectAction {
 
     @Inject
     public ContributeAction(final ContributeResources contributeResources,
-                            final ContributorLocalizationConstant localConstant,
+                            final ContributeMessages messages,
                             final UserServiceClient userServiceClient,
                             final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                             final NotificationManager notificationManager,
                             final DialogFactory dialogFactory,
                             final @Named("restContext") String baseUrl,
                             final RepositoryHost repositoryHost) {
-        super(localConstant.contributorButtonName(), localConstant.contributorButtonDescription(), contributeResources.contributeButton());
+        super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.userServiceClient = userServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
