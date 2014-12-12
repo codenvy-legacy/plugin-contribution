@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.contributor.client;
+package com.codenvy.plugin.contribution.client;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.ext.git.client.GitServiceClient;

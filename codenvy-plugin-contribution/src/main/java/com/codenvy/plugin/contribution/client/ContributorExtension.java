@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.ide.contributor.client;
+package com.codenvy.plugin.contribution.client;
 
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
