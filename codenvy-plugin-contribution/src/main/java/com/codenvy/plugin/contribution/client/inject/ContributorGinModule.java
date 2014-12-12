@@ -13,6 +13,8 @@ package com.codenvy.plugin.contribution.client.inject;
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcshost.GithubHost;
+import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.inject.client.AbstractGinModule;
 
 /**
@@ -24,5 +26,6 @@ public class ContributorGinModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind(VcsService.class).to(GitVcsService.class);
+        bind(RepositoryHost.class).to(GithubHost.class);
     }
 }

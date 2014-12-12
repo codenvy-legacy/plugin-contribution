@@ -8,38 +8,33 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs;
+package com.codenvy.plugin.contribution.client.vcshost;
 
 import com.codenvy.dto.shared.DTO;
 
-/**
- * Representation of a VCS branch.<br>
- * Mirrors the plugin-git interface until we define an abstraction on VCSes and branches.
- */
 @DTO
-public interface Branch {
+public interface HostUser {
+    String getId();
+
+    void setId(String id);
+
+    HostUser withId(String id);
 
     String getName();
 
-    boolean isActive();
-
-    String getDisplayName();
-
-    boolean isRemote();
-
     void setName(String name);
 
-    void setDisplayName(String displayName);
+    HostUser withName(String name);
 
-    void setActive(boolean isActive);
+    String getLogin();
 
-    void setRemote(boolean isRemote);
+    void setLogin(String login);
 
-    Branch withName(String name);
+    HostUser withLogin(String login);
 
-    Branch withDisplayName(String displayName);
+    String getUrl();
 
-    Branch withActive(boolean isActive);
+    void setUrl(String url);
 
-    Branch withRemote(boolean isRemote);
+    HostUser withUrl(String url);
 }
