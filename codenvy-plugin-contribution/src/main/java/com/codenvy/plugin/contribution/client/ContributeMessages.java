@@ -37,4 +37,7 @@ public interface ContributeMessages extends Messages {
 
     @Key("contributor.button.description")
     String contributorButtonDescription();
+
+    @DefaultMessage("Codenvy needs authorization on github to continue")
+    String repositoryHostAuthorizeMessage();
 }

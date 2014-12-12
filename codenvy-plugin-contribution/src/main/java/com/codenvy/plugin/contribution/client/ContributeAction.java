@@ -18,6 +18,7 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.rest.AsyncRequestCallback;
+import com.codenvy.ide.rest.DtoUnmarshaller;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.security.oauth.JsOAuthWindow;
 import com.codenvy.ide.security.oauth.OAuthCallback;
@@ -35,15 +36,50 @@ import com.google.inject.name.Named;
 
 public class ContributeAction extends ProjectAction {
 
-    private final UserServiceClient      userServiceClient;
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private final NotificationManager    notificationManager;
-    private final DialogFactory          dialogFactory;
-    private final String                 baseUrl;
-    private final RepositoryHost         repositoryHost;
+    /**
+     * I18n messages.
+     */
+    private final ContributeMessages messages;
 
-    private UserDescriptor               userDescriptor;
-    private HostUser                     hostUser;
+    /**
+     * Service to retrieve user informations.
+     */
+    private final UserServiceClient userServiceClient;
+
+    /**
+     * Factory of {@link DtoUnmarshaller} objects.
+     */
+    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
+
+    /**
+     * The notification manager.
+     */
+    private final NotificationManager notificationManager;
+
+    /**
+     * Factory for message dialogs.
+     */
+    private final DialogFactory dialogFactory;
+
+    /**
+     * The REST base URL.
+     */
+    private final String baseUrl;
+
+    /**
+     * The remote VCS host interface.
+     */
+    private final RepositoryHost repositoryHost;
+
+    /**
+     * The local user identity.
+     */
+    private UserDescriptor userDescriptor;
+
+    /**
+     * The user identity on the remote repository host.
+     */
+    private HostUser hostUser;
 
     @Inject
     public ContributeAction(final ContributeResources contributeResources,
@@ -58,6 +94,7 @@ public class ContributeAction extends ProjectAction {
 
         this.userServiceClient = userServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
+        this.messages = messages;
         this.notificationManager = notificationManager;
         this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
@@ -112,7 +149,7 @@ public class ContributeAction extends ProjectAction {
                 // authenticate user's Github account
                 if (exception.getMessage().contains("Bad credentials")) {
                     dialogFactory.createConfirmDialog("GitHub",
-                                                      "Codenvy requests authorization through OAuth2 protocol",
+                                                      messages.repositoryHostAuthorizeMessage(),
                                                       new ConfirmCallback() {
                                                           @Override
                                                           public void accepted() {
@@ -149,7 +186,7 @@ public class ContributeAction extends ProjectAction {
 
         /* parallel with the other items */
         // TODO check if user has a fork already existing for origin repo & fork if not
-        
+
         /* sequential */
         // TODO open wizard to configure PR (branch name, descr, review)
         // TODO rename local branch with name given in PR config
