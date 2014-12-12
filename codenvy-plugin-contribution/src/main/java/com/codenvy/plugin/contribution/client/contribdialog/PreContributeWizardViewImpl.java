@@ -19,7 +19,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -76,23 +75,8 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
 
     @Override
     public void reset() {
-        this.branchName.setEnabled(false);
-        this.delegate.suggestBranchName(new AsyncCallback<String>() {
-            @Override
-            public void onSuccess(final String result) {
-                resetBranchName(result);
-            }
-
-            @Override
-            public void onFailure(final Throwable caught) {
-                resetBranchName("");
-            }
-        });
-    }
-
-    private void resetBranchName(final String suggestion) {
-        branchName.setEnabled(true);
-        branchName.setValue(suggestion);
+        branchName.setValue(this.delegate.suggestBranchName());
+        this.pullRequestComment.setValue("");
         this.delegate.updateControls();
     }
 

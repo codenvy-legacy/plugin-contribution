@@ -11,7 +11,6 @@
 package com.codenvy.plugin.contribution.client.contribdialog;
 
 import com.codenvy.ide.api.wizard.Wizard;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Interface for the contribution configuration shown when the user decides to send their contribution.
@@ -76,8 +75,8 @@ public interface PreContributeWizardView {
         /**
          * Suggests a branch name for the current work.
          * 
-         * @param callback what to do with the suggestion
+         * @return the suggestion
          */
-        void suggestBranchName(final AsyncCallback<String> callback);
+        String suggestBranchName();
     }
 }

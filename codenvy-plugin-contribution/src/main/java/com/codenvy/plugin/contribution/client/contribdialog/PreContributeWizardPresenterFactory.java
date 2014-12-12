@@ -10,6 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.contribdialog;
 
+import javax.annotation.Nonnull;
+
+import com.codenvy.plugin.contribution.client.value.Configuration;
+import com.codenvy.plugin.contribution.client.value.Context;
+
 /**
  * Factory for {@link PreContributeWizardPresenter}.
  */
@@ -21,5 +26,7 @@ public interface PreContributeWizardPresenterFactory {
      * @param finishOperation the next operation
      * @return a {@link PreContributeWizardPresenter}
      */
-    PreContributeWizardPresenter create(FinishContributionOperation finishOperation);
+    PreContributeWizardPresenter create(@Nonnull FinishContributionOperation finishOperation,
+                                        @Nonnull Context context,
+                                        @Nonnull Configuration config);
 }

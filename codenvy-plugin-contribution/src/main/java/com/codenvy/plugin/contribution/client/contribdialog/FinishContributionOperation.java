@@ -12,6 +12,10 @@ package com.codenvy.plugin.contribution.client.contribdialog;
 
 import javax.annotation.Nonnull;
 
+import com.codenvy.plugin.contribution.client.value.Configuration;
+import com.codenvy.plugin.contribution.client.value.Context;
+
+
 /**
  * Interface for the operation following the configuration in the contribution workflow.
  */
@@ -20,8 +24,7 @@ public interface FinishContributionOperation {
     /**
      * Continue contribution.
      * 
-     * @param branchName the branch name to use
-     * @param pullRequestComment the pull request commit to post
+     * @param configuration the configuration obtained from the user
      */
-    void finishContribution(@Nonnull String branchName, @Nonnull String pullRequestComment);
+    void finishContribution(@Nonnull Context context, @Nonnull Configuration configuration);
 }

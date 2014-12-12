@@ -12,13 +12,11 @@ package com.codenvy.plugin.contribution.client.contribdialog;
 
 import javax.annotation.Nonnull;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.wizard.WizardDialog;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.value.Configuration;
+import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
@@ -28,35 +26,38 @@ import com.google.inject.assistedinject.AssistedInject;
 public class PreContributeWizardPresenter implements WizardDialog, PreContributeWizardView.ActionDelegate {
 
     /**
-     * The app content.
-     */
-    private final AppContext appContext;
-
-    /**
      * The component view.
      */
     private final PreContributeWizardView view;
 
     /**
-     * The service for VCS operations.
-     */
-    private final VcsService vcsService;
-
-    /**
      * The following operation to finish the contribution.
      */
-    private FinishContributionOperation finishContribution;
+    private final FinishContributionOperation finishContribution;
+
+    /**
+     * The contribution configuration, which contains values choosen by the user.
+     */
+    private final Configuration configuration;
+
+    /**
+     * The contribution context which contains project, work branch etc.
+     */
+    private final Context context;
+
 
     @AssistedInject
-    public PreContributeWizardPresenter(final AppContext appContext,
-                                        final ContributeMessages messages,
+    public PreContributeWizardPresenter(final ContributeMessages messages,
                                         final PreContributeWizardView view,
                                         final VcsService vcsService,
-                                        @Assisted @Nonnull final FinishContributionOperation finishContribution) {
-        this.appContext = appContext;
+                                        @Assisted @Nonnull final FinishContributionOperation finishContribution,
+                                        @Assisted @Nonnull final Context context,
+                                        @Assisted @Nonnull final Configuration config) {
         this.view = view;
-        this.vcsService = vcsService;
         this.finishContribution = finishContribution;
+
+        this.configuration = config;
+        this.context = context;
     }
 
     @Override
@@ -67,7 +68,8 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
     @Override
     public void onContributeClicked() {
-        this.finishContribution.finishContribution(this.view.getBranchName(), this.view.getPullRequestComment());
+        this.configuration.withBranchName(this.view.getBranchName()).withPullRequestComment(this.view.getPullRequestComment());
+        this.finishContribution.finishContribution(this.context, this.configuration);
     }
 
     @Override
@@ -76,13 +78,8 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
     }
 
     @Override
-    public void suggestBranchName(final AsyncCallback<String> callback) {
-        final CurrentProject currentProject = this.appContext.getCurrentProject();
-        if (currentProject == null) {
-            callback.onSuccess("");
-        }
-        final ProjectDescriptor projectDescriptor = currentProject.getProjectDescription();
-        this.vcsService.getBranchName(projectDescriptor, callback);
+    public String suggestBranchName() {
+        return this.context.getWorkBranchName();
     }
 
     @Override
