@@ -35,7 +35,7 @@
     <g:HTMLPanel width="774px" height="550px" addStyleNames="{style.rootPanel}">
         <div>
             <div>
-                <div ui:text="Branch Name" /><g:TextBox ui:field="branchName" type="text" />
+                <div ui:text="Branch Name" /><g:TextBox ui:field="branchName"/>
             </div>
             <div>
                 <div ui:text="Pull Request Comment" /><g:TextArea ui:field="pullRequestComment" visibleLines="3" />
