@@ -54,13 +54,13 @@ public class ContributorExtension {
     private DefaultActionGroup                    mainToolbarGroup;
 
     @Inject
-    public ContributorExtension(EventBus eventBus,
-                                ActionManager actionManager,
-                                ContributeAction contributeAction,
-                                ProjectServiceClient projectServiceClient,
-                                ContributorLocalizationConstant localConstant,
-                                NotificationManager notificationManager,
-                                GitAgent gitAgent) {
+    public ContributorExtension(final EventBus eventBus,
+                                final ActionManager actionManager,
+                                final ContributeAction contributeAction,
+                                final ProjectServiceClient projectServiceClient,
+                                final ContributorLocalizationConstant localConstant,
+                                final NotificationManager notificationManager,
+                                final GitAgent gitAgent) {
 
         this.actionManager = actionManager;
         this.contributeAction = contributeAction;
@@ -70,12 +70,12 @@ public class ContributorExtension {
 
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
-            public void onProjectOpened(ProjectActionEvent event) {
+            public void onProjectOpened(final ProjectActionEvent event) {
                 initContributeMode(event);
             }
 
             @Override
-            public void onProjectClosed(ProjectActionEvent projectActionEvent) {
+            public void onProjectClosed(final ProjectActionEvent projectActionEvent) {
                 exitContributeMode();
             }
         });
@@ -86,14 +86,14 @@ public class ContributorExtension {
      *
      * @param event the load event
      */
-    private void initContributeMode(ProjectActionEvent event) {
+    private void initContributeMode(final ProjectActionEvent event) {
 
         ProjectDescriptor project = event.getProject();
         Map<String, List<String>> attributes = event.getProject().getAttributes();
 
         if (attributes != null && attributes.containsKey("contribute")) {
-            String contributeAttribute = attributes.get("contribute").get(0);
-            if (contributeAttribute.equals("true")) {
+            final String contributeAttribute = attributes.get("contribute").get(0);
+            if ("true".equals(contributeAttribute)) {
 
                 // branch specified in factory.json has been already checkout at this point
                 // register & display contribute button
@@ -105,8 +105,8 @@ public class ContributorExtension {
                 mainToolbarGroup.add(contributeToolbarGroup, new Constraints(Anchor.AFTER, GROUP_RUN_TOOLBAR));
 
                 // TODO use hash of cloned branch instead of a random number
-                Date today = new Date();
-                DateTimeFormat timeFormat = DateTimeFormat.getFormat("MMddyyyy");
+                final Date today = new Date();
+                final DateTimeFormat timeFormat = DateTimeFormat.getFormat("MMddyyyy");
                 final String workingBranchName = "contrib-" + timeFormat.format(today) + "-" + String.valueOf(Math.random()).substring(8);
                 final Notification notification = new Notification("Creating a new working branch " + workingBranchName + "...", Type.INFO,
                                                                    Status.PROGRESS);
@@ -115,13 +115,13 @@ public class ContributorExtension {
                 gitAgent.checkoutBranch(project, workingBranchName, true, new AsyncRequestCallback<String>() {
 
                     @Override
-                    protected void onSuccess(String result) {
+                    protected void onSuccess(final String result) {
                         notification.setMessage("Branch " + workingBranchName + " successfully created and checked out.");
                         notification.setStatus(Status.FINISHED);
                     }
 
                     @Override
-                    protected void onFailure(Throwable exception) {
+                    protected void onFailure(final Throwable exception) {
                         notification.setMessage("Failed to create branch " + workingBranchName + ".");
                         notification.setType(Type.ERROR);
                         notification.setStatus(Status.FINISHED);
