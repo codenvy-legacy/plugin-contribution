@@ -18,7 +18,7 @@
         <groupId>com.codenvy.plugin-contribution</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>codenvy-ide-contributor</artifactId>
+    <artifactId>codenvy-plugin-contribution</artifactId>
     <name>Contributor Workflow Plugin</name>
     <dependencies>
         <dependency>

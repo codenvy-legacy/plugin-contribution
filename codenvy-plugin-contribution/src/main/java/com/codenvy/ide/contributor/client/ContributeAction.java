@@ -81,16 +81,7 @@ public class ContributeAction extends ProjectAction {
         }
 
         if (authenticated) {
-            // check if user has a fork already existing for origin repo
-            // 1. get list of forks from origin repo
-            List<GitHubRepository> forks = gitAgent.getForks();
-            // 2. check if a fork in list has owner.login = current git user owner.login
-            // GitHubFork fork = getUserFork(gitHubUser.getName(), forks);
-
-            // if (fork == null) {
             // TODO create fork
-            // }
-
             // TODO open wizard to configure PR (branch name, descr, review)
             // TODO rename local branch with name given in PR config
             // TODO push local branch to forked repo on GitHub

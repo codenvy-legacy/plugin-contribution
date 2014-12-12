@@ -47,8 +47,4 @@ public class GitAgent {
     public void getRepositoriesList(AsyncRequestCallback<GitHubRepositoryList> callback) {
         gitHubClientService.getRepositoriesList(callback);
     }
-
-    public void getForks(String user, String repository, AsyncRequestCallback<GitHubRepositoryList> callback) {
-        gitHubClientService.getForks(user, repository, callback);
-    }
 }
