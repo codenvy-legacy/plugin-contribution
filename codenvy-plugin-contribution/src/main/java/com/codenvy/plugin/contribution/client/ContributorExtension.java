@@ -30,9 +30,10 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.Notification.Type;
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
@@ -48,10 +49,10 @@ public class ContributorExtension {
     private final ContributeAction                contributeAction;
     private final ContributorLocalizationConstant localConstant;
     private final NotificationManager             notificationManager;
-    private final GitAgent                        gitAgent;
+    private final VcsService                      vcsService;
 
-    private DefaultActionGroup                    contributeToolbarGroup;
-    private DefaultActionGroup                    mainToolbarGroup;
+    private DefaultActionGroup contributeToolbarGroup;
+    private DefaultActionGroup mainToolbarGroup;
 
     @Inject
     public ContributorExtension(final EventBus eventBus,
@@ -60,13 +61,13 @@ public class ContributorExtension {
                                 final ProjectServiceClient projectServiceClient,
                                 final ContributorLocalizationConstant localConstant,
                                 final NotificationManager notificationManager,
-                                final GitAgent gitAgent) {
+                                final VcsService gitAgent) {
 
         this.actionManager = actionManager;
         this.contributeAction = contributeAction;
         this.localConstant = localConstant;
         this.notificationManager = notificationManager;
-        this.gitAgent = gitAgent;
+        this.vcsService = gitAgent;
 
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
@@ -112,16 +113,16 @@ public class ContributorExtension {
                                                                    Status.PROGRESS);
                 notificationManager.showNotification(notification);
                 // shorthand for create + checkout new temporary working branch -> checkout -b branchName
-                gitAgent.checkoutBranch(project, workingBranchName, true, new AsyncRequestCallback<String>() {
+                vcsService.checkoutBranch(project, workingBranchName, true, new AsyncCallback<String>() {
 
                     @Override
-                    protected void onSuccess(final String result) {
+                    public void onSuccess(final String result) {
                         notification.setMessage("Branch " + workingBranchName + " successfully created and checked out.");
                         notification.setStatus(Status.FINISHED);
                     }
 
                     @Override
-                    protected void onFailure(final Throwable exception) {
+                    public void onFailure(final Throwable exception) {
                         notification.setMessage("Failed to create branch " + workingBranchName + ".");
                         notification.setType(Type.ERROR);
                         notification.setStatus(Status.FINISHED);
