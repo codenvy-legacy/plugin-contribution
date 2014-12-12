@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
+import java.util.List;
+
 import com.codenvy.api.user.gwt.client.UserServiceClient;
 import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
@@ -17,7 +19,6 @@ import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.security.oauth.JsOAuthWindow;
@@ -28,6 +29,7 @@ import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
+import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -45,7 +47,6 @@ public class ContributeAction extends ProjectAction {
 
     private UserDescriptor               userDescriptor;
     private HostUser                     hostUser;
-    private boolean                      authenticated;
 
     @Inject
     public ContributeAction(final ContributeResources contributeResources,
@@ -79,13 +80,6 @@ public class ContributeAction extends ProjectAction {
             // TODO as user is temporary create a Codenvy account and then getCurrentUserInfo
             notificationManager.showNotification(new Notification("Current user isn't permanent.", Notification.Type.ERROR, Status.FINISHED));
         }
-
-        if (authenticated) {
-            // TODO create fork
-            // TODO open wizard to configure PR (branch name, descr, review)
-            // TODO rename local branch with name given in PR config
-            // TODO push local branch to forked repo on GitHub
-        }
     }
 
     private void getCurrentUserInfo() {
@@ -95,7 +89,7 @@ public class ContributeAction extends ProjectAction {
                              @Override
                              protected void onSuccess(final UserDescriptor user) {
                                  userDescriptor = user;
-                                 // get current user's associated github account
+                                 // get current user's associated VCS account
                                  getVCSUserInfo();
                              }
 
@@ -136,7 +130,7 @@ public class ContributeAction extends ProjectAction {
     private void showAuthWindow() {
         String authUrl = baseUrl
                          + "/oauth/authenticate?oauth_provider=github"
-                         + "&scope=user,repo,write:public_key&userId=" + userDescriptor.getId()
+                         + "&scope=user,repo,write:public_key&userId=" + (userDescriptor != null ? userDescriptor.getId() : "")
                          + "&redirect_after_login="
                          + Window.Location.getProtocol() + "//"
                          + Window.Location.getHost() + "/ws/"
@@ -145,6 +139,7 @@ public class ContributeAction extends ProjectAction {
 
             @Override
             public void onAuthenticated(OAuthStatus authStatus) {
+                // TODO get GitHub user
                 onVCSUserAuthenticated();
             }
 
@@ -154,6 +149,10 @@ public class ContributeAction extends ProjectAction {
 
     private void onVCSUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
-        authenticated = true;
+
+        // TODO check if user has a fork already existing for origin repo & fork if not
+        // TODO open wizard to configure PR (branch name, descr, review)
+        // TODO rename local branch with name given in PR config
+        // TODO push local branch to forked repo on GitHub
     }
 }
