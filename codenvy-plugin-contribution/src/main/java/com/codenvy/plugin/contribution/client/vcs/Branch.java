@@ -10,69 +10,36 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
+import com.codenvy.dto.shared.DTO;
+
 /**
  * Representation of a VCS branch.<br>
  * Mirrors the plugin-git interface until we define an abstraction on VCSes and branches.
  */
-public class Branch {
-    private String name;
-    private boolean active;
-    private String displayName;
-    private boolean remote;
+@DTO
+public interface Branch {
 
-    /** @return full name of branch, e.g. 'refs/heads/master' */
-    public String getName() {
-        return this.name;
-    }
+    String getName();
 
-    /** @return <code>true</code> if branch is checked out and false otherwise */
-    public boolean isActive() {
-        return this.active;
-    }
+    boolean isActive();
 
-    /** @return display name of branch, e.g. 'refs/heads/master' -> 'master' */
-    public String getDisplayName() {
-        return this.displayName;
-    }
+    String getDisplayName();
 
-    /** @return <code>true</code> if branch is a remote branch */
-    public boolean isRemote() {
-        return this.remote;
-    }
+    boolean isRemote();
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    void setName(String name);
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+    void setDisplayName(String displayName);
 
-    public void setActive(boolean isActive) {
-        this.active = isActive;
-    }
+    void setActive(boolean isActive);
 
-    public void setRemote(boolean isRemote) {
-        this.remote = isRemote;
-    }
+    void setRemote(boolean isRemote);
 
-    public Branch withName(String name) {
-        this.name = name;
-        return this;
-    }
+    Branch withName(String name);
 
-    public Branch withDisplayName(String displayName) {
-        this.displayName = displayName;
-        return this;
-    }
+    Branch withDisplayName(String displayName);
 
-    public Branch withActive(boolean isActive) {
-        this.active = isActive;
-        return this;
-    }
+    Branch withActive(boolean isActive);
 
-    public Branch withRemote(boolean isRemote) {
-        this.remote = isRemote;
-        return this;
-    }
+    Branch withRemote(boolean isRemote);
 }

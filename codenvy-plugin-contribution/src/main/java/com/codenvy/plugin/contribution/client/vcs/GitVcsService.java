@@ -11,6 +11,7 @@
 package com.codenvy.plugin.contribution.client.vcs;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
 import com.codenvy.ide.ext.git.shared.Status;
 import com.codenvy.ide.rest.AsyncRequestCallback;
@@ -20,9 +21,12 @@ import com.google.inject.Inject;
 public class GitVcsService implements VcsService {
 
     private final GitServiceClient service;
+    private final DtoFactory dtoFactory;
 
     @Inject
-    public GitVcsService(final GitServiceClient service) {
+    public GitVcsService(final DtoFactory dtoFactory,
+                         final GitServiceClient service) {
+        this.dtoFactory = dtoFactory;
         this.service = service;
     }
 
@@ -33,6 +37,7 @@ public class GitVcsService implements VcsService {
             protected void onSuccess(String result) {
                 callback.onSuccess(result);
             }
+
             @Override
             protected void onFailure(Throwable exception) {
                 callback.onFailure(exception);
@@ -45,11 +50,12 @@ public class GitVcsService implements VcsService {
         service.branchCreate(project, name, startPoint, new AsyncRequestCallback<com.codenvy.ide.ext.git.shared.Branch>() {
             @Override
             protected void onSuccess(final com.codenvy.ide.ext.git.shared.Branch result) {
-                final Branch branch = new Branch();
+                final Branch branch = GitVcsService.this.dtoFactory.createDto(Branch.class);
                 branch.withActive(result.isActive()).withRemote(result.isRemote())
                       .withName(branch.getName()).withDisplayName(branch.getDisplayName());
                 callback.onSuccess(branch);
             }
+
             @Override
             protected void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
@@ -64,6 +70,7 @@ public class GitVcsService implements VcsService {
             protected void onSuccess(final Status result) {
                 callback.onSuccess(result.getBranchName());
             }
+
             @Override
             protected void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
