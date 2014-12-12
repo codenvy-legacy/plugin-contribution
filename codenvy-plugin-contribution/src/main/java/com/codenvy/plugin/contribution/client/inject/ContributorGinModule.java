@@ -12,6 +12,8 @@ package com.codenvy.plugin.contribution.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
+import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
+import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcshost.GithubHost;
@@ -32,5 +34,7 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // bind the configure contribution dialog
         install(new GinFactoryModuleBuilder().build(PreContributeWizardPresenterFactory.class));
+        // bind the configure dialog view
+        bind(PreContributeWizardView.class).to(PreContributeWizardViewImpl.class);
     }
 }
