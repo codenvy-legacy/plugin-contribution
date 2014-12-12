@@ -16,6 +16,10 @@ import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
+import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
+import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
+import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
+import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -42,5 +46,11 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // the contribution context singleton
         bind(Context.class).in(Singleton.class);
+
+        // the steps
+        bind(IssuePullRequestStep.class);
+        bind(PushBranchOnForkStep.class);
+        bind(RenameBranchStep.class);
+        bind(ConfigureStep.class);
     }
 }
