@@ -93,7 +93,7 @@ public class ContributorExtension {
 
         if (attributes != null && attributes.containsKey("contribute")) {
             String contributeAttribute = attributes.get("contribute").get(0);
-            if (Integer.parseInt(contributeAttribute) == 1) {
+            if (contributeAttribute.equals("true")) {
 
                 // branch specified in factory.json has been already checkout at this point
                 // register & display contribute button
