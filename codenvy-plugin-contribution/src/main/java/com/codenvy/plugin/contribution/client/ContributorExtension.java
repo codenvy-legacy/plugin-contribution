@@ -116,7 +116,7 @@ public class ContributorExtension {
 
                     @Override
                     protected void onSuccess(String result) {
-                        notification.setMessage("Branch " + workingBranchName + " successfully created and checkout.");
+                        notification.setMessage("Branch " + workingBranchName + " successfully created and checked out.");
                         notification.setStatus(Status.FINISHED);
                     }
 
