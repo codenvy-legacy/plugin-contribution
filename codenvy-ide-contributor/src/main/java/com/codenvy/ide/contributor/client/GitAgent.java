@@ -13,23 +13,38 @@ package com.codenvy.ide.contributor.client;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
 import com.codenvy.ide.ext.git.shared.Branch;
+import com.codenvy.ide.ext.github.client.GitHubClientService;
+import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
+import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Singleton
 public class GitAgent {
 
-    private final GitServiceClient service;
-    
+    private final GitServiceClient    gitServiceClient;
+    private final GitHubClientService gitHubClientService;
+
     @Inject
-    public GitAgent(GitServiceClient service) {
-        this.service = service;
+    public GitAgent(GitServiceClient gitServiceClient, GitHubClientService gitHubClientService) {
+        this.gitServiceClient = gitServiceClient;
+        this.gitHubClientService = gitHubClientService;
     }
-    
+
     public void checkoutBranch(ProjectDescriptor project, String name, boolean createNew, AsyncRequestCallback<String> callback) {
-        service.branchCheckout(project, name, null, createNew, callback);
+        gitServiceClient.branchCheckout(project, name, null, createNew, callback);
     }
-    
+
     public void createBranch(ProjectDescriptor project, String name, String startPoint, AsyncRequestCallback<Branch> callback) {
-        service.branchCreate(project, name, startPoint, callback);
+        gitServiceClient.branchCreate(project, name, startPoint, callback);
+    }
+
+    public void getUserInfo(AsyncRequestCallback<GitHubUser> callback) {
+        gitHubClientService.getUserInfo(callback);
+    }
+
+    public void getRepositoriesList(AsyncRequestCallback<GitHubRepositoryList> callback) {
+        gitHubClientService.getRepositoriesList(callback);
     }
 }
