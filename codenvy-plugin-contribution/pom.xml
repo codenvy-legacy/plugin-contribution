@@ -122,6 +122,7 @@
                             <dtoPackages>
                                 <package>com.codenvy.plugin.contribution.client.vcshost</package>
                                 <package>com.codenvy.plugin.contribution.client.vcs</package>
+                                <package>com.codenvy.plugin.contribution.client.value</package>
                             </dtoPackages>
                             <outputDirectory>${dto-generator-out-directory}</outputDirectory>
                             <genClassName>com.codenvy.plugin.contribution.client.dto.DtoClientImpls</genClassName>
