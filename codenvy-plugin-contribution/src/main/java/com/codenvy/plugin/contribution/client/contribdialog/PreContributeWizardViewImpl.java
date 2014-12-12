@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.TextBox;
 public class PreContributeWizardViewImpl extends Window implements PreContributeWizardView {
 
     /** The uUI binder for this component. */
-    private static final PreContributeWizardWiewUiBinder UI_BINDER = GWT.create(PreContributeWizardWiewUiBinder.class);
+    private static final PreContributeWizardViewUiBinder UI_BINDER = GWT.create(PreContributeWizardViewUiBinder.class);
 
     /** The input component for the branch name. */
     @UiField
