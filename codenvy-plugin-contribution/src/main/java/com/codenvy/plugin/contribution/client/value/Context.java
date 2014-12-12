@@ -11,23 +11,42 @@
 package com.codenvy.plugin.contribution.client.value;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.dto.shared.DTO;
 
 /**
  * Contribution context, with information on current project, branch etc.
  */
-@DTO
-public interface Context {
+public class Context {
+    /** The project. */
+    private ProjectDescriptor project;
 
-    ProjectDescriptor getProject();
+    /**
+     * The name of the working branch.
+     */
+    private String workBranchName;
 
-    void setProject(ProjectDescriptor desc);
+    public ProjectDescriptor getProject() {
+        return this.project;
+    }
 
-    Context withProject(ProjectDescriptor desc);
+    public void setProject(ProjectDescriptor desc) {
+        this.project = desc;
+    }
 
-    String getWorkBranchName();
+    public Context withProject(ProjectDescriptor desc) {
+        this.project = desc;
+        return this;
+    }
 
-    void setWorkBranchName(String name);
+    public String getWorkBranchName() {
+        return this.workBranchName;
+    }
 
-    Context withWorkBranchName(String name);
+    public void setWorkBranchName(String name) {
+        this.workBranchName = name;
+    }
+
+    public Context withWorkBranchName(String name) {
+        this.workBranchName = name;
+        return this;
+    }
 }
