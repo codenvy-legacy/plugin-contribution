@@ -17,6 +17,7 @@ import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
+import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshaller;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -27,6 +28,9 @@ import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
+import com.codenvy.plugin.contribution.client.value.Configuration;
+import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.Window;
@@ -40,6 +44,11 @@ public class ContributeAction extends ProjectAction {
      * I18n messages.
      */
     private final ContributeMessages messages;
+
+    /**
+     * Step where the user configures the contribution.
+     */
+    private ConfigureStep configureStep;
 
     /**
      * Service to retrieve user informations.
@@ -71,6 +80,8 @@ public class ContributeAction extends ProjectAction {
      */
     private final RepositoryHost repositoryHost;
 
+    private final Context context;
+    private final Configuration config;
     /**
      * The local user identity.
      */
@@ -82,8 +93,11 @@ public class ContributeAction extends ProjectAction {
     private HostUser hostUser;
 
     @Inject
-    public ContributeAction(final ContributeResources contributeResources,
+    public ContributeAction(final ConfigureStep configureStep,
+                            final Context context,
+                            final ContributeResources contributeResources,
                             final ContributeMessages messages,
+                            final DtoFactory dtoFactory,
                             final UserServiceClient userServiceClient,
                             final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                             final NotificationManager notificationManager,
@@ -92,6 +106,7 @@ public class ContributeAction extends ProjectAction {
                             final RepositoryHost repositoryHost) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
+        this.configureStep = configureStep;
         this.userServiceClient = userServiceClient;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.messages = messages;
@@ -99,6 +114,9 @@ public class ContributeAction extends ProjectAction {
         this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
         this.repositoryHost = repositoryHost;
+
+        this.context = context;
+        this.config = dtoFactory.createDto(Configuration.class);
     }
 
     @Override
@@ -172,7 +190,7 @@ public class ContributeAction extends ProjectAction {
         JsOAuthWindow authWindow = new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
 
             @Override
-            public void onAuthenticated(OAuthStatus authStatus) {
+            public void onAuthenticated(final OAuthStatus authStatus) {
                 // TODO get GitHub user
                 onVCSUserAuthenticated();
             }
@@ -191,5 +209,6 @@ public class ContributeAction extends ProjectAction {
         // TODO open wizard to configure PR (branch name, descr, review)
         // TODO rename local branch with name given in PR config
         // TODO push local branch to forked repo on GitHub
+        this.configureStep.execute(this.context, this.config);
     }
 }
