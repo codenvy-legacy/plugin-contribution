@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import java.util.List;
-
 import com.codenvy.api.user.gwt.client.UserServiceClient;
 import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
@@ -29,7 +27,6 @@ import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
-import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
