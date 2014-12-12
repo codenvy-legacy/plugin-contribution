@@ -51,7 +51,7 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
      * The cancel button.
      */
     @UiField
-    Button cancelbutton;
+    Button cancelButton;
 
     /**
      * The i18n messages.
