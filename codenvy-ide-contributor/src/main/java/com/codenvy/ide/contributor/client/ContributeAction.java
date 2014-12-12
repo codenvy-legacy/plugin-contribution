@@ -10,18 +10,13 @@
  *******************************************************************************/
 package com.codenvy.ide.contributor.client;
 
-import java.util.List;
-
 import com.codenvy.api.user.gwt.client.UserServiceClient;
 import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
-import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.ext.github.shared.GitHubRepository;
-import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -44,7 +39,6 @@ public class ContributeAction extends ProjectAction {
     private final DialogFactory          dialogFactory;
     private final String                 baseUrl;
     private final GitAgent               gitAgent;
-    private final AppContext             appContext;
 
     private UserDescriptor               userDescriptor;
 
@@ -56,8 +50,7 @@ public class ContributeAction extends ProjectAction {
                             NotificationManager notificationManager,
                             DialogFactory dialogFactory,
                             @Named("restContext") String baseUrl,
-                            GitAgent gitAgent,
-                            AppContext appContext) {
+                            GitAgent gitAgent) {
         super(localConstant.contributorButtonName(), localConstant.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.userServiceClient = userServiceClient;
@@ -66,7 +59,6 @@ public class ContributeAction extends ProjectAction {
         this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
         this.gitAgent = gitAgent;
-        this.appContext = appContext;
     }
 
     @Override
