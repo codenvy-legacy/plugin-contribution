@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.ide.contributor.client;
 
+import java.util.List;
+
 import com.codenvy.api.user.gwt.client.UserServiceClient;
 import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
@@ -17,6 +19,7 @@ import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
+import com.codenvy.ide.ext.github.shared.GitHubRepository;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
@@ -41,6 +44,8 @@ public class ContributeAction extends ProjectAction {
     private final GitAgent               gitAgent;
 
     private UserDescriptor               userDescriptor;
+    private GitHubUser                   gitHubUser;
+    private boolean                      authenticated;
 
     @Inject
     public ContributeAction(ContributeResources contributeResources,
@@ -75,9 +80,21 @@ public class ContributeAction extends ProjectAction {
             notificationManager.showNotification(new Notification("Current user isn't permanent.", Notification.Type.ERROR, Status.FINISHED));
         }
 
-        // TODO open wizard to configure PR (branch name, descr, review)
-        // TODO rename local branch with name given in PR config
-        // TODO push local branch to forked repo on GitHub
+        if (authenticated) {
+            // check if user has a fork already existing for origin repo
+            // 1. get list of forks from origin repo
+            List<GitHubRepository> forks = gitAgent.getForks();
+            // 2. check if a fork in list has owner.login = current git user owner.login
+            // GitHubFork fork = getUserFork(gitHubUser.getName(), forks);
+
+            // if (fork == null) {
+            // TODO create fork
+            // }
+
+            // TODO open wizard to configure PR (branch name, descr, review)
+            // TODO rename local branch with name given in PR config
+            // TODO push local branch to forked repo on GitHub
+        }
     }
 
     private void getCurrentUserInfo() {
@@ -104,6 +121,7 @@ public class ContributeAction extends ProjectAction {
         gitAgent.getUserInfo(new AsyncRequestCallback<GitHubUser>() {
             @Override
             protected void onSuccess(GitHubUser result) {
+                gitHubUser = result;
                 onVCSUserAuthenticated();
             }
 
@@ -145,5 +163,6 @@ public class ContributeAction extends ProjectAction {
 
     private void onVCSUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
+        authenticated = true;
     }
 }

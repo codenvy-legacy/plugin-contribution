@@ -1,2 +1,2 @@
-plugin-wf-contributor
-=====================
+plugin-contribution
+===================

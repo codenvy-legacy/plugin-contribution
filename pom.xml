@@ -32,7 +32,7 @@
         </license>
     </licenses>
     <modules>
-        <module>codenvy-ide-contributor</module>
+        <module>codenvy-plugin-contribution</module>
     </modules>
     <scm>
         <connection>scm:git:git@github.com:codenvy/plugin-contribution.git</connection>
