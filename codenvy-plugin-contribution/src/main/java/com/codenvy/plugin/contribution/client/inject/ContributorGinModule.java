@@ -19,6 +19,7 @@ import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardV
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
+import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
@@ -52,5 +53,6 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(PushBranchOnForkStep.class);
         bind(RenameBranchStep.class);
         bind(ConfigureStep.class);
+        bind(RemoteForkStep.class);
     }
 }
