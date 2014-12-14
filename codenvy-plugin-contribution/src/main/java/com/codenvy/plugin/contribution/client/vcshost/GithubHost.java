@@ -40,6 +40,9 @@ public class GithubHost implements RepositoryHost {
         this.gitHubClientService.getUserInfo(new AsyncRequestCallback<GitHubUser>() {
             @Override
             protected void onSuccess(final GitHubUser result) {
+                if (result == null) {
+                    callback.onFailure(new Exception("No user info"));
+                }
                 final HostUser user = GithubHost.this.dtoFactory.createDto(HostUser.class);
                 user.withId(result.getId()).withLogin(user.getLogin()).withName(user.getName()).withUrl(user.getUrl());
                 callback.onSuccess(user);
