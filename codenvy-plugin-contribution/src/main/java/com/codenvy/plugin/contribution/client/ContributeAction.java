@@ -29,6 +29,7 @@ import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
+import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
@@ -48,7 +49,7 @@ public class ContributeAction extends ProjectAction {
     /**
      * Step where the user configures the contribution.
      */
-    private ConfigureStep configureStep;
+    private final ConfigureStep configureStep;
 
     /**
      * Service to retrieve user informations.
@@ -74,6 +75,11 @@ public class ContributeAction extends ProjectAction {
      * The REST base URL.
      */
     private final String baseUrl;
+
+    /**
+     * A step to create a fork on the remote repository.
+     */
+    private RemoteForkStep remoteForkStep;
 
     /**
      * The remote VCS host interface.
@@ -103,6 +109,7 @@ public class ContributeAction extends ProjectAction {
                             final NotificationManager notificationManager,
                             final DialogFactory dialogFactory,
                             final @Named("restContext") String baseUrl,
+                            final RemoteForkStep remoteForkStep,
                             final RepositoryHost repositoryHost) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
@@ -113,6 +120,7 @@ public class ContributeAction extends ProjectAction {
         this.notificationManager = notificationManager;
         this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
+        this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
 
         this.context = context;
@@ -202,13 +210,9 @@ public class ContributeAction extends ProjectAction {
     private void onVCSUserAuthenticated() {
         notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
 
-        /* parallel with the other items */
-        // TODO check if user has a fork already existing for origin repo & fork if not
+        /* parallel with the other steps */
+        this.remoteForkStep.execute(context, config);
 
-        /* sequential */
-        // TODO open wizard to configure PR (branch name, descr, review)
-        // TODO rename local branch with name given in PR config
-        // TODO push local branch to forked repo on GitHub
         this.configureStep.execute(this.context, this.config);
     }
 }
