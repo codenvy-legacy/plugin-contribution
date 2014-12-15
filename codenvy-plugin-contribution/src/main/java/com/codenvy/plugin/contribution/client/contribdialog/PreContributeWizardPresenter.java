@@ -58,6 +58,8 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
         this.configuration = config;
         this.context = context;
+
+        this.view.bindDelegate(this);
     }
 
     @Override
