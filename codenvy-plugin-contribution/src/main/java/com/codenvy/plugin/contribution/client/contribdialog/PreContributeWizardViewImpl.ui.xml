@@ -41,9 +41,9 @@
                 <div ui:text="Pull Request Comment" /><g:TextArea ui:field="pullRequestComment" visibleLines="3" />
             </div>
         </div>
-        <div>
-            <g:Button ui:field="cancelButton" ui:text="{messages.contributeButton}" />
-            <g:Button ui:field="contributeButton" ui:text="{messages.cancelButton}" />
+        <div class="{style.buttonSection}">
+            <g:Button ui:field="cancelButton" ui:text="{messages.cancelButton}" />
+            <g:Button ui:field="contributeButton" ui:text="{messages.contributeButton}" />
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
