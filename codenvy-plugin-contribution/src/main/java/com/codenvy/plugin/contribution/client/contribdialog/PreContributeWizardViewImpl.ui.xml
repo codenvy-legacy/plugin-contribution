@@ -45,24 +45,55 @@
             flex-direction: column;
             flex-grow: 1;
             flex-shrink: 1;
+            padding-top: 2em;
+            padding-right: 5em;
+            padding-left: 5em;
         }
         .fieldItem {
             display: flex;
             flex-direction: row;
+            justify-content: flex-start;
+            margin-bottom: 0.7em;
+        }
+
+        .button {
+            width: 9em;
+            margin-left: 0.5em;
+        }
+        .button-blue {
+            background: #256c9f;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.29), inset 0px 1px 0px 0px rgba(55, 126, 172, 1);
+            border-color: #2f3237;
+        }
+        .label {
+            width: 11em;
+            flex-grow: 0;
+            display: flex;
+            justify-content: flex-end;
+            margin-right: 1em;
+        }
+        .field {
+            flex-grow: 1;
+        }
+        .fixed-textarea {
+            overflow: scroll;
+            resize:none;
         }
     </ui:style>
     <g:HTMLPanel width="774px" height="400px" addStyleNames="{style.rootPanel}">
         <div class="{style.fieldsSection}">
             <div class="{style.fieldItem}">
-                <div>Branch Name</div><g:TextBox ui:field="branchName"/>
+                <div class="{style.label}">Branch Name</div>
+                <g:TextBox ui:field="branchName" addStyleNames="{style.field}" />
             </div>
             <div class="{style.fieldItem}">
-                <div>Pull Request Comment</div><g:TextArea ui:field="pullRequestComment" visibleLines="3" />
+                <div class="{style.label}">Pull Request Comment</div>
+                <g:TextArea ui:field="pullRequestComment" visibleLines="5"  addStyleNames="{style.field} {style.fixed-textarea}" />
             </div>
         </div>
         <div class="{style.buttonSection}">
-            <g:Button ui:field="cancelButton" ui:text="{messages.cancelButton}" />
-            <g:Button ui:field="contributeButton" ui:text="{messages.contributeButton}" />
+            <g:Button ui:field="cancelButton" ui:text="{messages.cancelButton}" addStyleNames="{style.button}" />
+            <g:Button ui:field="contributeButton" ui:text="{messages.contributeButton}" addStyleNames="{style.button} {style.button-blue}" />
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
