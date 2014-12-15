@@ -42,10 +42,11 @@ public class GithubHost implements RepositoryHost {
             protected void onSuccess(final GitHubUser result) {
                 if (result == null) {
                     callback.onFailure(new Exception("No user info"));
+                } else {
+                    final HostUser user = GithubHost.this.dtoFactory.createDto(HostUser.class);
+                    user.withId(result.getId()).withLogin(user.getLogin()).withName(user.getName()).withUrl(user.getUrl());
+                    callback.onSuccess(user);
                 }
-                final HostUser user = GithubHost.this.dtoFactory.createDto(HostUser.class);
-                user.withId(result.getId()).withLogin(user.getLogin()).withName(user.getName()).withUrl(user.getUrl());
-                callback.onSuccess(user);
             }
 
             @Override
