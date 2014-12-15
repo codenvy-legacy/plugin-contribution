@@ -106,7 +106,6 @@ public class ContributorExtension {
                 actionManager.registerAction(messages.contributorButtonName(), contributeAction);
                 mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
                 contributeToolbarGroup = new DefaultActionGroup(GROUP_MAIN_TOOLBAR, false, actionManager);
-                actionManager.registerAction(GROUP_MAIN_TOOLBAR, contributeToolbarGroup);
                 contributeToolbarGroup.add(contributeAction);
                 mainToolbarGroup.add(contributeToolbarGroup, new Constraints(Anchor.AFTER, GROUP_RUN_TOOLBAR));
 
