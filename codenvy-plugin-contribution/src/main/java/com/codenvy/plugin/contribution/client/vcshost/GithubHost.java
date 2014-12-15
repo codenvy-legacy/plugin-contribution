@@ -21,23 +21,27 @@ import com.codenvy.ide.ext.github.shared.GitHubRepository;
 import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
+import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GithubHost implements RepositoryHost {
 
-    private final GitHubClientService gitHubClientService;
+    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
     private final DtoFactory dtoFactory;
+    private final GitHubClientService gitHubClientService;
 
     @Inject
-    public GithubHost(final DtoFactory dtoFactory,
+    public GithubHost(final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                      final DtoFactory dtoFactory,
                       final GitHubClientService gitHubClientService) {
+        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
     }
 
     @Override
     public void getUserInfo(final AsyncCallback<HostUser> callback) {
-        this.gitHubClientService.getUserInfo(new AsyncRequestCallback<GitHubUser>() {
+        this.gitHubClientService.getUserInfo(new AsyncRequestCallback<GitHubUser>(dtoUnmarshallerFactory.newUnmarshaller(GitHubUser.class)) {
             @Override
             protected void onSuccess(final GitHubUser result) {
                 if (result == null) {
