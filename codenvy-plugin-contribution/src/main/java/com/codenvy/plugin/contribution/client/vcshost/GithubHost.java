@@ -48,7 +48,7 @@ public class GithubHost implements RepositoryHost {
                     callback.onFailure(new Exception("No user info"));
                 } else {
                     final HostUser user = GithubHost.this.dtoFactory.createDto(HostUser.class);
-                    user.withId(result.getId()).withLogin(user.getLogin()).withName(user.getName()).withUrl(user.getUrl());
+                    user.withId(result.getId()).withLogin(result.getLogin()).withName(result.getName()).withUrl(result.getUrl());
                     callback.onSuccess(user);
                 }
             }
