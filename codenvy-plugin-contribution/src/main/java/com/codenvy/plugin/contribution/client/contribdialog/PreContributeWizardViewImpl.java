@@ -70,6 +70,8 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
         this.messages = messages;
         setWidget(UI_BINDER.createAndBindUi(this));
 
+        setTitle(messages.preContributeWizardTitle());
+
         this.branchName.getElement().setPropertyString("placeholder", messages.branchNameInputPlaceHolder());
         this.pullRequestComment.getElement().setPropertyString("placeholder", messages.pullRequestCommentPlaceHolder());
     }
