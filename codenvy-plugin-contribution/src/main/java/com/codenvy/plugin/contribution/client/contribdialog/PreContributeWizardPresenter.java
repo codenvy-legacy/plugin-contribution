@@ -70,7 +70,9 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
     @Override
     public void onContributeClicked() {
-        this.configuration.withBranchName(this.view.getBranchName()).withPullRequestComment(this.view.getPullRequestComment());
+        this.configuration.withBranchName(this.view.getBranchName())
+                          .withPullRequestComment(this.view.getPullRequestComment())
+                          .withContributionTitle(this.view.getContribTitle());
         this.view.hide();
         this.finishContribution.finishContribution(this.context, this.configuration);
     }
@@ -88,11 +90,15 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
     @Override
     public void updateControls() {
         final String branchName = this.view.getBranchName();
+        final String title = this.view.getContribTitle();
+        boolean ready = true;
         if (branchName == null || "".equals(branchName)) {
-            this.view.setContributeEnabled(false);
-        } else {
-            this.view.setContributeEnabled(true);
+            ready = false;
         }
+        if (title == null || "".equals(title)) {
+            ready = false;
+        }
+        this.view.setContributeEnabled(ready);
     }
 
 }

@@ -54,6 +54,13 @@ public interface PreContributeWizardView {
     String getPullRequestComment();
 
     /**
+     * Returns the contribution title/
+     * 
+     * @return the title
+     */
+    String getContribTitle();
+
+    /**
      * Sets the enabled/disabled state of the "Contribute" button.
      * 
      * @param enabled true to enable, false to disable
