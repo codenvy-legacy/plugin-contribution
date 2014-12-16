@@ -45,15 +45,13 @@ public class GitVcsService implements VcsService {
         });
     }
 
+    @Override
     public void createBranch(final ProjectDescriptor project, final String name,
                              final String startPoint, final AsyncCallback<Branch> callback) {
         service.branchCreate(project, name, startPoint, new AsyncRequestCallback<com.codenvy.ide.ext.git.shared.Branch>() {
             @Override
             protected void onSuccess(final com.codenvy.ide.ext.git.shared.Branch result) {
-                final Branch branch = GitVcsService.this.dtoFactory.createDto(Branch.class);
-                branch.withActive(result.isActive()).withRemote(result.isRemote())
-                      .withName(branch.getName()).withDisplayName(branch.getDisplayName());
-                callback.onSuccess(branch);
+                callback.onSuccess(fromGitBranch(result));
             }
 
             @Override
@@ -95,5 +93,18 @@ public class GitVcsService implements VcsService {
                 callback.onFailure(exception);
             }
         });
+    }
+
+    /**
+     * Converts a git branch DTO to an abstracted branch object.
+     * 
+     * @param gitBracnh the object to convert
+     * @return the converted object
+     */
+    private Branch fromGitBranch(final com.codenvy.ide.ext.git.shared.Branch gitBracnh) {
+        final Branch branch = GitVcsService.this.dtoFactory.createDto(Branch.class);
+        branch.withActive(gitBracnh.isActive()).withRemote(gitBracnh.isRemote())
+              .withName(gitBracnh.getName()).withDisplayName(gitBracnh.getDisplayName());
+        return branch;
     }
 }
