@@ -70,7 +70,9 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
     @Override
     public void onContributeClicked() {
-        this.configuration.withBranchName(this.view.getBranchName()).withPullRequestComment(this.view.getPullRequestComment());
+        this.configuration.withBranchName(this.view.getBranchName())
+                          .withPullRequestComment(this.view.getPullRequestComment())
+                          .withContributionTitle(this.view.getContribTitle());
         this.view.hide();
         this.finishContribution.finishContribution(this.context, this.configuration);
     }

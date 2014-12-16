@@ -29,4 +29,10 @@ public interface Configuration {
     void setPullRequestComment(String comment);
 
     Configuration withPullRequestComment(String comment);
+
+    String getContributionTitle();
+
+    void setContributionTitle(String title);
+
+    Configuration withContributionTitle(String title);
 }
