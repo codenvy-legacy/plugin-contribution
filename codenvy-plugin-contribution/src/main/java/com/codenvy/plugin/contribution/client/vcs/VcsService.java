@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
@@ -23,4 +25,12 @@ public interface VcsService {
     void getBranchName(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<String> callback);
 
     void renameBranch(@Nonnull ProjectDescriptor project, String oldName, String newName, AsyncCallback<Void> callback);
+
+    /**
+     * List the local branches.
+     * 
+     * @param project the project descriptor
+     * @param callback what to to with the branches list
+     */
+    void listLocalBranches(@Nonnull ProjectDescriptor project, AsyncCallback<List<Branch>> callback);
 }
