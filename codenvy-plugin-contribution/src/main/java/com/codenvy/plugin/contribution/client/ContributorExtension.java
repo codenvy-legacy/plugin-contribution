@@ -45,6 +45,8 @@ import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
+    private static final String ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
+    private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ActionManager       actionManager;
     private final Context             context;
@@ -86,20 +88,20 @@ public class ContributorExtension {
     }
 
     /**
-     * Initialize contribution button & operations
+     * Initialize contribution button & operations.
      *
      * @param event
-     *         the load event
+     *         the load event.
      */
     private void initContributeMode(final ProjectActionEvent event) {
+        final ProjectDescriptor project = event.getProject();
+        context.setProject(project);
 
-        ProjectDescriptor project = event.getProject();
-        this.context.setProject(project);
-        Map<String, List<String>> attributes = event.getProject().getAttributes();
+        final Map<String, List<String>> attributes = event.getProject().getAttributes();
+        if (attributes != null && attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
 
-        if (attributes != null && attributes.containsKey("contribute")) {
-            final String contributeAttribute = attributes.get("contribute").get(0);
-            if ("true".equals(contributeAttribute)) {
+            final String contributeAttribute = attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0);
+            if ("true".equalsIgnoreCase(contributeAttribute)) {
 
                 // branch specified in factory.json has been already checkout at this point
                 // register & display contribute button
@@ -109,11 +111,8 @@ public class ContributorExtension {
                 contributeToolbarGroup.add(contributeAction);
                 mainToolbarGroup.add(contributeToolbarGroup, new Constraints(Anchor.AFTER, GROUP_RUN_TOOLBAR));
 
-                // TODO use hash of cloned branch instead of a random number
-                final Date today = new Date();
-                final DateTimeFormat timeFormat = DateTimeFormat.getFormat("MMddyyyy");
-                final String workingBranchName = "contrib-" + timeFormat.format(today) + "-" + String.valueOf(Math.random()).substring(8);
-                this.context.setWorkBranchName(workingBranchName);
+                final String workingBranchName = generateWorkingBranchName();
+                context.setWorkBranchName(workingBranchName);
                 final Notification notification = new Notification("Creating a new working branch " + workingBranchName + "...", Type.INFO,
                                                                    Status.PROGRESS);
                 notificationManager.showNotification(notification);
@@ -144,5 +143,15 @@ public class ContributorExtension {
         if (mainToolbarGroup != null && contributeToolbarGroup != null) {
             mainToolbarGroup.remove(contributeToolbarGroup);
         }
+    }
+
+    /**
+     * Generates the working branch name used for the contribution.
+     *
+     * @return the working branch name, never {@code null}.
+     */
+    private String generateWorkingBranchName() {
+        final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MMddyyyy");
+        return WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
     }
 }
