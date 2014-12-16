@@ -87,6 +87,10 @@
                 <g:TextBox ui:field="branchName" addStyleNames="{style.field}" />
             </div>
             <div class="{style.fieldItem}">
+                <div class="{style.label}">Contribution Title</div>
+                <g:TextBox ui:field="contribTitle" addStyleNames="{style.field}" />
+            </div>
+            <div class="{style.fieldItem}">
                 <div class="{style.label}">Pull Request Comment</div>
                 <g:TextArea ui:field="pullRequestComment" visibleLines="5"  addStyleNames="{style.field} {style.fixed-textarea}" />
             </div>

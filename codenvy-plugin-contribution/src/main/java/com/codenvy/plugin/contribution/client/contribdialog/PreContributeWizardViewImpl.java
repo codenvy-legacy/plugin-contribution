@@ -36,6 +36,10 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     @UiField
     TextBox branchName;
 
+    /** The input component for the contribution title. */
+    @UiField
+    TextBox contribTitle;
+
     /**
      * The input zone for the pull request comment.
      */
@@ -103,6 +107,11 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     }
 
     @Override
+    public String getContribTitle() {
+        return this.contribTitle.getValue();
+    }
+
+    @Override
     public void setContributeEnabled(final boolean enabled) {
         this.contributeButton.setEnabled(enabled);
     }
@@ -124,6 +133,11 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
 
     @UiHandler("pullRequestComment")
     public void pullRequestCommentChanged(final ValueChangeEvent<String> event) {
+        this.delegate.updateControls();
+    }
+
+    @UiHandler("contribTitle")
+    public void contribTitleChanged(final ValueChangeEvent<String> event) {
         this.delegate.updateControls();
     }
 
