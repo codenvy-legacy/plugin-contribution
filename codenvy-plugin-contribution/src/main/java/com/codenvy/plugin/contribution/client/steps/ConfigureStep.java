@@ -17,6 +17,8 @@ import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardP
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
 public class ConfigureStep implements Step {
 
@@ -31,13 +33,20 @@ public class ConfigureStep implements Step {
     }
 
     public void execute(final Context context, final Configuration configuration) {
-        final PreContributeWizardPresenter dialog = this.configureWizardFactory.create(new FinishContributionOperation() {
-
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
-            public void finishContribution(final Context context, final Configuration config) {
-                renameBranchStep.execute(context, config);
+            public void execute() {
+                final FinishContributionOperation finish = new FinishContributionOperation() {
+                    @Override
+                    public void finishContribution(final Context context, final Configuration config) {
+                        renameBranchStep.execute(context, config);
+                    }
+                };
+                final PreContributeWizardPresenter dialog = ConfigureStep.this.configureWizardFactory.create(finish,
+                                                                                                             context,
+                                                                                                             configuration);
+                dialog.show();
             }
-        }, context, configuration);
-        dialog.show();
+        });
     }
 }

@@ -40,4 +40,22 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Codenvy needs authorization on github to continue")
     String repositoryHostAuthorizeMessage();
+
+    @DefaultMessage("You need to provide the contribution branch name.")
+    String warnBranchEmpty();
+
+    @DefaultMessage("Incorrect or missing information")
+    String warnMissingConfigTitle();
+
+    @DefaultMessage("Could not list local branches. Contribution interrupted")
+    String errorListBranches();
+
+    @DefaultMessage("A branch with this name already exists: {0}")
+    String errorBranchExists(String name);
+
+    @DefaultMessage("Branch rename failed. Contribution interrupted")
+    String errorRenameFailed();
+
+    @DefaultMessage("Contribution branch renamed to {0}")
+    String infoRenamedBranch(String branchName);
 }

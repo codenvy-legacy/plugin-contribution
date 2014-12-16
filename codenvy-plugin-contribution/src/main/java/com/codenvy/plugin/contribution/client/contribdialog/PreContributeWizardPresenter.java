@@ -71,6 +71,7 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
     @Override
     public void onContributeClicked() {
         this.configuration.withBranchName(this.view.getBranchName()).withPullRequestComment(this.view.getPullRequestComment());
+        this.view.hide();
         this.finishContribution.finishContribution(this.context, this.configuration);
     }
 

@@ -10,7 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
 import com.codenvy.ide.ext.git.shared.Status;
@@ -20,10 +24,24 @@ import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
+/**
+ * Git backed implementation for {@link VcsService}.
+ */
 public class GitVcsService implements VcsService {
 
+    /**
+     * The git client service.
+     */
     private final GitServiceClient service;
+
+    /**
+     * The DTO factory.
+     */
     private final DtoFactory dtoFactory;
+
+    /**
+     * Unmarshaller for DTOs.
+     */
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
     @Inject
@@ -35,6 +53,7 @@ public class GitVcsService implements VcsService {
         this.service = service;
     }
 
+    @Override
     public void checkoutBranch(final ProjectDescriptor project, final String name,
                                final boolean createNew, final AsyncCallback<String> callback) {
         service.branchCheckout(project, name, null, createNew, new AsyncRequestCallback<String>() {
@@ -99,6 +118,37 @@ public class GitVcsService implements VcsService {
                 callback.onFailure(exception);
             }
         });
+    }
+
+    @Override
+    public void listLocalBranches(final ProjectDescriptor project, final AsyncCallback<List<Branch>> callback) {
+        listBranches(project, null, callback);
+    }
+
+    /**
+     * List branches of a given type.
+     * 
+     * @param project the project descriptor
+     * @param whichBranches null -> list local branches; "r" -> list remote branches; "a" -> list all branches
+     * @param callback
+     */
+    private void listBranches(final ProjectDescriptor project, final String whichBranches, final AsyncCallback<List<Branch>> callback) {
+        final Unmarshallable<Array<com.codenvy.ide.ext.git.shared.Branch>> unMarshaller = dtoUnmarshallerFactory.newArrayUnmarshaller(com.codenvy.ide.ext.git.shared.Branch.class);
+        this.service.branchList(project, whichBranches,
+            new AsyncRequestCallback<Array<com.codenvy.ide.ext.git.shared.Branch>>(unMarshaller) {
+                @Override
+                protected void onSuccess(final Array<com.codenvy.ide.ext.git.shared.Branch> branches) {
+                    final List<Branch> result = new ArrayList<>();
+                    for (final com.codenvy.ide.ext.git.shared.Branch branch: branches.asIterable()) {
+                        result.add(fromGitBranch(branch));
+                    }
+                    callback.onSuccess(result);
+                }
+                @Override
+                protected void onFailure(final Throwable exception) {
+                    callback.onFailure(exception);
+                }
+            });
     }
 
     /**
