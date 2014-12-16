@@ -10,13 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
-import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.action.ActionManager;
@@ -39,19 +32,27 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
+import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
+
 /**
  * @author Stephane Tournie
+ * @author Kevin Pollet
  */
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
 
-    private final ActionManager                   actionManager;
-    private final Context context;
-    private final ContributeAction                contributeAction;
-    private final ContributeMessages messages;
-    private final NotificationManager             notificationManager;
-    private final VcsService                      vcsService;
+    private final ActionManager       actionManager;
+    private final Context             context;
+    private final ContributeAction    contributeAction;
+    private final ContributeMessages  messages;
+    private final NotificationManager notificationManager;
+    private final VcsService          vcsService;
 
     private DefaultActionGroup contributeToolbarGroup;
     private DefaultActionGroup mainToolbarGroup;
@@ -89,7 +90,8 @@ public class ContributorExtension {
     /**
      * Initialize contribution button & operations
      *
-     * @param event the load event
+     * @param event
+     *         the load event
      */
     private void initContributeMode(final ProjectActionEvent event) {
 
