@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.action.ActionManager;
 import com.codenvy.ide.api.action.DefaultActionGroup;
@@ -62,7 +61,6 @@ public class ContributorExtension {
                                 final EventBus eventBus,
                                 final ActionManager actionManager,
                                 final ContributeAction contributeAction,
-                                final ProjectServiceClient projectServiceClient,
                                 final ContributeMessages messages,
                                 final NotificationManager notificationManager,
                                 final VcsService gitAgent) {
