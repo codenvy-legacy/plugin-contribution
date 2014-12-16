@@ -24,10 +24,24 @@ import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
+/**
+ * Git backed implementation for {@link VcsService}.
+ */
 public class GitVcsService implements VcsService {
 
+    /**
+     * The git client service.
+     */
     private final GitServiceClient service;
+
+    /**
+     * The DTO factory.
+     */
     private final DtoFactory dtoFactory;
+
+    /**
+     * Unmarshaller for DTOs.
+     */
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
     @Inject
@@ -39,6 +53,7 @@ public class GitVcsService implements VcsService {
         this.service = service;
     }
 
+    @Override
     public void checkoutBranch(final ProjectDescriptor project, final String name,
                                final boolean createNew, final AsyncCallback<String> callback) {
         service.branchCheckout(project, name, null, createNew, new AsyncRequestCallback<String>() {
