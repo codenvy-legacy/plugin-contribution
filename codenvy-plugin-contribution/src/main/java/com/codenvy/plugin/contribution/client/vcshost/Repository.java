@@ -10,6 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
+import com.codenvy.dto.shared.DTO;
+
+@DTO
 public interface Repository {
     String getName();
 
