@@ -122,8 +122,19 @@ public class GitVcsService implements VcsService {
 
     @Override
     public void listLocalBranches(final ProjectDescriptor project, final AsyncCallback<List<Branch>> callback) {
+        listBranches(project, null, callback);
+    }
+
+    /**
+     * List branches of a given type.
+     * 
+     * @param project the project descriptor
+     * @param whichBranches null -> list local branches; "r" -> list remote branches; "a" -> list all branches
+     * @param callback
+     */
+    private void listBranches(final ProjectDescriptor project, final String whichBranches, final AsyncCallback<List<Branch>> callback) {
         final Unmarshallable<Array<com.codenvy.ide.ext.git.shared.Branch>> unMarshaller = dtoUnmarshallerFactory.newArrayUnmarshaller(com.codenvy.ide.ext.git.shared.Branch.class);
-        this.service.branchList(project, "false",
+        this.service.branchList(project, whichBranches,
             new AsyncRequestCallback<Array<com.codenvy.ide.ext.git.shared.Branch>>(unMarshaller) {
                 @Override
                 protected void onSuccess(final Array<com.codenvy.ide.ext.git.shared.Branch> branches) {
