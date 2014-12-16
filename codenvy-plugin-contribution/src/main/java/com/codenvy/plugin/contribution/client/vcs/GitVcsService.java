@@ -15,6 +15,8 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
 import com.codenvy.ide.ext.git.shared.Status;
 import com.codenvy.ide.rest.AsyncRequestCallback;
+import com.codenvy.ide.rest.DtoUnmarshallerFactory;
+import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
@@ -22,11 +24,14 @@ public class GitVcsService implements VcsService {
 
     private final GitServiceClient service;
     private final DtoFactory dtoFactory;
+    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
     @Inject
     public GitVcsService(final DtoFactory dtoFactory,
+                         final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                          final GitServiceClient service) {
         this.dtoFactory = dtoFactory;
+        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.service = service;
     }
 
@@ -48,7 +53,8 @@ public class GitVcsService implements VcsService {
     @Override
     public void createBranch(final ProjectDescriptor project, final String name,
                              final String startPoint, final AsyncCallback<Branch> callback) {
-        service.branchCreate(project, name, startPoint, new AsyncRequestCallback<com.codenvy.ide.ext.git.shared.Branch>() {
+        final Unmarshallable<com.codenvy.ide.ext.git.shared.Branch> unMarshaller = dtoUnmarshallerFactory.newUnmarshaller(com.codenvy.ide.ext.git.shared.Branch.class);
+        service.branchCreate(project, name, startPoint, new AsyncRequestCallback<com.codenvy.ide.ext.git.shared.Branch>(unMarshaller) {
             @Override
             protected void onSuccess(final com.codenvy.ide.ext.git.shared.Branch result) {
                 callback.onSuccess(fromGitBranch(result));
