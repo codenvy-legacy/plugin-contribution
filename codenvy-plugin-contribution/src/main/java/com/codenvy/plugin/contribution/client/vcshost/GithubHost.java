@@ -84,11 +84,51 @@ public class GithubHost implements RepositoryHost {
 
     @Override
     public void getForks(final String login, final String repository, final AsyncCallback<List<Repository>> callback) {
-        // TODO
+        this.gitHubClientService.getForks(login,
+                                          repository,
+                                          new AsyncRequestCallback<GitHubRepositoryList>(
+                                                                                         dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
+                                              @Override
+                                              protected void onSuccess(final GitHubRepositoryList result) {
+                                                  final List<Repository> repositories = new ArrayList<>();
+                                                  for (final GitHubRepository original : result.getRepositories()) {
+                                                      final Repository repository = GithubHost.this.dtoFactory.createDto(Repository.class);
+                                                      repository.withFork(original.isFork()).withName(original.getName())
+                                                                .withPrivateRepo(original.isPrivateRepo()).withUrl(original.getUrl());
+                                                      repositories.add(repository);
+                                                  }
+                                                  callback.onSuccess(repositories);
+                                              }
+
+                                              @Override
+                                              protected void onFailure(final Throwable exception) {
+                                                  callback.onFailure(exception);
+                                              }
+                                          });
     }
 
     @Override
     public void fork(final String login, final String repository, final AsyncCallback<Repository> callback) {
-        // TODO
+        this.gitHubClientService.fork(login,
+                                      repository,
+                                      new AsyncRequestCallback<GitHubRepository>(
+                                                                                 dtoUnmarshallerFactory.newUnmarshaller(GitHubRepository.class)) {
+                                          @Override
+                                          protected void onSuccess(GitHubRepository result) {
+                                              if (result != null) {
+                                                  final Repository repository = GithubHost.this.dtoFactory.createDto(Repository.class);
+                                                  repository.withFork(result.isFork()).withName(result.getName())
+                                                            .withPrivateRepo(result.isPrivateRepo()).withUrl(result.getUrl());
+                                                  callback.onSuccess(repository);
+                                              } else {
+                                                  callback.onFailure(new Exception("No repository."));
+                                              }
+                                          }
+
+                                          @Override
+                                          protected void onFailure(Throwable exception) {
+                                              callback.onFailure(exception);
+                                          }
+                                      });
     }
 }
