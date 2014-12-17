@@ -10,18 +10,20 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
-import java.util.List;
+import com.google.gwt.i18n.client.Messages;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+/**
+ * Templates for repository URLs.
+ */
+public interface UrlTemplates extends Messages {
 
-public interface RepositoryHost {
-    void getUserInfo(AsyncCallback<HostUser> callback);
-
-    void getRepositoriesList(AsyncCallback<List<Repository>> callback);
-
-    void getForks(String login, String repository, AsyncCallback<List<Repository>> callback);
-
-    void fork(String login, String repository, AsyncCallback<Repository> callback);
-
-    String makeRemoteUrl(String username, String repository);
+    /**
+     * The git URL to a github repository.
+     * 
+     * @param user the user name
+     * @param repo the repository name
+     * @return the URL
+     */
+    @DefaultMessage("git@github.com:{0}/{1}.git")
+    String gitRemoteTemplate(String user, String repo);
 }
