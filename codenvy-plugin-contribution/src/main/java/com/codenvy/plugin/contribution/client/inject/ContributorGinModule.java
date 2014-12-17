@@ -21,6 +21,7 @@ import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
+import com.codenvy.plugin.contribution.client.steps.WaitForForOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -54,5 +55,6 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(RenameBranchStep.class);
         bind(ConfigureStep.class);
         bind(RemoteForkStep.class);
+        install(new GinFactoryModuleBuilder().build(WaitForForOnRemoteStepFactory.class));
     }
 }
