@@ -16,6 +16,7 @@ import com.codenvy.plugin.contribution.client.authdialog.AuthenticationViewImpl;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
+import com.codenvy.plugin.contribution.client.steps.AddRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
@@ -59,6 +60,7 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(IssuePullRequestStep.class);
         bind(PushBranchOnForkStep.class);
         bind(RenameBranchStep.class);
+        bind(AddRemoteStep.class);
         bind(ConfigureStep.class);
         bind(RemoteForkStep.class);
         install(new GinFactoryModuleBuilder().build(WaitForForOnRemoteStepFactory.class));

@@ -44,7 +44,7 @@ public class RenameBranchStep implements Step {
     /**
      * The following step.
      */
-    private final PushBranchOnForkStep pushStep;
+    private final Step nextStep;
 
     /**
      * A provider for configure steps. Needed in case the branch name must be asked again.<br>
@@ -62,26 +62,19 @@ public class RenameBranchStep implements Step {
      */
     private final ContributeMessages messages;
 
-    /**
-     * Factory for poll loop step.
-     */
-    private final WaitForForOnRemoteStepFactory waitRemoteStepFactory;
-
     @Inject
-    public RenameBranchStep(final @Nonnull PushBranchOnForkStep pushStep,
+    public RenameBranchStep(final @Nonnull AddRemoteStep addRemoteStep,
                             final @Nonnull Provider<ConfigureStep> configureStepProvider,
                             final @Nonnull VcsService vcsService,
                             final @Nonnull DialogFactory dialogFactory,
                             final @Nonnull NotificationManager notificationManager,
-                            final @Nonnull ContributeMessages messages,
-                            final @Nonnull WaitForForOnRemoteStepFactory waitRemoteStepFactory) {
+                            final @Nonnull ContributeMessages messages) {
         this.notificationManager = notificationManager;
         this.dialogFactory = dialogFactory;
-        this.pushStep = pushStep;
+        this.nextStep = addRemoteStep;
         this.configureStepProvider = configureStepProvider;
         this.vcsService = vcsService;
         this.messages = messages;
-        this.waitRemoteStepFactory = waitRemoteStepFactory;
     }
 
     @Override
@@ -114,8 +107,7 @@ public class RenameBranchStep implements Step {
      * @param config the configuration
      */
     private void proceed(final Context context, final Configuration config) {
-        final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);
-        waitStep.execute(context, config);
+        this.nextStep.execute(context, config);
     }
 
     /**
