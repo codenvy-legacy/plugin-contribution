@@ -10,6 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
@@ -21,37 +26,58 @@ import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Provider;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import java.util.List;
-
+/**
+ * Renames the current branch with the one provided by the user.
+ */
 public class RenameBranchStep implements Step {
 
-    private final NotificationManager           notificationManager;
-    private final DialogFactory                 dialogFactory;
-    private final PushBranchOnForkStep          pushStep;
-    private final Provider<ConfigureStep>       configureStepProvider;
-    private final VcsService                    vcsService;
-    private final ContributeMessages            messages;
-    private final WaitForForOnRemoteStepFactory waitRemoteStepFactory;
+    /**
+     * The notification manager.
+     */
+    private final NotificationManager notificationManager;
+
+    /**
+     * Factory for dialogs.
+     */
+    private final DialogFactory dialogFactory;
+
+    /**
+     * The following step.
+     */
+    private final Step nextStep;
+
+    /**
+     * A provider for configure steps. Needed in case the branch name must be asked again.<br>
+     * Also, inject a provider so there is no dependency cycle.
+     */
+    private final Provider<ConfigureStep> configureStepProvider;
+
+    /**
+     * The service for VCS operations.
+     */
+    private final VcsService vcsService;
+
+    /**
+     * I18n-able messages.
+     */
+    private final ContributeMessages messages;
 
     @Inject
-    public RenameBranchStep(final @Nonnull PushBranchOnForkStep pushStep,
+    public RenameBranchStep(final @Nonnull AddRemoteStep addRemoteStep,
                             final @Nonnull Provider<ConfigureStep> configureStepProvider,
                             final @Nonnull VcsService vcsService,
                             final @Nonnull DialogFactory dialogFactory,
                             final @Nonnull NotificationManager notificationManager,
-                            final @Nonnull ContributeMessages messages,
-                            final @Nonnull WaitForForOnRemoteStepFactory waitRemoteStepFactory) {
+                            final @Nonnull ContributeMessages messages) {
         this.notificationManager = notificationManager;
         this.dialogFactory = dialogFactory;
-        this.pushStep = pushStep;
+        this.nextStep = addRemoteStep;
         this.configureStepProvider = configureStepProvider;
         this.vcsService = vcsService;
         this.messages = messages;
-        this.waitRemoteStepFactory = waitRemoteStepFactory;
     }
 
+    @Override
     public void execute(final Context context, final Configuration config) {
         if (config == null || config.getBranchName() == null || "".equals(config.getBranchName())) {
             final ConfirmCallback callback = new ConfirmCallback() {
@@ -74,11 +100,23 @@ public class RenameBranchStep implements Step {
         }
     }
 
+    /**
+     * Continue with the folloing step.
+     * 
+     * @param context the contribution context
+     * @param config the configuration
+     */
     private void proceed(final Context context, final Configuration config) {
-        final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);
-        waitStep.execute(context, config);
+        this.nextStep.execute(context, config);
     }
 
+    /**
+     * Check if the branch exists and either do the rename or return to configuration.
+     * 
+     * @param branchName the provided branch name
+     * @param context the contribution context
+     * @param config the contribution configuration
+     */
     private void checkExistAndRename(final String branchName, final Context context, final Configuration config) {
         this.vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
             @Override
@@ -108,6 +146,13 @@ public class RenameBranchStep implements Step {
         });
     }
 
+    /**
+     * Rename the branch.
+     * 
+     * @param branchName the provided name
+     * @param context the contribution context
+     * @param config the contribution configuration
+     */
     private void doRename(final String branchName, final Context context, final Configuration config) {
         this.vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
             @Override

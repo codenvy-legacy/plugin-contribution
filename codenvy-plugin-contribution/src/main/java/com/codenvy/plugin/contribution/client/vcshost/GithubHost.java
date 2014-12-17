@@ -10,6 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
 import com.codenvy.ide.ext.github.shared.GitHubRepository;
@@ -19,23 +24,26 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-
 public class GithubHost implements RepositoryHost {
 
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
     private final DtoFactory             dtoFactory;
     private final GitHubClientService    gitHubClientService;
 
+    /**
+     * The tempaltes for repository URLs.
+     */
+    private final UrlTemplates urlTemplates;
+
     @Inject
     public GithubHost(final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                       final DtoFactory dtoFactory,
-                      final GitHubClientService gitHubClientService) {
+                      final GitHubClientService gitHubClientService,
+                      final UrlTemplates urlTemplates) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
+        this.urlTemplates = urlTemplates;
     }
 
     @Override
@@ -130,5 +138,10 @@ public class GithubHost implements RepositoryHost {
                                               callback.onFailure(exception);
                                           }
                                       });
+    }
+
+    @Override
+    public String makeRemoteUrl(final String username, final String repository) {
+        return this.urlTemplates.gitRemoteTemplate(username, repository);
     }
 }
