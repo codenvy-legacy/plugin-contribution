@@ -10,10 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import javax.inject.Inject;
-
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+
+import javax.inject.Inject;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.

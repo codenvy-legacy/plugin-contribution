@@ -34,36 +34,38 @@ public interface PreContributeWizardView {
 
     /**
      * Binds the view and the action delegate.
-     * 
-     * @param delegate the delegate
+     *
+     * @param delegate
+     *         the delegate
      */
     void bindDelegate(ActionDelegate delegate);
 
     /**
      * Returns the current content of the branch name.
-     * 
+     *
      * @return the branch name
      */
     String getBranchName();
 
     /**
      * Returns the current content of the pull request comment.
-     * 
+     *
      * @return the comment
      */
     String getPullRequestComment();
 
     /**
      * Returns the contribution title/
-     * 
+     *
      * @return the title
      */
     String getContribTitle();
 
     /**
      * Sets the enabled/disabled state of the "Contribute" button.
-     * 
-     * @param enabled true to enable, false to disable
+     *
+     * @param enabled
+     *         true to enable, false to disable
      */
     void setContributeEnabled(boolean enabled);
 
@@ -81,7 +83,7 @@ public interface PreContributeWizardView {
 
         /**
          * Suggests a branch name for the current work.
-         * 
+         *
          * @return the suggestion
          */
         String suggestBranchName();

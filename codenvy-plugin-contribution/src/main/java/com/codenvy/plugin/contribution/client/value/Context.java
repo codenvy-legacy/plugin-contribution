@@ -57,7 +57,7 @@ public class Context {
 
     /**
      * Tells if the fork is ready.
-     * 
+     *
      * @return true iff the fork is ready
      */
     public boolean getForkReady() {
@@ -66,8 +66,9 @@ public class Context {
 
     /**
      * Sets the fork ready flag.
-     * 
-     * @param newValue the new value
+     *
+     * @param newValue
+     *         the new value
      */
     public void setForkReady(final boolean newValue) {
         this.forkReady = newValue;

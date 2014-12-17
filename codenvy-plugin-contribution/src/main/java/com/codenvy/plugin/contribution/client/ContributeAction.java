@@ -21,20 +21,20 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshaller;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
-import com.codenvy.plugin.contribution.client.authdialog.AuthenticationPresenter;
-import com.codenvy.security.oauth.JsOAuthWindow;
-import com.codenvy.security.oauth.OAuthCallback;
-import com.codenvy.security.oauth.OAuthStatus;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.authdialog.AuthenticationPresenter;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
+import com.codenvy.security.oauth.JsOAuthWindow;
+import com.codenvy.security.oauth.OAuthCallback;
+import com.codenvy.security.oauth.OAuthStatus;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -87,12 +87,12 @@ public class ContributeAction extends ProjectAction {
      */
     private final RepositoryHost repositoryHost;
 
-    private final Context context;
-    private final Configuration config;
+    private final Context        context;
+    private final Configuration  config;
     /**
      * The local user identity.
      */
-    private UserDescriptor userDescriptor;
+    private       UserDescriptor userDescriptor;
 
     /**
      * The user identity on the remote repository host.
@@ -149,21 +149,21 @@ public class ContributeAction extends ProjectAction {
     private void getCurrentUserInfo() {
         // get current user's Codenvy account
         userServiceClient.getCurrentUser(
-                         new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
-                             @Override
-                             protected void onSuccess(final UserDescriptor user) {
-                                 userDescriptor = user;
-                                 // get current user's associated VCS account
-                                 getVCSUserInfo();
-                             }
+                new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
+                    @Override
+                    protected void onSuccess(final UserDescriptor user) {
+                        userDescriptor = user;
+                        // get current user's associated VCS account
+                        getVCSUserInfo();
+                    }
 
-                             @Override
-                             protected void onFailure(final Throwable exception) {
-                                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                                 Log.error(ContributeAction.class, exception.getMessage());
-                             }
-                         }
-                         );
+                    @Override
+                    protected void onFailure(final Throwable exception) {
+                        notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                        Log.error(ContributeAction.class, exception.getMessage());
+                    }
+                }
+                                        );
     }
 
     private void getVCSUserInfo() {

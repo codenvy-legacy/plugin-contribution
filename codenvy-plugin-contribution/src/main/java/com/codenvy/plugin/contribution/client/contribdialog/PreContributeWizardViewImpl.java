@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.contribdialog;
 
-import javax.inject.Inject;
-
 import com.codenvy.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.gwt.core.shared.GWT;
@@ -23,6 +21,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of {@link PreContributeWizardView}.
@@ -143,6 +143,6 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
 
     @Override
     public void show() {
-        super.show(this.branchName.getElement().<InputElement> cast());
+        super.show(this.branchName.getElement().<InputElement>cast());
     }
 }

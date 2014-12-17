@@ -10,11 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
 import com.codenvy.ide.ext.github.shared.GitHubRepository;
@@ -24,11 +19,15 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
 public class GithubHost implements RepositoryHost {
 
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private final DtoFactory dtoFactory;
-    private final GitHubClientService gitHubClientService;
+    private final DtoFactory             dtoFactory;
+    private final GitHubClientService    gitHubClientService;
 
     @Inject
     public GithubHost(final DtoUnmarshallerFactory dtoUnmarshallerFactory,
@@ -41,23 +40,24 @@ public class GithubHost implements RepositoryHost {
 
     @Override
     public void getUserInfo(final AsyncCallback<HostUser> callback) {
-        this.gitHubClientService.getUserInfo(new AsyncRequestCallback<GitHubUser>(dtoUnmarshallerFactory.newUnmarshaller(GitHubUser.class)) {
-            @Override
-            protected void onSuccess(final GitHubUser result) {
-                if (result == null) {
-                    callback.onFailure(new Exception("No user info"));
-                } else {
-                    final HostUser user = GithubHost.this.dtoFactory.createDto(HostUser.class);
-                    user.withId(result.getId()).withLogin(result.getLogin()).withName(result.getName()).withUrl(result.getUrl());
-                    callback.onSuccess(user);
-                }
-            }
+        this.gitHubClientService
+                .getUserInfo(new AsyncRequestCallback<GitHubUser>(dtoUnmarshallerFactory.newUnmarshaller(GitHubUser.class)) {
+                    @Override
+                    protected void onSuccess(final GitHubUser result) {
+                        if (result == null) {
+                            callback.onFailure(new Exception("No user info"));
+                        } else {
+                            final HostUser user = GithubHost.this.dtoFactory.createDto(HostUser.class);
+                            user.withId(result.getId()).withLogin(result.getLogin()).withName(result.getName()).withUrl(result.getUrl());
+                            callback.onSuccess(user);
+                        }
+                    }
 
-            @Override
-            protected void onFailure(final Throwable exception) {
-                callback.onFailure(exception);
-            }
-        });
+                    @Override
+                    protected void onFailure(final Throwable exception) {
+                        callback.onFailure(exception);
+                    }
+                });
     }
 
     @Override

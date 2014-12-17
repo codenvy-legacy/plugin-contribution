@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.inject;
 
-import javax.inject.Singleton;
-
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.authdialog.AuthenticationView;
 import com.codenvy.plugin.contribution.client.authdialog.AuthenticationViewImpl;
@@ -31,6 +29,8 @@ import com.codenvy.plugin.contribution.client.vcshost.GithubHost;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
+
+import javax.inject.Singleton;
 
 /**
  * Gin module definition for the contributor extension.

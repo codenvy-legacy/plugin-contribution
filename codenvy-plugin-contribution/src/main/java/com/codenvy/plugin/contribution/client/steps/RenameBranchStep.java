@@ -10,11 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
@@ -26,14 +21,18 @@ import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Provider;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.List;
+
 public class RenameBranchStep implements Step {
 
-    private final NotificationManager notificationManager;
-    private final DialogFactory dialogFactory;
-    private final PushBranchOnForkStep pushStep;
-    private final Provider<ConfigureStep> configureStepProvider;
-    private final VcsService vcsService;
-    private final ContributeMessages messages;
+    private final NotificationManager           notificationManager;
+    private final DialogFactory                 dialogFactory;
+    private final PushBranchOnForkStep          pushStep;
+    private final Provider<ConfigureStep>       configureStepProvider;
+    private final VcsService                    vcsService;
+    private final ContributeMessages            messages;
     private final WaitForForOnRemoteStepFactory waitRemoteStepFactory;
 
     @Inject
@@ -101,6 +100,7 @@ public class RenameBranchStep implements Step {
                 doRename(branchName, context, config);
 
             }
+
             @Override
             public void onFailure(final Throwable caught) {
                 notificationManager.showError(messages.errorListBranches());
@@ -116,6 +116,7 @@ public class RenameBranchStep implements Step {
                 context.setWorkBranchName(branchName);
                 proceed(context, config);
             }
+
             @Override
             public void onFailure(final Throwable caught) {
                 notificationManager.showError(messages.errorRenameFailed());

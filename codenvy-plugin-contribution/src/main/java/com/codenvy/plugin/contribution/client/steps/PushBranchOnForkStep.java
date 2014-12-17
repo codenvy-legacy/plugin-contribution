@@ -10,10 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import javax.inject.Inject;
-
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+
+import javax.inject.Inject;
 
 public class PushBranchOnForkStep implements Step {
 

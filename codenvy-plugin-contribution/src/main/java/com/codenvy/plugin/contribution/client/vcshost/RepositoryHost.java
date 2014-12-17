@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
-import java.util.List;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import java.util.List;
 
 public interface RepositoryHost {
     void getUserInfo(AsyncCallback<HostUser> callback);

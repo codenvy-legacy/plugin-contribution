@@ -60,6 +60,7 @@ public class WaitForForkOnRemoteStep implements Step {
                         public void onFailure(final Throwable caught) {
                             check(context, config);
                         }
+
                         @Override
                         public void onSuccess(final Void result) {
                             context.setForkReady(true);
@@ -81,6 +82,6 @@ public class WaitForForkOnRemoteStep implements Step {
     }
 
     private void checkRepository(final Context context, AsyncCallback<Void> callback) {
-        
+
     }
 }

@@ -10,10 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import org.vectomatic.dom.svg.ui.SVGResource;
-
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+
+import org.vectomatic.dom.svg.ui.SVGResource;
 
 public interface ContributeResources extends ClientBundle {
     interface ContributeCss extends CssResource {

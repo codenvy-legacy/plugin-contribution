@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.contribdialog;
 
-import javax.annotation.Nonnull;
-
 import com.codenvy.ide.api.wizard.WizardDialog;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.value.Configuration;
@@ -19,6 +17,8 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+
+import javax.annotation.Nonnull;
 
 /**
  * Dialog for the contribution configuration.
