@@ -18,4 +18,8 @@ public interface RepositoryHost {
     void getUserInfo(AsyncCallback<HostUser> callback);
 
     void getRepositoriesList(AsyncCallback<List<Repository>> callback);
+
+    void getForks(String login, String repository, AsyncCallback<List<Repository>> callback);
+
+    void fork(String login, String repository, AsyncCallback<Repository> callback);
 }
