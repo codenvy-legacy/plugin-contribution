@@ -21,6 +21,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshaller;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
+import com.codenvy.plugin.contribution.client.authdialog.AuthenticationPresenter;
 import com.codenvy.security.oauth.JsOAuthWindow;
 import com.codenvy.security.oauth.OAuthCallback;
 import com.codenvy.security.oauth.OAuthStatus;
@@ -98,6 +99,8 @@ public class ContributeAction extends ProjectAction {
      */
     private HostUser hostUser;
 
+    private final AuthenticationPresenter authenticationPresenter;
+
     @Inject
     public ContributeAction(final ConfigureStep configureStep,
                             final Context context,
@@ -110,7 +113,8 @@ public class ContributeAction extends ProjectAction {
                             final DialogFactory dialogFactory,
                             final @Named("restContext") String baseUrl,
                             final RemoteForkStep remoteForkStep,
-                            final RepositoryHost repositoryHost) {
+                            final RepositoryHost repositoryHost,
+                            final AuthenticationPresenter authenticationPresenter) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
@@ -124,6 +128,7 @@ public class ContributeAction extends ProjectAction {
         this.repositoryHost = repositoryHost;
 
         this.context = context;
+        this.authenticationPresenter = authenticationPresenter;
         this.config = dtoFactory.createDto(Configuration.class);
     }
 
@@ -137,8 +142,7 @@ public class ContributeAction extends ProjectAction {
         if (appContext.getCurrentUser().isUserPermanent()) {
             getCurrentUserInfo();
         } else {
-            // TODO as user is temporary create a Codenvy account and then getCurrentUserInfo
-            notificationManager.showNotification(new Notification("Current user isn't permanent.", Notification.Type.ERROR, Status.FINISHED));
+            authenticationPresenter.showDialog();
         }
     }
 

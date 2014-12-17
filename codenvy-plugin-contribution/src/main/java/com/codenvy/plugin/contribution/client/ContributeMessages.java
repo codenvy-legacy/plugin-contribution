@@ -58,4 +58,19 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Contribution branch renamed to {0}")
     String infoRenamedBranch(String branchName);
+
+    /*
+     * Authentication dialog
+     */
+    @Key("authentication.dialog.title")
+    String authenticationDialogTitle();
+
+    @Key("authentication.dialog.message")
+    String authenticationDialogMessage();
+
+    @Key("authentication.dialog.login.button.text")
+    String authenticationDialogLoginButtonText();
+
+    @Key("authentication.dialog.create.account.button.text")
+    String authenticationDialogCreateAccountButtonText();
 }

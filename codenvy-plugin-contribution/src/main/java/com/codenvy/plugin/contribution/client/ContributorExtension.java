@@ -65,14 +65,16 @@ public class ContributorExtension {
                                 final ContributeAction contributeAction,
                                 final ContributeMessages messages,
                                 final NotificationManager notificationManager,
-                                final VcsService gitAgent) {
-
+                                final VcsService gitAgent,
+                                final ContributeResources resources) {
         this.actionManager = actionManager;
         this.context = context;
         this.contributeAction = contributeAction;
         this.messages = messages;
         this.notificationManager = notificationManager;
         this.vcsService = gitAgent;
+
+        resources.contributeCss().ensureInjected();
 
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override

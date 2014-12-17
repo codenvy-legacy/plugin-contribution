@@ -8,20 +8,17 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client;
+package com.codenvy.plugin.contribution.client.authdialog;
 
-import org.vectomatic.dom.svg.ui.SVGResource;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
 
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
-
-public interface ContributeResources extends ClientBundle {
-    interface ContributeCss extends CssResource {
-    }
-
-    @Source("Contribute.css")
-    ContributeCss contributeCss();
-
-    @Source("contribute.svg")
-    SVGResource contributeButton();
+/**
+ * The authentication view ui binder.
+ *
+ * @author Kevin Pollet
+ */
+@UiTemplate("com.codenvy.plugin.contribution.client.authdialog.AuthenticationViewImpl.ui.xml")
+public interface AuthenticationViewUiBinder extends UiBinder<Widget, AuthenticationViewImpl> {
 }

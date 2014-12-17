@@ -13,6 +13,8 @@ package com.codenvy.plugin.contribution.client.inject;
 import javax.inject.Singleton;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.codenvy.plugin.contribution.client.authdialog.AuthenticationView;
+import com.codenvy.plugin.contribution.client.authdialog.AuthenticationViewImpl;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
@@ -43,8 +45,12 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // bind the configure contribution dialog
         install(new GinFactoryModuleBuilder().build(PreContributeWizardPresenterFactory.class));
+
         // bind the configure dialog view
         bind(PreContributeWizardView.class).to(PreContributeWizardViewImpl.class);
+
+        // bind the authentication dialog view
+        bind(AuthenticationView.class).to(AuthenticationViewImpl.class);
 
         // the contribution context singleton
         bind(Context.class).in(Singleton.class);
