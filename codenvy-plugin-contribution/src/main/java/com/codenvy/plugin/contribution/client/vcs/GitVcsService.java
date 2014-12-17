@@ -157,6 +157,28 @@ public class GitVcsService implements VcsService {
                                 });
     }
 
+    @Override
+    public void listRemotes(final ProjectDescriptor project, final AsyncCallback<List<Remote>> callback) {
+        final Unmarshallable<Array<com.codenvy.ide.ext.git.shared.Remote>> unMarshaller
+            = dtoUnmarshallerFactory.newArrayUnmarshaller(com.codenvy.ide.ext.git.shared.Remote.class);
+        this.service.remoteList(project, null, false,
+                                new AsyncRequestCallback<Array<com.codenvy.ide.ext.git.shared.Remote>>(unMarshaller) {
+                                    @Override
+                                    protected void onSuccess(final Array<com.codenvy.ide.ext.git.shared.Remote> remotes) {
+                                        final List<Remote> result = new ArrayList<>();
+                                        for (final com.codenvy.ide.ext.git.shared.Remote remote : remotes.asIterable()) {
+                                            result.add(fromGitRemote(remote));
+                                        }
+                                        callback.onSuccess(result);
+                                    }
+
+                                    @Override
+                                    protected void onFailure(final Throwable exception) {
+                                        callback.onFailure(exception);
+                                    }
+                                });
+    }
+
     /**
      * Converts a git branch DTO to an abstracted branch object.
      *
@@ -164,10 +186,16 @@ public class GitVcsService implements VcsService {
      *         the object to convert
      * @return the converted object
      */
-    private Branch fromGitBranch(final com.codenvy.ide.ext.git.shared.Branch gitBracnh) {
+    private Branch fromGitBranch(final com.codenvy.ide.ext.git.shared.Branch gitBranch) {
         final Branch branch = GitVcsService.this.dtoFactory.createDto(Branch.class);
-        branch.withActive(gitBracnh.isActive()).withRemote(gitBracnh.isRemote())
-              .withName(gitBracnh.getName()).withDisplayName(gitBracnh.getDisplayName());
+        branch.withActive(gitBranch.isActive()).withRemote(gitBranch.isRemote())
+              .withName(gitBranch.getName()).withDisplayName(gitBranch.getDisplayName());
         return branch;
+    }
+
+    private Remote fromGitRemote(final com.codenvy.ide.ext.git.shared.Remote gitRemote) {
+        final Remote remote = GitVcsService.this.dtoFactory.createDto(Remote.class);
+        remote.withName(gitRemote.getName()).withUrl(gitRemote.getUrl());
+        return remote;
     }
 }
