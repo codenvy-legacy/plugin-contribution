@@ -20,7 +20,7 @@ public class IssuePullRequestStep implements Step {
     }
 
     @Override
-    public void execute(Context xontext, Configuration config) {
+    public void execute(Context context, Configuration config) {
         // TODO Auto-generated method stub
 
     }

@@ -41,7 +41,6 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 public class ContributeAction extends ProjectAction {
-
     /**
      * I18n messages.
      */
@@ -53,7 +52,7 @@ public class ContributeAction extends ProjectAction {
     private final ConfigureStep configureStep;
 
     /**
-     * Service to retrieve user informations.
+     * Service to retrieve user information.
      */
     private final UserServiceClient userServiceClient;
 
@@ -87,18 +86,24 @@ public class ContributeAction extends ProjectAction {
      */
     private final RepositoryHost repositoryHost;
 
-    private final Context        context;
-    private final Configuration  config;
+    /**
+     * Contributor plugin context.
+     */
+    private final Context context;
+
+    /**
+     * Contributor plugin configuration.
+     */
+    private final Configuration config;
+
     /**
      * The local user identity.
      */
-    private       UserDescriptor userDescriptor;
+    private UserDescriptor userDescriptor;
 
     /**
-     * The user identity on the remote repository host.
+     * Presenter used to authenticate user in Codenvy.
      */
-    private HostUser hostUser;
-
     private final AuthenticationPresenter authenticationPresenter;
 
     @Inject
@@ -126,7 +131,6 @@ public class ContributeAction extends ProjectAction {
         this.baseUrl = baseUrl;
         this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
-
         this.context = context;
         this.authenticationPresenter = authenticationPresenter;
         this.config = dtoFactory.createDto(Configuration.class);
@@ -170,7 +174,6 @@ public class ContributeAction extends ProjectAction {
         repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
             @Override
             public void onSuccess(final HostUser result) {
-                hostUser = result;
                 onVCSUserAuthenticated();
             }
 

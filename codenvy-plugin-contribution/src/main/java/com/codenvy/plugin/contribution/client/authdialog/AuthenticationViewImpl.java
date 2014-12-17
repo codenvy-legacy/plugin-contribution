@@ -17,7 +17,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
-import com.google.inject.Inject;
+
+import javax.inject.Inject;
 
 /**
  * {@link com.codenvy.plugin.contribution.client.authdialog.AuthenticationView} implementation.

@@ -15,6 +15,9 @@ import com.google.gwt.resources.client.CssResource;
 
 import org.vectomatic.dom.svg.ui.SVGResource;
 
+/**
+ * Contributor plugin resources.
+ */
 public interface ContributeResources extends ClientBundle {
     interface ContributeCss extends CssResource {
     }

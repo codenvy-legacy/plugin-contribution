@@ -15,7 +15,7 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The authentication view ui binder.
+ * {@link com.google.gwt.uibinder.client.UiBinder} interface for the authentication dialog.
  *
  * @author Kevin Pollet
  */

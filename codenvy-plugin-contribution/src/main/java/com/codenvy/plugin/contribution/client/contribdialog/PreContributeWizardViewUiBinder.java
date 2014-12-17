@@ -14,7 +14,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
-/** {@link UiBinder} interface for the configure contribution dialog. */
+/**
+ * {@link com.google.gwt.uibinder.client.UiBinder} interface for the configure contribution dialog.
+ */
 @UiTemplate("com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl.ui.xml")
 public interface PreContributeWizardViewUiBinder extends UiBinder<HTMLPanel, PreContributeWizardViewImpl> {
 }

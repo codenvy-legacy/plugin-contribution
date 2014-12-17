@@ -11,10 +11,8 @@
 package com.codenvy.plugin.contribution.client.contribdialog;
 
 import com.codenvy.ide.api.wizard.WizardDialog;
-import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
@@ -47,19 +45,16 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
 
     @AssistedInject
-    public PreContributeWizardPresenter(final ContributeMessages messages,
-                                        final PreContributeWizardView view,
-                                        final VcsService vcsService,
+    public PreContributeWizardPresenter(final PreContributeWizardView view,
                                         @Assisted @Nonnull final FinishContributionOperation finishContribution,
                                         @Assisted @Nonnull final Context context,
                                         @Assisted @Nonnull final Configuration config) {
         this.view = view;
         this.finishContribution = finishContribution;
-
         this.configuration = config;
         this.context = context;
 
-        this.view.bindDelegate(this);
+        this.view.setDelegate(this);
     }
 
     @Override

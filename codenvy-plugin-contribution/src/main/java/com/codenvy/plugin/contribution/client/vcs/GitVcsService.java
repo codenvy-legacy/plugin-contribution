@@ -21,6 +21,7 @@ import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void checkoutBranch(final ProjectDescriptor project, final String name,
+    public void checkoutBranch(@Nonnull final ProjectDescriptor project, final String name,
                                final boolean createNew, final AsyncCallback<String> callback) {
         service.branchCheckout(project, name, null, createNew, new AsyncRequestCallback<String>() {
             @Override
@@ -70,7 +71,7 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void createBranch(final ProjectDescriptor project, final String name,
+    public void createBranch(@Nonnull final ProjectDescriptor project, final String name,
                              final String startPoint, final AsyncCallback<Branch> callback) {
         final Unmarshallable<com.codenvy.ide.ext.git.shared.Branch> unMarshaller =
                 dtoUnmarshallerFactory.newUnmarshaller(com.codenvy.ide.ext.git.shared.Branch.class);
@@ -88,7 +89,7 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void getBranchName(final ProjectDescriptor project, final AsyncCallback<String> callback) {
+    public void getBranchName(@Nonnull final ProjectDescriptor project, @Nonnull final AsyncCallback<String> callback) {
         service.status(project, new AsyncRequestCallback<Status>() {
             @Override
             protected void onSuccess(final Status result) {
@@ -103,7 +104,7 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void renameBranch(final ProjectDescriptor project,
+    public void renameBranch(@Nonnull final ProjectDescriptor project,
                              final String oldName,
                              final String newName,
                              final AsyncCallback<Void> callback) {
@@ -122,7 +123,7 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void listLocalBranches(final ProjectDescriptor project, final AsyncCallback<List<Branch>> callback) {
+    public void listLocalBranches(@Nonnull final ProjectDescriptor project, final AsyncCallback<List<Branch>> callback) {
         listBranches(project, null, callback);
     }
 

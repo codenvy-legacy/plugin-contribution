@@ -18,6 +18,7 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 public class ConfigureStep implements Step {
@@ -38,7 +39,7 @@ public class ConfigureStep implements Step {
             public void execute() {
                 final FinishContributionOperation finish = new FinishContributionOperation() {
                     @Override
-                    public void finishContribution(final Context context, final Configuration config) {
+                    public void finishContribution(@Nonnull final Context context, @Nonnull final Configuration config) {
                         renameBranchStep.execute(context, config);
                     }
                 };

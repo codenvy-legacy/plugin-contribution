@@ -11,7 +11,8 @@
 package com.codenvy.plugin.contribution.client.authdialog;
 
 import com.google.gwt.user.client.Window;
-import com.google.inject.Inject;
+
+import javax.inject.Inject;
 
 import static com.google.gwt.http.client.URL.encodeQueryString;
 

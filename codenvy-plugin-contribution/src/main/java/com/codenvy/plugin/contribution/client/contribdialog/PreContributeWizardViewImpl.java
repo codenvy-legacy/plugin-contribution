@@ -92,7 +92,7 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     }
 
     @Override
-    public void bindDelegate(final ActionDelegate delegate) {
+    public void setDelegate(final ActionDelegate delegate) {
         this.delegate = delegate;
     }
 

@@ -10,12 +10,13 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.contribdialog;
 
+import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.api.wizard.Wizard;
 
 /**
  * Interface for the contribution configuration shown when the user decides to send their contribution.
  */
-public interface PreContributeWizardView {
+public interface PreContributeWizardView extends View<PreContributeWizardView.ActionDelegate> {
 
     /**
      * Resets the dialog fields to their initial value.
@@ -31,14 +32,6 @@ public interface PreContributeWizardView {
      * Hide the dialog.
      */
     void hide();
-
-    /**
-     * Binds the view and the action delegate.
-     *
-     * @param delegate
-     *         the delegate
-     */
-    void bindDelegate(ActionDelegate delegate);
 
     /**
      * Returns the current content of the branch name.
@@ -73,7 +66,7 @@ public interface PreContributeWizardView {
     /**
      * Action delegate interface for the contribution configuration dialog.
      */
-    public interface ActionDelegate extends Wizard.UpdateDelegate {
+    interface ActionDelegate extends Wizard.UpdateDelegate {
 
         /** Performs any actions appropriate in response to the user having pressed the Contribute button */
         void onContributeClicked();
