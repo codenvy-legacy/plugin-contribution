@@ -24,6 +24,11 @@ public class Context {
      */
     private String workBranchName;
 
+    /**
+     * Flag that tells is the fork has been seen.
+     */
+    private boolean forkReady = false;
+
     public ProjectDescriptor getProject() {
         return this.project;
     }
@@ -48,5 +53,23 @@ public class Context {
     public Context withWorkBranchName(String name) {
         this.workBranchName = name;
         return this;
+    }
+
+    /**
+     * Tells if the fork is ready.
+     * 
+     * @return true iff the fork is ready
+     */
+    public boolean getForkReady() {
+        return this.forkReady;
+    }
+
+    /**
+     * Sets the fork ready flag.
+     * 
+     * @param newValue the new value
+     */
+    public void setForkReady(final boolean newValue) {
+        this.forkReady = newValue;
     }
 }
