@@ -34,6 +34,7 @@ public class RenameBranchStep implements Step {
     private final Provider<ConfigureStep> configureStepProvider;
     private final VcsService vcsService;
     private final ContributeMessages messages;
+    private final WaitForForOnRemoteStepFactory waitRemoteStepFactory;
 
     @Inject
     public RenameBranchStep(final @Nonnull PushBranchOnForkStep pushStep,
@@ -41,13 +42,15 @@ public class RenameBranchStep implements Step {
                             final @Nonnull VcsService vcsService,
                             final @Nonnull DialogFactory dialogFactory,
                             final @Nonnull NotificationManager notificationManager,
-                            final @Nonnull ContributeMessages messages) {
+                            final @Nonnull ContributeMessages messages,
+                            final @Nonnull WaitForForOnRemoteStepFactory waitRemoteStepFactory) {
         this.notificationManager = notificationManager;
         this.dialogFactory = dialogFactory;
         this.pushStep = pushStep;
         this.configureStepProvider = configureStepProvider;
         this.vcsService = vcsService;
         this.messages = messages;
+        this.waitRemoteStepFactory = waitRemoteStepFactory;
     }
 
     public void execute(final Context context, final Configuration config) {
@@ -73,7 +76,8 @@ public class RenameBranchStep implements Step {
     }
 
     private void proceed(final Context context, final Configuration config) {
-        pushStep.execute(context, config);
+        final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);
+        waitStep.execute(context, config);
     }
 
     private void checkExistAndRename(final String branchName, final Context context, final Configuration config) {
