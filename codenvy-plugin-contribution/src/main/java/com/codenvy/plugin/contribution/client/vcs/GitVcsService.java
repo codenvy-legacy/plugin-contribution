@@ -10,6 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.dto.DtoFactory;
@@ -20,10 +25,6 @@ import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Git backed implementation for {@link VcsService}.
@@ -197,5 +198,20 @@ public class GitVcsService implements VcsService {
         final Remote remote = GitVcsService.this.dtoFactory.createDto(Remote.class);
         remote.withName(gitRemote.getName()).withUrl(gitRemote.getUrl());
         return remote;
+    }
+
+    @Override
+    public void addRemote(final ProjectDescriptor project, final String remote,
+                          final String remoteUrl, final AsyncCallback<Void> callback) {
+        this.service.remoteAdd(project, remote, remoteUrl, new AsyncRequestCallback<String>() {
+            @Override
+            protected void onSuccess(final String notUsed) {
+                callback.onSuccess(null);
+            }
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
     }
 }

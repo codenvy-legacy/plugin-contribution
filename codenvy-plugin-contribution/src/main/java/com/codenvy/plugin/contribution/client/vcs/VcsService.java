@@ -10,11 +10,12 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.List;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+
+import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Service for VCS operations.
@@ -89,4 +90,14 @@ public interface VcsService {
      * @param callback what to to with the remotes list
      */
     void listRemotes(@Nonnull ProjectDescriptor project, AsyncCallback<List<Remote>> callback);
+
+    /**
+     * Add a remote to the project VCS metadata.
+     * 
+     * @param project the project descriptor
+     * @param remote the remote name
+     * @param remoteUrl the remote URL
+     * @param callback callback
+     */
+    void addRemote(@Nonnull ProjectDescriptor project, String remote, String remoteUrl, AsyncCallback<Void> callback);
 }
