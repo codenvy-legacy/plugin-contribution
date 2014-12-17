@@ -56,6 +56,9 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Branch rename failed. Contribution interrupted")
     String errorRenameFailed();
 
+    @DefaultMessage("Adding fork remote failed. Contribution interrupted")
+    String errorAddRemoteFailed();
+
     @DefaultMessage("Contribution branch renamed to {0}")
     String infoRenamedBranch(String branchName);
 
