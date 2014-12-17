@@ -22,7 +22,17 @@ public class Context {
     /**
      * The name of the working branch.
      */
-    private String workBranchName;
+    private String            workBranchName;
+
+    /**
+     * The name of the user on VCS.
+     */
+    private String            hostUserLogin;
+
+    /**
+     * The name of the repository forked on VCS.
+     */
+    private String            repositoryName;
 
     /**
      * Flag that tells is the fork has been seen.
@@ -72,5 +82,31 @@ public class Context {
      */
     public void setForkReady(final boolean newValue) {
         this.forkReady = newValue;
+    }
+
+    public String getHostUserLogin() {
+        return hostUserLogin;
+    }
+
+    public void setHostUserLogin(String hostUserLogin) {
+        this.hostUserLogin = hostUserLogin;
+    }
+
+    public Context withHostUserLogin(String hostUserLogin) {
+        this.hostUserLogin = hostUserLogin;
+        return this;
+    }
+
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+    public Context withRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+        return this;
     }
 }

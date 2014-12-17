@@ -81,4 +81,12 @@ public interface VcsService {
      *         what to to with the branches list
      */
     void listLocalBranches(@Nonnull ProjectDescriptor project, AsyncCallback<List<Branch>> callback);
+
+    /**
+     * List remotes.
+     *
+     * @param project the project descriptor
+     * @param callback what to to with the remotes list
+     */
+    void listRemotes(@Nonnull ProjectDescriptor project, AsyncCallback<List<Remote>> callback);
 }

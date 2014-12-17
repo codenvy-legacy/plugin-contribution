@@ -24,6 +24,7 @@ import com.codenvy.ide.api.notification.Notification.Type;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,6 +32,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +47,9 @@ import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
-    private static final String ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
-    private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
+    public static final String        VCS_LOCATION_KEY           = "vcs.location";
+    private static final String       ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
+    private static final String       WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ActionManager       actionManager;
     private final Context             context;
@@ -55,8 +58,8 @@ public class ContributorExtension {
     private final NotificationManager notificationManager;
     private final VcsService          vcsService;
 
-    private DefaultActionGroup contributeToolbarGroup;
-    private DefaultActionGroup mainToolbarGroup;
+    private DefaultActionGroup        contributeToolbarGroup;
+    private DefaultActionGroup        mainToolbarGroup;
 
     @Inject
     public ContributorExtension(final Context context,
@@ -97,9 +100,30 @@ public class ContributorExtension {
      */
     private void initContributeMode(final ProjectActionEvent event) {
         final ProjectDescriptor project = event.getProject();
+        // get origin repository's URL from default remote
+        vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
+
+            @Override
+            public void onSuccess(List<Remote> result) {
+                String remoteUrl = result.get(0).getUrl();
+                Map<String,List<String>> attributes = project.getAttributes();
+                attributes.put(VCS_LOCATION_KEY, Arrays.asList(remoteUrl));
+                // add VCS location in project attributes
+                ProjectDescriptor updatedProject = project.withAttributes(attributes);
+                onDefaultRemoteReceived(updatedProject);
+            }
+
+            @Override
+            public void onFailure(Throwable exception) {
+                Log.error(ContributorExtension.class, exception.getMessage());
+            }
+        });
+    }
+
+    private void onDefaultRemoteReceived(ProjectDescriptor project) {
         context.setProject(project);
 
-        final Map<String, List<String>> attributes = event.getProject().getAttributes();
+        final Map<String, List<String>> attributes = project.getAttributes();
         if (attributes != null && attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
 
             final String contributeAttribute = attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0);

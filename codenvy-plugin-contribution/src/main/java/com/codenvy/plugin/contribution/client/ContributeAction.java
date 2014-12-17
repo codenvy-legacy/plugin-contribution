@@ -15,7 +15,6 @@ import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
@@ -174,6 +173,7 @@ public class ContributeAction extends ProjectAction {
         repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
             @Override
             public void onSuccess(final HostUser result) {
+                context.setHostUserLogin(result.getLogin());
                 onVCSUserAuthenticated();
             }
 
@@ -189,6 +189,9 @@ public class ContributeAction extends ProjectAction {
                                                               showAuthWindow();
                                                           }
                                                       }, null).show();
+                } else {
+                    notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                    Log.error(ContributeAction.class, exception.getMessage());
                 }
             }
         });
@@ -215,7 +218,7 @@ public class ContributeAction extends ProjectAction {
     }
 
     private void onVCSUserAuthenticated() {
-        notificationManager.showNotification(new Notification("User successfully authenticated.", Notification.Type.INFO, Status.FINISHED));
+        Log.debug(ContributeAction.class, "User successfully authenticated.");
 
         /* parallel with the other steps */
         this.remoteForkStep.execute(context, config);

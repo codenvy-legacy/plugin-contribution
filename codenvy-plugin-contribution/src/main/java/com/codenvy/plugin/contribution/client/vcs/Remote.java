@@ -8,18 +8,21 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcshost;
+package com.codenvy.plugin.contribution.client.vcs;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.codenvy.dto.shared.DTO;
 
-import java.util.List;
-
-public interface RepositoryHost {
-    void getUserInfo(AsyncCallback<HostUser> callback);
-
-    void getRepositoriesList(AsyncCallback<List<Repository>> callback);
-
-    void getForks(String login, String repository, AsyncCallback<List<Repository>> callback);
-
-    void fork(String login, String repository, AsyncCallback<Repository> callback);
+/**
+ * Info about remote configuration.
+ *
+ */
+@DTO
+public interface Remote {
+    String getName();
+    
+    Remote withName(String name);
+    
+    String getUrl();
+    
+    Remote withUrl(String url);
 }
