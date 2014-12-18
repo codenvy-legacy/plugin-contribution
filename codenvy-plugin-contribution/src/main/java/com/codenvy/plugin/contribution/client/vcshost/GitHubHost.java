@@ -57,7 +57,7 @@ public class GitHubHost implements RepositoryHost {
                         if (result == null) {
                             callback.onFailure(new Exception("No user info"));
                         } else {
-                            final HostUser user = GitHubHost.this.dtoFactory.createDto(HostUser.class);
+                            final HostUser user = dtoFactory.createDto(HostUser.class);
                             user.withId(result.getId()).withLogin(result.getLogin()).withName(result.getName()).withUrl(result.getUrl());
                             callback.onSuccess(user);
                         }
@@ -78,7 +78,7 @@ public class GitHubHost implements RepositoryHost {
                     protected void onSuccess(final GitHubRepositoryList result) {
                         final List<Repository> repositories = new ArrayList<>();
                         for (final GitHubRepository original : result.getRepositories()) {
-                            final Repository repository = GitHubHost.this.dtoFactory.createDto(Repository.class);
+                            final Repository repository = dtoFactory.createDto(Repository.class);
                             repository.withFork(original.isFork()).withName(original.getName())
                                       .withPrivateRepo(original.isPrivateRepo()).withUrl(original.getUrl());
                             repositories.add(repository);
@@ -103,7 +103,7 @@ public class GitHubHost implements RepositoryHost {
                                          protected void onSuccess(final GitHubRepositoryList result) {
                                              final List<Repository> repositories = new ArrayList<>();
                                              for (final GitHubRepository original : result.getRepositories()) {
-                                                 final Repository repository = GitHubHost.this.dtoFactory.createDto(Repository.class);
+                                                 final Repository repository = dtoFactory.createDto(Repository.class);
                                                  repository.withFork(original.isFork()).withName(original.getName())
                                                            .withPrivateRepo(original.isPrivateRepo()).withUrl(original.getUrl());
                                                  repositories.add(repository);
@@ -127,7 +127,7 @@ public class GitHubHost implements RepositoryHost {
                                      @Override
                                      protected void onSuccess(final GitHubRepository result) {
                                          if (result != null) {
-                                             final Repository repository = GitHubHost.this.dtoFactory.createDto(Repository.class);
+                                             final Repository repository = dtoFactory.createDto(Repository.class);
                                              repository.withFork(result.isFork()).withName(result.getName())
                                                        .withPrivateRepo(result.isPrivateRepo()).withUrl(result.getUrl());
                                              callback.onSuccess(repository);
@@ -164,5 +164,38 @@ public class GitHubHost implements RepositoryHost {
                                   final String body,
                                   final AsyncCallback<PullRequest> callback) {
 
+    }
+
+    @Override
+    public void getUserFork(final String user, String owner, String repository, final AsyncCallback<Repository> callback) {
+        getForks(owner, repository, new AsyncCallback<List<Repository>>() {
+
+            @Override
+            public void onSuccess(List<Repository> result) {
+                // find out if current user has a fork
+                Repository fork = getUserFork(user, result);
+                if (fork != null) {
+                    callback.onSuccess(fork);
+                } else {
+                    callback.onFailure(new NoUserForkException(user));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
+            }
+        });
+    }
+
+    protected Repository getUserFork(String login, List<Repository> forks) {
+        Repository userFork = null;
+        for (Repository repository : forks) {
+            String forkURL = repository.getUrl();
+            if (forkURL.toLowerCase().contains("/repos/" + login + "/")) {
+                userFork = repository;
+            }
+        }
+        return userFork;
     }
 }

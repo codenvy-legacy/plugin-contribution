@@ -10,15 +10,17 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import com.codenvy.ide.api.notification.Notification;
+import com.codenvy.ide.api.notification.Notification.Status;
+import com.codenvy.ide.api.notification.Notification.Type;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcshost.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,13 +30,15 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class RemoteForkStep implements Step {
 
-    private final RepositoryHost       repositoryHost;
-    private final NotificationManager  notificationManager;
+    private final RepositoryHost      repositoryHost;
+    private final NotificationManager notificationManager;
+    private final ContributeMessages  messages;
 
     @Inject
-    public RemoteForkStep(RepositoryHost repositoryHost, NotificationManager notificationManager) {
+    public RemoteForkStep(RepositoryHost repositoryHost, NotificationManager notificationManager, ContributeMessages messages) {
         this.repositoryHost = repositoryHost;
         this.notificationManager = notificationManager;
+        this.messages = messages;
     }
 
     @Override
@@ -42,55 +46,46 @@ public class RemoteForkStep implements Step {
         final String owner = context.getOriginRepositoryOwner();
         final String repository = context.getOriginRepositoryName();
         // get list of forks existing for origin repository
-        repositoryHost.getForks(owner, repository, new AsyncCallback<List<Repository>>() {
+        repositoryHost.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
 
             @Override
-            public void onSuccess(List<Repository> result) {
-                if (context.getHostUserLogin() != null) {
-                    // find out if current user has a fork
-                    Repository fork = getUserFork(context.getHostUserLogin(), result);
-                    if (fork != null) {
-                        Log.info(RemoteForkStep.class, "Fork already exist.");
-                    } else {
-                        // create a fork on current user's VCS account
-                        createFork(context, owner, repository);
-                    }
-                } else {
-                    Log.error(RemoteForkStep.class, "No VCS user available.");
-                }
+            public void onSuccess(Repository fork) {
+                notificationManager.showNotification(new Notification(messages.useExistingUserBranch(), Notification.Type.INFO));
             }
 
             @Override
             public void onFailure(Throwable exception) {
+                if (exception instanceof NoUserForkException) {
+                    createFork(context, owner, repository);
+                    return;
+                }
                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
                 Log.error(RemoteForkStep.class, exception.getMessage());
             }
         });
     }
 
-    private Repository getUserFork(String login, List<Repository> forks) {
-        Repository userFork = null;
-        for (Repository repository : forks) {
-            String forkURL = repository.getUrl();
-            if (forkURL.toLowerCase().contains("/repos/" + login + "/")) {
-                userFork = repository;
-            }
-        }
-        return userFork;
-    }
+    private void createFork(final Context context, final String repositoryOwner, final String repositoryName) {
+        final Notification notification = new Notification(messages.creatingFork(repositoryOwner, repositoryName), Notification.Type.INFO);
+        notification.setStatus(Status.PROGRESS);
+        notificationManager.showNotification(notification);
 
-    private void createFork(final Context context, String username, String repository) {
-        repositoryHost.fork(username, repository, new AsyncCallback<Repository>() {
+        repositoryHost.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
 
             @Override
             public void onSuccess(Repository result) {
-                Log.info(RemoteForkStep.class, "Fork creation started.");
+                notification.setStatus(Status.FINISHED);
+                notification.setMessage(messages.requestedForkCreation(repositoryOwner, repositoryName));
             }
 
             @Override
             public void onFailure(Throwable exception) {
-                notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                Log.error(RemoteForkStep.class, exception.getMessage());
+                notification.setType(Type.ERROR);
+                notification.setStatus(Status.FINISHED);
+                String errorMessage = messages.failedCreatingUserFork(repositoryOwner, repositoryName, exception.getMessage());
+                notification.setMessage(errorMessage);
+
+                Log.error(RemoteForkStep.class, exception);
             }
         });
     }

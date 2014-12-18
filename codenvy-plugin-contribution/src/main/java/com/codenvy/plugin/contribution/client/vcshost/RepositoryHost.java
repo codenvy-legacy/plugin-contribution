@@ -21,6 +21,8 @@ public interface RepositoryHost {
 
     void getForks(String owner, String repository, AsyncCallback<List<Repository>> callback);
 
+    void getUserFork(String user, String owner, String repository, AsyncCallback<Repository> callback);
+
     void fork(String owner, String repository, AsyncCallback<Repository> callback);
 
     String makeRemoteUrl(String username, String repository);

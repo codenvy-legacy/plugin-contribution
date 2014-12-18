@@ -76,4 +76,21 @@ public interface ContributeMessages extends Messages {
 
     @Key("authentication.dialog.create.account.button.text")
     String authenticationDialogCreateAccountButtonText();
+
+    /*
+     * messages for check/create remote user fork step
+     */
+    public final static String CONTRIB_ISSUE_PR_PREFIX = "Issue PR: ";
+
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Using existing user''s fork")
+    String useExistingUserBranch();
+
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Creating a fork the repository`{0}/{1}`")
+    String creatingFork(String username, String repository);
+
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Requested creation of a fork of the repository `{0}/{1}`")
+    String requestedForkCreation(String repositoryOwner, String repositoryName);
+
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Failed creating the fork of the repository`{0}/{1}`. {2}")
+    String failedCreatingUserFork(String repositoryOwner, String repositoryName, String message);
 }
