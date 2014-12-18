@@ -144,4 +144,11 @@ public class GithubHost implements RepositoryHost {
     public String makeRemoteUrl(final String username, final String repository) {
         return this.urlTemplates.gitRemoteTemplate(username, repository);
     }
+
+    @Override
+    public void commentPullRequest(final String username, final String repository,
+                                   final String pullRequestId, final String commentText,
+                                   final AsyncCallback<Void> callback) {
+
+    }
 }
