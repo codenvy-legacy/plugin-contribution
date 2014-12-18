@@ -88,8 +88,8 @@ public class WaitForForkOnRemoteStep implements Step {
         repositoryHost.getRepositoriesList(new AsyncCallback<List<Repository>>() {
 
             @Override
-            public void onSuccess(List<Repository> result) {
-                for (Repository repo : result) {
+            public void onSuccess(final List<Repository> result) {
+                for (final Repository repo : result) {
                     if (repo.getName().equals(context.getRepositoryName())) {
                         callback.onSuccess(null);
                     }
@@ -98,7 +98,7 @@ public class WaitForForkOnRemoteStep implements Step {
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onFailure(final Throwable caught) {
                 callback.onFailure(caught);
             }
         });
