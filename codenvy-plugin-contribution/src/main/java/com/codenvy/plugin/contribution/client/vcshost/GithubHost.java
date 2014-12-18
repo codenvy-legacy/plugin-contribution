@@ -91,8 +91,8 @@ public class GithubHost implements RepositoryHost {
     }
 
     @Override
-    public void getForks(final String login, final String repository, final AsyncCallback<List<Repository>> callback) {
-        this.gitHubClientService.getForks(login,
+    public void getForks(final String owner, final String repository, final AsyncCallback<List<Repository>> callback) {
+        this.gitHubClientService.getForks(owner,
                                           repository,
                                           new AsyncRequestCallback<GitHubRepositoryList>(
                                                                                          dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
@@ -116,8 +116,8 @@ public class GithubHost implements RepositoryHost {
     }
 
     @Override
-    public void fork(final String login, final String repository, final AsyncCallback<Repository> callback) {
-        this.gitHubClientService.fork(login,
+    public void fork(final String owner, final String repository, final AsyncCallback<Repository> callback) {
+        this.gitHubClientService.fork(owner,
                                       repository,
                                       new AsyncRequestCallback<GitHubRepository>(
                                                                                  dtoUnmarshallerFactory.newUnmarshaller(GitHubRepository.class)) {
