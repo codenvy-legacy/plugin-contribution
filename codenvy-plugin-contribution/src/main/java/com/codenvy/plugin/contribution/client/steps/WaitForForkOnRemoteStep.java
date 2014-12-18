@@ -10,8 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import java.util.List;
+
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -81,7 +84,23 @@ public class WaitForForkOnRemoteStep implements Step {
         }
     }
 
-    private void checkRepository(final Context context, AsyncCallback<Void> callback) {
+    private void checkRepository(final Context context, final AsyncCallback<Void> callback) {
+        repositoryHost.getRepositoriesList(new AsyncCallback<List<Repository>>() {
 
+            @Override
+            public void onSuccess(List<Repository> result) {
+                for (Repository repo : result) {
+                    if (repo.getName().equals(context.getRepositoryName())) {
+                        callback.onSuccess(null);
+                    }
+                }
+                callback.onFailure(null);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
+            }
+        });
     }
 }
