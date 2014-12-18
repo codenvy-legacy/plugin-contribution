@@ -29,7 +29,7 @@ import com.codenvy.plugin.contribution.client.steps.WaitForForOnRemoteStepFactor
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcshost.GithubHost;
+import com.codenvy.plugin.contribution.client.vcshost.GitHubHost;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
@@ -43,7 +43,7 @@ public class ContributorGinModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind(VcsService.class).to(GitVcsService.class);
-        bind(RepositoryHost.class).to(GithubHost.class);
+        bind(RepositoryHost.class).to(GitHubHost.class);
 
         // bind the configure contribution dialog
         install(new GinFactoryModuleBuilder().build(PreContributeWizardPresenterFactory.class));
