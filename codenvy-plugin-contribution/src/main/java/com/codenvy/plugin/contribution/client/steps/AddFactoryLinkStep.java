@@ -14,24 +14,25 @@ import javax.inject.Inject;
 
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 
 /**
- * Create the pull request on the remote VCS repository.
+ * Adds a factory link to the contribution in a comment of the pull request.
  */
-public class IssuePullRequestStep implements Step {
+public class AddFactoryLinkStep implements Step {
 
     /**
-     * The following step.
+     * The remote VCS repository.
      */
-    private final AddFactoryLinkStep nextStep;
+    private final RepositoryHost repository;
 
     @Inject
-    public IssuePullRequestStep(final AddFactoryLinkStep nextStep) {
-        this.nextStep = nextStep;
+    public AddFactoryLinkStep(final RepositoryHost repository) {
+        this.repository = repository;
     }
 
     @Override
-    public void execute(Context context, Configuration config) {
+    public void execute(final Context context, final Configuration config) {
         // TODO Auto-generated method stub
 
     }
