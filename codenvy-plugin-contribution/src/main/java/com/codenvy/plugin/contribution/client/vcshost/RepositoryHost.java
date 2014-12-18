@@ -35,4 +35,12 @@ public interface RepositoryHost {
      */
     void commentPullRequest(String username, String repository,
                             String pullRequestId, String commentText, AsyncCallback<Void> callback);
+
+    void createPullRequest(String owner,
+                           String repository,
+                           String title,
+                           String headBranch,
+                           String baseBranch,
+                           String body,
+                           AsyncCallback<PullRequest> callback);
 }

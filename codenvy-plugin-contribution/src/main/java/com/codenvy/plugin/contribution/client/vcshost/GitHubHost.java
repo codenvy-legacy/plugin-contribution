@@ -154,4 +154,15 @@ public class GitHubHost implements RepositoryHost {
                                    final AsyncCallback<Void> callback) {
 
     }
+
+    @Override
+    public void createPullRequest(final String owner,
+                                  final String repository,
+                                  final String title,
+                                  final String headBranch,
+                                  final String baseBranch,
+                                  final String body,
+                                  final AsyncCallback<PullRequest> callback) {
+
+    }
 }
