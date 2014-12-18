@@ -10,18 +10,12 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import com.codenvy.api.user.gwt.client.UserServiceClient;
-import com.codenvy.api.user.shared.dto.UserDescriptor;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
+import com.codenvy.ide.api.app.CurrentUser;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.ide.rest.AsyncRequestCallback;
-import com.codenvy.ide.rest.DtoUnmarshaller;
-import com.codenvy.ide.rest.DtoUnmarshallerFactory;
-import com.codenvy.ide.ui.dialogs.ConfirmCallback;
-import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.authdialog.AuthenticationPresenter;
@@ -41,34 +35,14 @@ import com.google.inject.name.Named;
 
 public class ContributeAction extends ProjectAction {
     /**
-     * I18n messages.
-     */
-    private final ContributeMessages messages;
-
-    /**
      * Step where the user configures the contribution.
      */
     private final ConfigureStep configureStep;
 
     /**
-     * Service to retrieve user information.
-     */
-    private final UserServiceClient userServiceClient;
-
-    /**
-     * Factory of {@link DtoUnmarshaller} objects.
-     */
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-
-    /**
      * The notification manager.
      */
     private final NotificationManager notificationManager;
-
-    /**
-     * Factory for message dialogs.
-     */
-    private final DialogFactory dialogFactory;
 
     /**
      * The REST base URL.
@@ -96,11 +70,6 @@ public class ContributeAction extends ProjectAction {
     private final Configuration config;
 
     /**
-     * The local user identity.
-     */
-    private UserDescriptor userDescriptor;
-
-    /**
      * Presenter used to authenticate user in Codenvy.
      */
     private final AuthenticationPresenter authenticationPresenter;
@@ -111,10 +80,7 @@ public class ContributeAction extends ProjectAction {
                             final ContributeResources contributeResources,
                             final ContributeMessages messages,
                             final DtoFactory dtoFactory,
-                            final UserServiceClient userServiceClient,
-                            final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                             final NotificationManager notificationManager,
-                            final DialogFactory dialogFactory,
                             final @Named("restContext") String baseUrl,
                             final RemoteForkStep remoteForkStep,
                             final RepositoryHost repositoryHost,
@@ -122,11 +88,7 @@ public class ContributeAction extends ProjectAction {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
-        this.userServiceClient = userServiceClient;
-        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
-        this.messages = messages;
         this.notificationManager = notificationManager;
-        this.dialogFactory = dialogFactory;
         this.baseUrl = baseUrl;
         this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
@@ -142,87 +104,84 @@ public class ContributeAction extends ProjectAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        if (appContext.getCurrentUser().isUserPermanent()) {
-            getCurrentUserInfo();
-        } else {
+        // first we check if the user is authenticated on the vcs host
+        repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                final String exceptionMessage = exception.getMessage();
+                if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+                    authenticateOnVCSHost();
+
+                } else {
+                    handleError(exception);
+                }
+            }
+
+            @Override
+            public void onSuccess(final HostUser user) {
+                onVCSHostUserAuthenticated(user);
+            }
+        });
+    }
+
+    /**
+     * Authenticates the user on the VCS Host.
+     */
+    private void authenticateOnVCSHost() {
+        final CurrentUser currentUser = appContext.getCurrentUser();
+        final String authUrl = baseUrl
+                               + "/oauth/authenticate?oauth_provider=github&userId=" + currentUser.getProfile().getId()
+                               + "&scope=user,repo,write:public_key&redirect_after_login="
+                               + Window.Location.getProtocol() + "//"
+                               + Window.Location.getHost() + "/ws/"
+                               + Config.getWorkspaceName();
+
+        new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
+            @Override
+            public void onAuthenticated(final OAuthStatus authStatus) {
+                // maybe it's possible to avoid this request if authStatus contains the vcs host user.
+                repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        handleError(exception);
+                    }
+
+                    @Override
+                    public void onSuccess(final HostUser user) {
+                        onVCSHostUserAuthenticated(user);
+                    }
+                });
+            }
+
+        }).loginWithOAuth();
+    }
+
+    /**
+     * Checks that the user authenticated on the VCS Host is authenticated on Codenvy.
+     *
+     * @param user
+     *         the user authenticated on the VCS Host.
+     */
+    private void onVCSHostUserAuthenticated(final HostUser user) {
+        context.setHostUserLogin(user.getLogin());
+
+        if (!appContext.getCurrentUser().isUserPermanent()) {
             authenticationPresenter.showDialog();
+
+        } else {
+            remoteForkStep.execute(context, config); // parallel with the other steps
+            configureStep.execute(context, config);
         }
     }
 
-    private void getCurrentUserInfo() {
-        // get current user's Codenvy account
-        userServiceClient.getCurrentUser(
-                new AsyncRequestCallback<UserDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(UserDescriptor.class)) {
-                    @Override
-                    protected void onSuccess(final UserDescriptor user) {
-                        userDescriptor = user;
-                        // get current user's associated VCS account
-                        getVCSUserInfo();
-                    }
-
-                    @Override
-                    protected void onFailure(final Throwable exception) {
-                        notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                        Log.error(ContributeAction.class, exception.getMessage());
-                    }
-                }
-                                        );
-    }
-
-    private void getVCSUserInfo() {
-        repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
-            @Override
-            public void onSuccess(final HostUser result) {
-                context.setHostUserLogin(result.getLogin());
-                onVCSUserAuthenticated();
-            }
-
-            @Override
-            public void onFailure(final Throwable exception) {
-                // authenticate user's Github account
-                if (exception.getMessage().contains("Bad credentials")) {
-                    dialogFactory.createConfirmDialog("GitHub",
-                                                      messages.repositoryHostAuthorizeMessage(),
-                                                      new ConfirmCallback() {
-                                                          @Override
-                                                          public void accepted() {
-                                                              showAuthWindow();
-                                                          }
-                                                      }, null).show();
-                } else {
-                    notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                    Log.error(ContributeAction.class, exception.getMessage());
-                }
-            }
-        });
-    }
-
-    private void showAuthWindow() {
-        String authUrl = baseUrl
-                         + "/oauth/authenticate?oauth_provider=github"
-                         + "&scope=user,repo,write:public_key&userId=" + (userDescriptor != null ? userDescriptor.getId() : "")
-                         + "&redirect_after_login="
-                         + Window.Location.getProtocol() + "//"
-                         + Window.Location.getHost() + "/ws/"
-                         + Config.getWorkspaceName();
-        JsOAuthWindow authWindow = new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
-
-            @Override
-            public void onAuthenticated(final OAuthStatus authStatus) {
-                // TODO get GitHub user
-                onVCSUserAuthenticated();
-            }
-
-        });
-        authWindow.loginWithOAuth();
-    }
-
-    private void onVCSUserAuthenticated() {
-        Log.debug(ContributeAction.class, "User successfully authenticated.");
-
-        /* parallel with the other steps */
-        this.remoteForkStep.execute(context, config);
-
-        this.configureStep.execute(this.context, this.config);
+    /**
+     * Handles an exception and display the error message in a notification.
+     *
+     * @param exception
+     *         the exception to handle.
+     */
+    private void handleError(final Throwable exception) {
+        notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+        Log.error(ContributeAction.class, exception.getMessage());
     }
 }
