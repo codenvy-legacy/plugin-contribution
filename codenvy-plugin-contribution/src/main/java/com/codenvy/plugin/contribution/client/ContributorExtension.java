@@ -32,7 +32,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
-    public static final String        VCS_LOCATION_KEY           = "vcs.location";
     private static final String       ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
     private static final String       WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
@@ -93,7 +91,7 @@ public class ContributorExtension {
     }
 
     /**
-     * Initialize contribution button & operations.
+     * Initialize contributor environment
      *
      * @param event
      *         the load event.
@@ -105,12 +103,15 @@ public class ContributorExtension {
 
             @Override
             public void onSuccess(List<Remote> result) {
+                // save origin repository name & owner in context
                 String remoteUrl = result.get(0).getUrl();
-                Map<String,List<String>> attributes = project.getAttributes();
-                attributes.put(VCS_LOCATION_KEY, Arrays.asList(remoteUrl));
-                // add VCS location in project attributes
-                ProjectDescriptor updatedProject = project.withAttributes(attributes);
-                onDefaultRemoteReceived(updatedProject);
+                final String repository = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
+                context.setOriginRepositoryName(repository);
+                final String remoteUrlSubstring = remoteUrl.substring(0, remoteUrl.length() - repository.length() - 1);
+                final String owner = remoteUrlSubstring.substring(remoteUrlSubstring.lastIndexOf('/') + 1);
+                context.setOriginRepositoryOwner(owner);
+                // initiate contributor button & working branch
+                onDefaultRemoteReceived(project);
             }
 
             @Override

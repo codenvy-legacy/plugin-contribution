@@ -30,9 +30,14 @@ public class Context {
     private String hostUserLogin;
 
     /**
+     * The name of the owner of the origin repository on VCS.
+     */
+    private String originRepositoryOwner;
+
+    /**
      * The name of the repository forked on VCS.
      */
-    private String repositoryName;
+    private String originRepositoryName;
 
     /**
      * The id of the pull request issued for the contribution.
@@ -102,16 +107,29 @@ public class Context {
         return this;
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
+    public String getOriginRepositoryOwner() {
+        return originRepositoryOwner;
     }
 
-    public void setRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
+    public void setOriginRepositoryOwner(String originRepositoryOwner) {
+        this.originRepositoryOwner = originRepositoryOwner;
     }
 
-    public Context withRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
+    public Context withOriginRepositoryOwner(String originRepositoryOwner) {
+        this.originRepositoryOwner = originRepositoryOwner;
+        return this;
+    }
+
+    public String getOriginRepositoryName() {
+        return originRepositoryName;
+    }
+
+    public void setOriginRepositoryName(String originRepositoryName) {
+        this.originRepositoryName = originRepositoryName;
+    }
+
+    public Context withOriginRepositoryName(String originRepositoryName) {
+        this.originRepositoryName = originRepositoryName;
         return this;
     }
 

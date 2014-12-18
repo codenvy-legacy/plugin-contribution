@@ -90,7 +90,7 @@ public class WaitForForkOnRemoteStep implements Step {
             @Override
             public void onSuccess(final List<Repository> result) {
                 for (final Repository repo : result) {
-                    if (repo.getName().equals(context.getRepositoryName())) {
+                    if (repo.getName().equals(context.getOriginRepositoryName())) {
                         callback.onSuccess(null);
                     }
                 }

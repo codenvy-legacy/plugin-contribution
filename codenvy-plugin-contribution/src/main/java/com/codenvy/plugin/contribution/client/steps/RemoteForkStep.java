@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import static com.codenvy.plugin.contribution.client.ContributorExtension.VCS_LOCATION_KEY;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,41 +39,34 @@ public class RemoteForkStep implements Step {
 
     @Override
     public void execute(final Context context, final Configuration config) {
-        // get URL of project on VCS
-        List<String> locationAttributeValues = context.getProject().getAttributes().get(VCS_LOCATION_KEY);
-        if (locationAttributeValues != null && !locationAttributeValues.isEmpty()) {
-            String locationURL = locationAttributeValues.get(0);
+        final String owner = context.getOriginRepositoryOwner();
+        final String repository = context.getOriginRepositoryName();
+        // get list of forks existing for origin repository
+        repositoryHost.getForks(owner, repository, new AsyncCallback<List<Repository>>() {
 
-            final String repository = locationURL.substring(locationURL.lastIndexOf('/') + 1);
-            final String locationURLSubstring = locationURL.substring(0, locationURL.length() - repository.length() - 1);
-            final String username = locationURLSubstring.substring(locationURLSubstring.lastIndexOf('/') + 1);
-            // get list of forks existing for origin repository
-            repositoryHost.getForks(username, repository, new AsyncCallback<List<Repository>>() {
-
-                @Override
-                public void onSuccess(List<Repository> result) {
-                    if (context.getHostUserLogin() != null) {
-                        // find out if current user has a fork
-                        Repository fork = getUserFork(context.getHostUserLogin(), result);
-                        if (fork != null) {
-                            Log.info(RemoteForkStep.class, "Fork already exist.");
-                            context.setRepositoryName(fork.getName());
-                        } else {
-                            // create a fork on current user's VCS account
-                            createFork(context, username, repository);
-                        }
+            @Override
+            public void onSuccess(List<Repository> result) {
+                if (context.getHostUserLogin() != null) {
+                    // find out if current user has a fork
+                    Repository fork = getUserFork(context.getHostUserLogin(), result);
+                    if (fork != null) {
+                        Log.info(RemoteForkStep.class, "Fork already exist.");
+                        context.setOriginRepositoryName(fork.getName());
                     } else {
-                        Log.error(RemoteForkStep.class, "No VCS user available.");
+                        // create a fork on current user's VCS account
+                        createFork(context, owner, repository);
                     }
+                } else {
+                    Log.error(RemoteForkStep.class, "No VCS user available.");
                 }
+            }
 
-                @Override
-                public void onFailure(Throwable exception) {
-                    notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                    Log.error(RemoteForkStep.class, exception.getMessage());
-                }
-            });
-        }
+            @Override
+            public void onFailure(Throwable exception) {
+                notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+                Log.error(RemoteForkStep.class, exception.getMessage());
+            }
+        });
     }
 
     private Repository getUserFork(String login, List<Repository> forks) {
@@ -95,7 +86,7 @@ public class RemoteForkStep implements Step {
             @Override
             public void onSuccess(Repository result) {
                 Log.info(RemoteForkStep.class, "Fork creation started.");
-                context.setRepositoryName(result.getName());
+                context.setOriginRepositoryName(result.getName());
             }
 
             @Override

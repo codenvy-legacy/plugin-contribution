@@ -78,7 +78,7 @@ public class AddRemoteStep implements Step {
 
     @Override
     public void execute(final Context context, final Configuration config) {
-        final String remoteUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getRepositoryName());
+        final String remoteUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
 
         this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
