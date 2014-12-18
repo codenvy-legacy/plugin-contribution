@@ -93,4 +93,13 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Failed creating the fork of the repository`{0}/{1}`. {2}")
     String failedCreatingUserFork(String repositoryOwner, String repositoryName, String message);
+
+    @DefaultMessage("You can review this pull request by following this link: {0}")
+    String pullRequestlinkComment(String factoryUrl);
+
+    @DefaultMessage("Could not post review factory link in pull request comments: {0}")
+    String warnPostFactoryLinkFailed(String factoryUrl);
+
+    @DefaultMessage("Could not create review factory link")
+    String warnCreateFactoryFailed();
 }
