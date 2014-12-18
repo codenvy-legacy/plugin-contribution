@@ -41,7 +41,7 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Codenvy needs authorization on github to continue")
     String repositoryHostAuthorizeMessage();
 
-    @DefaultMessage("You need to provide the contribution branch name.")
+    @DefaultMessage("You need to provide the contribution branch name")
     String warnBranchEmpty();
 
     @DefaultMessage("Incorrect or missing information")
