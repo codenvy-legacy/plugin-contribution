@@ -22,17 +22,22 @@ public class Context {
     /**
      * The name of the working branch.
      */
-    private String            workBranchName;
+    private String workBranchName;
 
     /**
      * The name of the user on VCS.
      */
-    private String            hostUserLogin;
+    private String hostUserLogin;
 
     /**
      * The name of the repository forked on VCS.
      */
-    private String            repositoryName;
+    private String repositoryName;
+
+    /**
+     * The id of the pull request issued for the contribution.
+     */
+    private String pullRequestId;
 
     /**
      * Flag that tells is the fork has been seen.
@@ -107,6 +112,29 @@ public class Context {
 
     public Context withRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
+        return this;
+    }
+
+    /**
+     * Return the id of the pull request issued for this contribution.
+     * 
+     * @return the pull request id
+     */
+    public String getPullRequestId() {
+        return pullRequestId;
+    }
+
+    /**
+     * Sets the id of the pull request issued for this contribution.
+     * 
+     * @param pullRequestId the new value
+     */
+    public void setPullRequestId(final String pullRequestId) {
+        this.pullRequestId = pullRequestId;
+    }
+
+    public Context withPullRequestId(final String pullRequestId) {
+        this.pullRequestId = pullRequestId;
         return this;
     }
 }
