@@ -89,7 +89,7 @@ public class RemoteForkStep implements Step {
         return userFork;
     }
 
-    private boolean createFork(final Context context, String username, String repository) {
+    private void createFork(final Context context, String username, String repository) {
         repositoryHost.fork(username, repository, new AsyncCallback<Repository>() {
 
             @Override
@@ -104,6 +104,5 @@ public class RemoteForkStep implements Step {
                 Log.error(RemoteForkStep.class, exception.getMessage());
             }
         });
-        return true;
     }
 }
