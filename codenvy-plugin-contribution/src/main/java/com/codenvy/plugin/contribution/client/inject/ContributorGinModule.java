@@ -22,6 +22,7 @@ import com.codenvy.plugin.contribution.client.steps.AddFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.AddRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
+import com.codenvy.plugin.contribution.client.steps.ProposePersistStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
@@ -58,6 +59,7 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(Context.class).in(Singleton.class);
 
         // the steps
+        bind(ProposePersistStep.class);
         bind(AddFactoryLinkStep.class);
         bind(IssuePullRequestStep.class);
         bind(PushBranchOnForkStep.class);
