@@ -59,6 +59,7 @@ public class RemoteForkStep implements Step {
                         Repository fork = getUserFork(context.getHostUserLogin(), result);
                         if (fork != null) {
                             Log.info(RemoteForkStep.class, "Fork already exist.");
+                            context.setRepositoryName(fork.getName());
                         } else {
                             // create a fork on current user's VCS account
                             createFork(context, username, repository);
