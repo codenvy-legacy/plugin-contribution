@@ -82,7 +82,7 @@ public interface ContributeMessages extends Messages {
      */
     public final static String CONTRIB_ISSUE_PR_PREFIX = "Issue PR: ";
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Using existing user's fork")
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Using existing user''s fork")
     String useExistingUserFork();
 
     @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Creating a fork the repository`{0}/{1}`")
