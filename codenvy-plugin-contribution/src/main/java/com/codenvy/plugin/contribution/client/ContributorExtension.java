@@ -19,11 +19,10 @@ import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.Notification.Status;
-import com.codenvy.ide.api.notification.Notification.Type;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -38,6 +37,10 @@ import java.util.Map;
 
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
+import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
+import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
+import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
+import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 
 /**
  * @author Stephane Tournie
@@ -46,8 +49,8 @@ import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
-    private static final String       ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
-    private static final String       WORKING_BRANCH_NAME_PREFIX = "contrib-";
+    private static final String ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
+    private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ActionManager       actionManager;
     private final Context             context;
@@ -56,8 +59,8 @@ public class ContributorExtension {
     private final NotificationManager notificationManager;
     private final VcsService          vcsService;
 
-    private DefaultActionGroup        contributeToolbarGroup;
-    private DefaultActionGroup        mainToolbarGroup;
+    private DefaultActionGroup contributeToolbarGroup;
+    private DefaultActionGroup mainToolbarGroup;
 
     @Inject
     public ContributorExtension(final Context context,
@@ -121,7 +124,7 @@ public class ContributorExtension {
         });
     }
 
-    private void onDefaultRemoteReceived(ProjectDescriptor project) {
+    private void onDefaultRemoteReceived(final ProjectDescriptor project) {
         context.setProject(project);
 
         final Map<String, List<String>> attributes = project.getAttributes();
@@ -140,24 +143,43 @@ public class ContributorExtension {
 
                 final String workingBranchName = generateWorkingBranchName();
                 context.setWorkBranchName(workingBranchName);
-                final Notification notification = new Notification("Creating a new working branch " + workingBranchName + "...", Type.INFO,
-                                                                   Status.PROGRESS);
-                notificationManager.showNotification(notification);
-                // shorthand for create + checkout new temporary working branch -> checkout -b branchName
-                vcsService.checkoutBranch(project, workingBranchName, true, new AsyncCallback<String>() {
 
+                final Notification createWorkingBranchNotification =
+                        new Notification("Creating a new working branch " + workingBranchName + "...", INFO, PROGRESS);
+                notificationManager.showNotification(createWorkingBranchNotification);
+
+                // the working branch is only created if it doesn't exist
+                vcsService.listLocalBranches(project, new AsyncCallback<List<Branch>>() {
                     @Override
-                    public void onSuccess(final String result) {
-                        notification.setMessage("Branch " + workingBranchName + " successfully created and checked out.");
-                        notification.setStatus(Status.FINISHED);
+                    public void onFailure(final Throwable exception) {
+                        handleError(exception, createWorkingBranchNotification);
                     }
 
                     @Override
-                    public void onFailure(final Throwable exception) {
-                        notification.setMessage("Failed to create branch " + workingBranchName + ".");
-                        notification.setType(Type.ERROR);
-                        notification.setStatus(Status.FINISHED);
-                        Log.error(ContributorExtension.class, exception.getMessage());
+                    public void onSuccess(final List<Branch> branches) {
+                        boolean workingBranchExists = false;
+
+                        for (final Branch oneBranch : branches) {
+                            if (workingBranchName.equals(oneBranch.getDisplayName())) {
+                                workingBranchExists = true;
+                                break;
+                            }
+                        }
+
+                        // shorthand for create + checkout new temporary working branch -> checkout -b branchName
+                        vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
+                            @Override
+                            public void onSuccess(final String result) {
+                                createWorkingBranchNotification.setMessage(
+                                        "Branch " + workingBranchName + " successfully created and checked out.");
+                                createWorkingBranchNotification.setStatus(FINISHED);
+                            }
+
+                            @Override
+                            public void onFailure(final Throwable exception) {
+                                handleError(exception, createWorkingBranchNotification);
+                            }
+                        });
                     }
                 });
             }
@@ -180,5 +202,26 @@ public class ContributorExtension {
     private String generateWorkingBranchName() {
         final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MMddyyyy");
         return WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
+    }
+
+    /**
+     * Handles an exception and display the error message in a notification.
+     *
+     * @param exception
+     *         the exception to handle.
+     * @param notification
+     *         the notification in progress, {@code null} if none.
+     */
+    private void handleError(final Throwable exception, final Notification notification) {
+        if (notification != null) {
+            notification.setMessage(exception.getMessage());
+            notification.setType(ERROR);
+            notification.setStatus(FINISHED);
+
+        } else {
+            notificationManager.showNotification(new Notification(exception.getMessage(), ERROR, FINISHED));
+        }
+
+        Log.error(ContributeAction.class, exception.getMessage());
     }
 }
