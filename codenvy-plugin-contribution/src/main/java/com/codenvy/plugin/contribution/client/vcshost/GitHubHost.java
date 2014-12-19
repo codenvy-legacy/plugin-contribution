@@ -12,6 +12,8 @@ package com.codenvy.plugin.contribution.client.vcshost;
 
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
+import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
+import com.codenvy.ide.ext.github.shared.GitHubPullRequestInput;
 import com.codenvy.ide.ext.github.shared.GitHubRepository;
 import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
@@ -164,6 +166,26 @@ public class GitHubHost implements RepositoryHost {
                                   final String body,
                                   final AsyncCallback<PullRequest> callback) {
 
+        final GitHubPullRequestInput input = GitHubHost.this.dtoFactory.createDto(GitHubPullRequestInput.class);
+        input.withTitle(title).withHead(headBranch).withBase(baseBranch).withBody(body);
+        gitHubClientService.createPullRequest(owner, repository, input, new AsyncRequestCallback<GitHubPullRequest>() {
+
+            @Override
+            protected void onSuccess(GitHubPullRequest result) {
+                if (result != null) {
+                    final PullRequest pr = GitHubHost.this.dtoFactory.createDto(PullRequest.class);
+                    pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl());
+                    callback.onSuccess(pr);
+                } else {
+                    callback.onFailure(new Exception("No pull request."));
+                }
+            }
+
+            @Override
+            protected void onFailure(Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
     }
 
     @Override

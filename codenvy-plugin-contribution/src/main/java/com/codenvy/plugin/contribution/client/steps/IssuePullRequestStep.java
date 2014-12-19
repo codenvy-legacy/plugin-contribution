@@ -10,15 +10,24 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.plugin.contribution.client.value.Configuration;
-import com.codenvy.plugin.contribution.client.value.Context;
 
 import javax.inject.Inject;
+
+import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.value.Configuration;
+import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcshost.PullRequest;
+import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Create the pull request on the remote VCS repository.
  */
 public class IssuePullRequestStep implements Step {
+
+    private static final String BASE_BRANCH = "master";
+
+    private final RepositoryHost     repositoryHost;
 
     /**
      * The following step.
@@ -26,14 +35,33 @@ public class IssuePullRequestStep implements Step {
     private final Step nextStep;
 
     @Inject
-    public IssuePullRequestStep(final GenerateReviewFactory nextStep) {
+    public IssuePullRequestStep(final RepositoryHost repositoryHost, final GenerateReviewFactory nextStep) {
+        this.repositoryHost = repositoryHost;
         this.nextStep = nextStep;
     }
 
     @Override
-    public void execute(Context context, Configuration config) {
-        // TODO Auto-generated method stub
+    public void execute(final Context context, final Configuration config) {
+        String owner = context.getOriginRepositoryOwner();
+        String repository = context.getOriginRepositoryName();
+        String title = config.getContributionTitle();
+        String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
+        String body = config.getPullRequestComment();
+        repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
 
+            @Override
+            public void onSuccess(PullRequest result) {
+                onPullRequestCreated(context, config);
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Log.error(RemoteForkStep.class, caught.getMessage());
+            }
+        });
     }
 
+    protected void onPullRequestCreated(final Context context, final Configuration config) {
+        nextStep.execute(context, config);
+    }
 }
