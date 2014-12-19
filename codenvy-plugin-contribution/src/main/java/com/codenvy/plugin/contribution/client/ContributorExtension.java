@@ -49,8 +49,7 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
-    private static final String ATTRIBUTE_CONTRIBUTE_KEY   = "contribute";
-    private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
+    private static final String       WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ActionManager       actionManager;
     private final Context             context;
@@ -128,9 +127,9 @@ public class ContributorExtension {
         context.setProject(project);
 
         final Map<String, List<String>> attributes = project.getAttributes();
-        if (attributes != null && attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+        if (attributes != null && attributes.containsKey(ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY)) {
 
-            final String contributeAttribute = attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0);
+            final String contributeAttribute = attributes.get(ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY).get(0);
             if ("true".equalsIgnoreCase(contributeAttribute)) {
 
                 // branch specified in factory.json has been already checkout at this point
