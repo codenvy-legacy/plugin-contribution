@@ -105,15 +105,20 @@ public class ContributorExtension {
 
             @Override
             public void onSuccess(List<Remote> result) {
-                // save origin repository name & owner in context
-                String remoteUrl = result.get(0).getUrl();
-                final String repository = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
-                context.setOriginRepositoryName(repository);
-                final String remoteUrlSubstring = remoteUrl.substring(0, remoteUrl.length() - repository.length() - 1);
-                final String owner = remoteUrlSubstring.substring(remoteUrlSubstring.lastIndexOf('/') + 1);
-                context.setOriginRepositoryOwner(owner);
-                // initiate contributor button & working branch
-                onDefaultRemoteReceived(project);
+                for (Remote remote : result) {
+                    if (remote.getName().equals("origin")) {
+                        // save origin repository name & owner in context
+                        String remoteUrl = remote.getUrl();
+                        final String repository = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
+                        context.setOriginRepositoryName(repository);
+                        final String remoteUrlSubstring = remoteUrl.substring(0, remoteUrl.length() - repository.length() - 1);
+                        final String owner = remoteUrlSubstring.substring(remoteUrlSubstring.lastIndexOf('/') + 1);
+                        context.setOriginRepositoryOwner(owner);
+                        // initiate contributor button & working branch
+                        onDefaultRemoteReceived(project);
+                        break;
+                    }
+                }
             }
 
             @Override
