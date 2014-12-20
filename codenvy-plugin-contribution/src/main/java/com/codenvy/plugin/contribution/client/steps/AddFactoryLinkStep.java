@@ -188,7 +188,7 @@ public class AddFactoryLinkStep implements Step {
     }
 
     private void saveFactory(final FormData formData, final AsyncCallback<Factory> callback) {
-        final String requestUrl = this.apiTemplate.getFactoryJson();
+        final String requestUrl = this.apiTemplate.saveFactory();
 
         final Unmarshallable<String> unmarshaller = this.dtoUnmarshallerFactory.newUnmarshaller(String.class);
         this.asyncRequestFactory.createPostRequest(requestUrl, formData)
@@ -294,11 +294,11 @@ public class AddFactoryLinkStep implements Step {
         String getFactoryJson(String workspaceId, String projectName);
 
         /**
-         * Returns a 'getFactoryJson' call URL.
+         * Returns a 'getFactoryJson'/saveFactory call URL.
          * 
          * @return the call URL
          */
         @DefaultMessage("/api/factory")
-        String getFactoryJson();
+        String saveFactory();
     }
 }
