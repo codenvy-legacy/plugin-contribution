@@ -21,18 +21,29 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
+/**
+ * Launches the user configuration interface for the contribution.
+ */
 public class ConfigureStep implements Step {
 
+    /**
+     * The factory for the contribute dialog component.
+     */
     private final PreContributeWizardPresenterFactory configureWizardFactory;
-    private final Step renameBranchStep;
+
+    /**
+     * The next step.
+     */
+    private final Step nextStep;
 
     @Inject
     public ConfigureStep(final PreContributeWizardPresenterFactory configureWizardFactory,
                          final RenameBranchStep renameBranchStep) {
         this.configureWizardFactory = configureWizardFactory;
-        this.renameBranchStep = renameBranchStep;
+        this.nextStep = renameBranchStep;
     }
 
+    @Override
     public void execute(final Context context, final Configuration configuration) {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -40,7 +51,7 @@ public class ConfigureStep implements Step {
                 final FinishContributionOperation finish = new FinishContributionOperation() {
                     @Override
                     public void finishContribution(@Nonnull final Context context, @Nonnull final Configuration config) {
-                        renameBranchStep.execute(context, config);
+                        nextStep.execute(context, config);
                     }
                 };
                 final PreContributeWizardPresenter dialog = ConfigureStep.this.configureWizardFactory.create(finish,
