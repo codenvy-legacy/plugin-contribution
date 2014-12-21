@@ -10,14 +10,14 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import javax.inject.Inject;
+
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 
-import javax.inject.Inject;
-
 public class PushBranchOnForkStep implements Step {
 
-    private final IssuePullRequestStep pullRequestStep;
+    private final Step pullRequestStep;
 
     @Inject
     public PushBranchOnForkStep(final IssuePullRequestStep nextStep) {

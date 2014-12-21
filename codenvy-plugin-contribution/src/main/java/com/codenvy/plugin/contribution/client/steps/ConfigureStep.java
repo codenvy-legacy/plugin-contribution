@@ -10,6 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+
 import com.codenvy.plugin.contribution.client.contribdialog.FinishContributionOperation;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenter;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
@@ -18,13 +21,10 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
 public class ConfigureStep implements Step {
 
     private final PreContributeWizardPresenterFactory configureWizardFactory;
-    private final RenameBranchStep                    renameBranchStep;
+    private final Step renameBranchStep;
 
     @Inject
     public ConfigureStep(final PreContributeWizardPresenterFactory configureWizardFactory,

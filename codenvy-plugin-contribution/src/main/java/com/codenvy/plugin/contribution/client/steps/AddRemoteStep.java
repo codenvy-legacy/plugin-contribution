@@ -44,7 +44,7 @@ public class AddRemoteStep implements Step {
     /**
      * The following step.
      */
-    private final PushBranchOnForkStep pushStep;
+    private final Step pushStep;
 
     /**
      * The notification manager.
