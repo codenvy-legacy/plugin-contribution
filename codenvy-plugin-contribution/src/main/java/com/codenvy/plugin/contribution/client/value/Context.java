@@ -49,6 +49,11 @@ public class Context {
      */
     private boolean forkReady = false;
 
+    /**
+     * The generated review factory URL.
+     */
+    private String reviewFactoryUrl;
+
     public ProjectDescriptor getProject() {
         return this.project;
     }
@@ -153,6 +158,35 @@ public class Context {
 
     public Context withPullRequestId(final String pullRequestId) {
         this.pullRequestId = pullRequestId;
+        return this;
+    }
+
+    /**
+     * Returns the generated review factory URL (if available).
+     * 
+     * @return factory URL
+     */
+    public String getReviewFactoryUrl() {
+        return this.reviewFactoryUrl;
+    }
+
+    /**
+     * Sets the generated review factory URL (if available).
+     * 
+     * @param factoryUrl new value
+     */
+    public void setReviewFactoryUrl(final String factoryUrl) {
+        this.reviewFactoryUrl = factoryUrl;
+    }
+
+    /**
+     * Sets the generated review factory URL (if available).
+     * 
+     * @param factoryUrl new value
+     * @return this object
+     */
+    public Context withReviewFactoryUrl(final String factoryUrl) {
+        this.reviewFactoryUrl = factoryUrl;
         return this;
     }
 }

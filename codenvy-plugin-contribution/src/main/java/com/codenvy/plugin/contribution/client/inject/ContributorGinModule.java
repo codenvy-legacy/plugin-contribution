@@ -21,6 +21,7 @@ import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardV
 import com.codenvy.plugin.contribution.client.steps.AddFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.AddRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
+import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactory;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.ProposePersistStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
@@ -61,6 +62,7 @@ public class ContributorGinModule extends AbstractGinModule {
         // the steps
         bind(ProposePersistStep.class);
         bind(AddFactoryLinkStep.class);
+        bind(GenerateReviewFactory.class);
         bind(IssuePullRequestStep.class);
         bind(PushBranchOnForkStep.class);
         bind(RenameBranchStep.class);

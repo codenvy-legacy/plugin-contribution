@@ -23,10 +23,10 @@ public class IssuePullRequestStep implements Step {
     /**
      * The following step.
      */
-    private final AddFactoryLinkStep nextStep;
+    private final Step nextStep;
 
     @Inject
-    public IssuePullRequestStep(final AddFactoryLinkStep nextStep) {
+    public IssuePullRequestStep(final GenerateReviewFactory nextStep) {
         this.nextStep = nextStep;
     }
 
