@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.contribdialog;
+package com.codenvy.plugin.contribution.client.dialogs.contribute;
 
 import com.codenvy.ide.api.wizard.WizardDialog;
 import com.codenvy.plugin.contribution.client.value.Configuration;

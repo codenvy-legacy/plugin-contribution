@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.contribdialog;
+package com.codenvy.plugin.contribution.client.dialogs.contribute;
 
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;

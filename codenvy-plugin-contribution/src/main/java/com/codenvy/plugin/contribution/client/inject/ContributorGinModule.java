@@ -11,9 +11,9 @@
 package com.codenvy.plugin.contribution.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
-import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
-import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
-import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
+import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardPresenterFactory;
+import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardView;
+import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardViewImpl;
 import com.codenvy.plugin.contribution.client.steps.AddFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.AddRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;

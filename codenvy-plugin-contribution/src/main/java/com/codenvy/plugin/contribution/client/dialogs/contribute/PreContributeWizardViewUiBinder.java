@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.contribdialog;
+package com.codenvy.plugin.contribution.client.dialogs.contribute;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -17,6 +17,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 /**
  * {@link com.google.gwt.uibinder.client.UiBinder} interface for the configure contribution dialog.
  */
-@UiTemplate("com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl.ui.xml")
+@UiTemplate("com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardViewImpl.ui.xml")
 public interface PreContributeWizardViewUiBinder extends UiBinder<HTMLPanel, PreContributeWizardViewImpl> {
 }
