@@ -18,7 +18,6 @@ import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
-import com.codenvy.plugin.contribution.client.authdialog.AuthenticationPresenter;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
@@ -32,6 +31,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
+import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 
 public class ContributeAction extends ProjectAction {
     /**
@@ -69,11 +70,6 @@ public class ContributeAction extends ProjectAction {
      */
     private final Configuration config;
 
-    /**
-     * Presenter used to authenticate user in Codenvy.
-     */
-    private final AuthenticationPresenter authenticationPresenter;
-
     @Inject
     public ContributeAction(final ConfigureStep configureStep,
                             final Context context,
@@ -83,8 +79,7 @@ public class ContributeAction extends ProjectAction {
                             final NotificationManager notificationManager,
                             final @Named("restContext") String baseUrl,
                             final RemoteForkStep remoteForkStep,
-                            final RepositoryHost repositoryHost,
-                            final AuthenticationPresenter authenticationPresenter) {
+                            final RepositoryHost repositoryHost) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
@@ -93,7 +88,6 @@ public class ContributeAction extends ProjectAction {
         this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
         this.context = context;
-        this.authenticationPresenter = authenticationPresenter;
         this.config = dtoFactory.createDto(Configuration.class);
     }
 
@@ -104,24 +98,28 @@ public class ContributeAction extends ProjectAction {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        // first we check if the user is authenticated on the vcs host
-        repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
-            @Override
-            public void onFailure(final Throwable exception) {
-                final String exceptionMessage = exception.getMessage();
-                if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
-                    authenticateOnVCSHost();
+        if (!appContext.getCurrentUser().isUserPermanent()) {
+            notificationManager.showNotification(new Notification("Codenvy account is not permanent", ERROR));
 
-                } else {
-                    handleError(exception);
+        } else {
+            repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    final String exceptionMessage = exception.getMessage();
+                    if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+                        authenticateOnVCSHost();
+
+                    } else {
+                        handleError(exception);
+                    }
                 }
-            }
 
-            @Override
-            public void onSuccess(final HostUser user) {
-                onVCSHostUserAuthenticated(user);
-            }
-        });
+                @Override
+                public void onSuccess(final HostUser user) {
+                    onVCSHostUserAuthenticated(user);
+                }
+            });
+        }
     }
 
     /**
@@ -165,13 +163,8 @@ public class ContributeAction extends ProjectAction {
     private void onVCSHostUserAuthenticated(final HostUser user) {
         context.setHostUserLogin(user.getLogin());
 
-        if (!appContext.getCurrentUser().isUserPermanent()) {
-            authenticationPresenter.showDialog();
-
-        } else {
-            remoteForkStep.execute(context, config); // parallel with the other steps
-            configureStep.execute(context, config);
-        }
+        remoteForkStep.execute(context, config); // parallel with the other steps
+        configureStep.execute(context, config);
     }
 
     /**
@@ -181,7 +174,7 @@ public class ContributeAction extends ProjectAction {
      *         the exception to handle.
      */
     private void handleError(final Throwable exception) {
-        notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
+        notificationManager.showNotification(new Notification(exception.getMessage(), ERROR));
         Log.error(ContributeAction.class, exception.getMessage());
     }
 }

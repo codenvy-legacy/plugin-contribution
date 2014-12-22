@@ -10,11 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.inject;
 
-import javax.inject.Singleton;
-
 import com.codenvy.ide.api.extension.ExtensionGinModule;
-import com.codenvy.plugin.contribution.client.authdialog.AuthenticationView;
-import com.codenvy.plugin.contribution.client.authdialog.AuthenticationViewImpl;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardView;
 import com.codenvy.plugin.contribution.client.contribdialog.PreContributeWizardViewImpl;
@@ -36,6 +32,8 @@ import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 
+import javax.inject.Singleton;
+
 /**
  * Gin module definition for the contributor extension.
  */
@@ -52,9 +50,6 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // bind the configure dialog view
         bind(PreContributeWizardView.class).to(PreContributeWizardViewImpl.class);
-
-        // bind the authentication dialog view
-        bind(AuthenticationView.class).to(AuthenticationViewImpl.class);
 
         // the contribution context singleton
         bind(Context.class).in(Singleton.class);

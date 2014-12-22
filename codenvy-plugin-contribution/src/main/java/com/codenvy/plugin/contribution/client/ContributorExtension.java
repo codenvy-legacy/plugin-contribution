@@ -13,6 +13,7 @@ package com.codenvy.plugin.contribution.client;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.action.ActionManager;
 import com.codenvy.ide.api.action.DefaultActionGroup;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.constraints.Anchor;
 import com.codenvy.ide.api.constraints.Constraints;
 import com.codenvy.ide.api.event.ProjectActionEvent;
@@ -26,11 +27,13 @@ import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
+import javax.inject.Named;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,7 @@ import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static com.google.gwt.http.client.URL.encodeQueryString;
 
 /**
  * @author Stephane Tournie
@@ -49,7 +53,7 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
-    private static final String       WORKING_BRANCH_NAME_PREFIX = "contrib-";
+    private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ActionManager       actionManager;
     private final Context             context;
@@ -57,6 +61,8 @@ public class ContributorExtension {
     private final ContributeMessages  messages;
     private final NotificationManager notificationManager;
     private final VcsService          vcsService;
+    private final String              baseUrl;
+    private final AppContext          appContext;
 
     private DefaultActionGroup contributeToolbarGroup;
     private DefaultActionGroup mainToolbarGroup;
@@ -69,13 +75,17 @@ public class ContributorExtension {
                                 final ContributeMessages messages,
                                 final NotificationManager notificationManager,
                                 final VcsService gitAgent,
-                                final ContributeResources resources) {
+                                final ContributeResources resources,
+                                final @Named("restContext") String baseUrl,
+                                final AppContext appContext) {
         this.actionManager = actionManager;
         this.context = context;
         this.contributeAction = contributeAction;
         this.messages = messages;
         this.notificationManager = notificationManager;
         this.vcsService = gitAgent;
+        this.baseUrl = baseUrl;
+        this.appContext = appContext;
 
         resources.contributeCss().ensureInjected();
 
@@ -99,6 +109,10 @@ public class ContributorExtension {
      *         the load event.
      */
     private void initContributeMode(final ProjectActionEvent event) {
+        if (!appContext.getCurrentUser().isUserPermanent()) {
+            authenticateWithVCSHost();
+        }
+
         final ProjectDescriptor project = event.getProject();
         // get origin repository's URL from default remote
         vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
@@ -196,6 +210,18 @@ public class ContributorExtension {
         if (mainToolbarGroup != null && contributeToolbarGroup != null) {
             mainToolbarGroup.remove(contributeToolbarGroup);
         }
+    }
+
+    /**
+     * Authenticates the user on the VCS Host.
+     */
+    private void authenticateWithVCSHost() {
+        final String authUrl = baseUrl
+                               + "/oauth/authenticate?oauth_provider=github&mode=federated_login"
+                               + "&scope=user,repo,write:public_key&redirect_after_login="
+                               + encodeQueryString(baseUrl + "/oauth?redirect_url=" + Window.Location.getHref() + "&oauth_provider=github");
+
+        Window.Location.assign(authUrl);
     }
 
     /**
