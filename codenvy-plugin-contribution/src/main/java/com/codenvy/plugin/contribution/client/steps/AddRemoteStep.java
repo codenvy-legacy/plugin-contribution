@@ -80,6 +80,17 @@ public class AddRemoteStep implements Step {
     public void execute(final Context context, final Configuration config) {
         final String remoteUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
 
+        addRemote(context, config, remoteUrl);
+    }
+
+    /**
+     * Add the remote to the project.
+     * 
+     * @param context the contribution context
+     * @param config the contribution configuration
+     * @param remoteUrl the url of the remote
+     */
+    private void addRemote(final Context context, final Configuration config, final String remoteUrl) {
         this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void notUsed) {
@@ -92,6 +103,12 @@ public class AddRemoteStep implements Step {
         });
     }
 
+    /**
+     * Continue to the following step.
+     * 
+     * @param context the contribution context
+     * @param config the contribution configuration
+     */
     private void proceed(final Context context, final Configuration config) {
         final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);
         waitStep.execute(context, config);
