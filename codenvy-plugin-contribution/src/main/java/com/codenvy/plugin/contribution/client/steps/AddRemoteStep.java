@@ -10,13 +10,17 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import com.codenvy.ide.api.notification.NotificationManager;
+import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -80,6 +84,43 @@ public class AddRemoteStep implements Step {
     public void execute(final Context context, final Configuration config) {
         final String remoteUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
 
+        checkRemotePresent(context, config, remoteUrl);
+    }
+
+    private void checkRemotePresent(final Context context, final Configuration config, final String remoteUrl) {
+        this.vcsService.listRemotes(context.getProject(), new AsyncCallback<List<Remote>>() {
+            @Override
+            public void onSuccess(final List<Remote> result) {
+                for (final Remote remote : result) {
+                    if (FORK_REMOTE_NAME.equals(remote.getName())) {
+                        Log.info(AddRemoteStep.class, messages.forekRemoteAlreadyPresent(FORK_REMOTE_NAME));
+                        if (remoteUrl.equals(remote.getUrl())) {
+                            // all is correct, continue
+                            proceed(context, config);
+                        } else {
+                            replaceRemote(context, config, remoteUrl);
+                        }
+                        // leave the method, do not go to addRemote(...)
+                        return;
+                    }
+                }
+                addRemote(context, config, remoteUrl);
+            }
+            @Override
+            public void onFailure(final Throwable caught) {
+                notificationManager.showWarning(messages.warnCheckRemote());
+            }
+        });
+    }
+
+    /**
+     * Add the remote to the project.
+     * 
+     * @param context the contribution context
+     * @param config the contribution configuration
+     * @param remoteUrl the url of the remote
+     */
+    private void addRemote(final Context context, final Configuration config, final String remoteUrl) {
         this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void notUsed) {
@@ -92,6 +133,32 @@ public class AddRemoteStep implements Step {
         });
     }
 
+    /**
+     * Removes the fork remote from the project before adding it with the correct URL.
+     * 
+     * @param context the contribution context
+     * @param config the contribution configuration
+     * @param remoteUrl the url of the remote
+     */
+    private void replaceRemote(final Context context, final Configuration config, final String remoteUrl) {
+        this.vcsService.deleteRemote(context.getProject(), remoteUrl, new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(final Void result) {
+                addRemote(context, config, remoteUrl);
+            }
+            @Override
+            public void onFailure(final Throwable caught) {
+                notificationManager.showError(messages.errorRemoveRemoteFailed());
+            }
+        });
+    }
+
+    /**
+     * Continue to the following step.
+     * 
+     * @param context the contribution context
+     * @param config the contribution configuration
+     */
     private void proceed(final Context context, final Configuration config) {
         final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);
         waitStep.execute(context, config);

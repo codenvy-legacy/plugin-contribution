@@ -100,4 +100,13 @@ public interface VcsService {
      * @param callback callback
      */
     void addRemote(@Nonnull ProjectDescriptor project, String remote, String remoteUrl, AsyncCallback<Void> callback);
+
+    /**
+     * Removes a remote to the project VCS metadata.
+     * 
+     * @param project the project descriptor
+     * @param remote the remote name
+     * @param callback callback
+     */
+    void deleteRemote(@Nonnull ProjectDescriptor project, String remote, AsyncCallback<Void> callback);
 }

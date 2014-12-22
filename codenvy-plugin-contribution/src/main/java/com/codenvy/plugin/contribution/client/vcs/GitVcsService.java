@@ -214,4 +214,18 @@ public class GitVcsService implements VcsService {
             }
         });
     }
+
+    @Override
+    public void deleteRemote(final ProjectDescriptor project, final String remote, final AsyncCallback<Void> callback) {
+        this.service.remoteDelete(project, remote, new AsyncRequestCallback<String>() {
+            @Override
+            protected void onSuccess(final String notUsed) {
+                callback.onSuccess(null);
+            }
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
+    }
 }
