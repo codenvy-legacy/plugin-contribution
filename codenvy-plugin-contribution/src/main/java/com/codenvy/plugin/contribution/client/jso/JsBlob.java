@@ -59,8 +59,8 @@ public class JsBlob extends JavaScriptObject implements Blob {
      * @return a Blob
      */
     public static final native JsBlob create(String blobPart) /*-{
-    return new Blob([ blobPart ], { "type" : mediaType });
-    }-*/;
+                                                              return new Blob([ blobPart ]);
+                                                              }-*/;
 
     /**
      * Creates a new Blob object.
