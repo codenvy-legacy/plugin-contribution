@@ -10,11 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
@@ -25,6 +20,10 @@ import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Provider;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Renames the current branch with the one provided by the user.

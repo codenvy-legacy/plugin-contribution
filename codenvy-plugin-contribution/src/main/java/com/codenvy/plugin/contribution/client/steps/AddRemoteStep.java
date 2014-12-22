@@ -10,10 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
 
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
@@ -24,6 +20,10 @@ import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Adds the forked remote repository to the remotes of the project.
@@ -106,6 +106,7 @@ public class AddRemoteStep implements Step {
                 }
                 addRemote(context, config, remoteUrl);
             }
+
             @Override
             public void onFailure(final Throwable caught) {
                 notificationManager.showWarning(messages.warnCheckRemote());
@@ -115,10 +116,13 @@ public class AddRemoteStep implements Step {
 
     /**
      * Add the remote to the project.
-     * 
-     * @param context the contribution context
-     * @param config the contribution configuration
-     * @param remoteUrl the url of the remote
+     *
+     * @param context
+     *         the contribution context
+     * @param config
+     *         the contribution configuration
+     * @param remoteUrl
+     *         the url of the remote
      */
     private void addRemote(final Context context, final Configuration config, final String remoteUrl) {
         this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
@@ -126,6 +130,7 @@ public class AddRemoteStep implements Step {
             public void onSuccess(final Void notUsed) {
                 proceed(context, config);
             }
+
             @Override
             public void onFailure(final Throwable caught) {
                 notificationManager.showError(messages.errorAddRemoteFailed());
@@ -135,10 +140,13 @@ public class AddRemoteStep implements Step {
 
     /**
      * Removes the fork remote from the project before adding it with the correct URL.
-     * 
-     * @param context the contribution context
-     * @param config the contribution configuration
-     * @param remoteUrl the url of the remote
+     *
+     * @param context
+     *         the contribution context
+     * @param config
+     *         the contribution configuration
+     * @param remoteUrl
+     *         the url of the remote
      */
     private void replaceRemote(final Context context, final Configuration config, final String remoteUrl) {
         this.vcsService.deleteRemote(context.getProject(), remoteUrl, new AsyncCallback<Void>() {
@@ -146,6 +154,7 @@ public class AddRemoteStep implements Step {
             public void onSuccess(final Void result) {
                 addRemote(context, config, remoteUrl);
             }
+
             @Override
             public void onFailure(final Throwable caught) {
                 notificationManager.showError(messages.errorRemoveRemoteFailed());
@@ -155,9 +164,11 @@ public class AddRemoteStep implements Step {
 
     /**
      * Continue to the following step.
-     * 
-     * @param context the contribution context
-     * @param config the contribution configuration
+     *
+     * @param context
+     *         the contribution context
+     * @param config
+     *         the contribution configuration
      */
     private void proceed(final Context context, final Configuration config) {
         final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);

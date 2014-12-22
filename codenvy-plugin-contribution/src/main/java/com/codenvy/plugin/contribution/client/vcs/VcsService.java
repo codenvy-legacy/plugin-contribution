@@ -10,12 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Service for VCS operations.

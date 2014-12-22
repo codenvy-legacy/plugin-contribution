@@ -10,8 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import javax.inject.Inject;
-
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.Notification.Status;
 import com.codenvy.ide.api.notification.Notification.Type;
@@ -24,6 +22,8 @@ import com.codenvy.plugin.contribution.client.vcshost.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import javax.inject.Inject;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.

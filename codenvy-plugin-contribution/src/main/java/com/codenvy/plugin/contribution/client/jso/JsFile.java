@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.jso;
 
-import java.util.Date;
-
 import com.google.gwt.core.client.JavaScriptObject;
+
+import java.util.Date;
 
 /**
  * Javascript Overlay class over File objects.
