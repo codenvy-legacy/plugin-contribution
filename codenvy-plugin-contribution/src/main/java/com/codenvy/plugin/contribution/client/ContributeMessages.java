@@ -102,4 +102,14 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Could not create review factory link")
     String warnCreateFactoryFailed();
+
+    @DefaultMessage("Remote with name {0} already exists.")
+    // period because that's a log, not a notification
+    String forekRemoteAlreadyPresent(String forkRemoteName);
+
+    @DefaultMessage("Failed to set the forked repository remote. Contribution interrupted")
+    String errorRemoveRemoteFailed();
+
+    @DefaultMessage("Could not check the remotes.")
+    String warnCheckRemote();
 }
