@@ -86,7 +86,7 @@ public class FormData extends JavaScriptObject {
      * @param value the value
      */
     public final native void append(String name, Blob value) /*-{
-    this.append(name, value, filename);
+    this.append(name, value);
     }-*/;
 
     /**
@@ -118,6 +118,6 @@ public class FormData extends JavaScriptObject {
      * @param filename the file name reported to the server
      */
     public final native void append(String name, File value, String filename) /*-{
-    this.append(name, value);
+    this.append(name, value, filename);
     }-*/;
 }
