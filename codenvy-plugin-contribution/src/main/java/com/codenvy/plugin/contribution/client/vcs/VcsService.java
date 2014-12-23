@@ -24,13 +24,13 @@ public interface VcsService {
      * Checkout a branch of the given project.
      *
      * @param project
-     *         the project descriptor
+     *         the project descriptor.
      * @param branchName
-     *         the name of the branch to checkout
+     *         the name of the branch to checkout.
      * @param createNew
-     *         create a new branch if true
+     *         create a new branch if {@code true}.
      * @param callback
-     *         callback when the operation is done
+     *         callback when the operation is done.
      */
     void checkoutBranch(@Nonnull ProjectDescriptor project, String branchName, boolean createNew, AsyncCallback<String> callback);
 
@@ -38,13 +38,13 @@ public interface VcsService {
      * Create a branch for the given project.
      *
      * @param project
-     *         the project descriptor
+     *         the project descriptor.
      * @param name
-     *         the name of the branch to create
+     *         the name of the branch to create.
      * @param startPoint
-     *         commit at which to start the new branch
+     *         commit at which to start the new branch.
      * @param callback
-     *         callback when the operation is done
+     *         callback when the operation is done.
      */
     void createBranch(@Nonnull ProjectDescriptor project, String name, String startPoint, AsyncCallback<Branch> callback);
 
@@ -52,9 +52,9 @@ public interface VcsService {
      * Get the current branch for the project.
      *
      * @param project
-     *         the project descriptor
+     *         the project descriptor.
      * @param callback
-     *         callback when the operation is done
+     *         callback when the operation is done.
      */
     void getBranchName(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<String> callback);
 
@@ -62,13 +62,13 @@ public interface VcsService {
      * Rename a branch of the project.
      *
      * @param project
-     *         the project descriptor
+     *         the project descriptor.
      * @param oldName
-     *         the name of the branch to rename
+     *         the name of the branch to rename.
      * @param newName
-     *         the new name
+     *         the new name.
      * @param callback
-     *         callback when the operation is done
+     *         callback when the operation is done.
      */
     void renameBranch(@Nonnull ProjectDescriptor project, String oldName, String newName, AsyncCallback<Void> callback);
 
@@ -76,38 +76,59 @@ public interface VcsService {
      * List the local branches.
      *
      * @param project
-     *         the project descriptor
+     *         the project descriptor.
      * @param callback
-     *         what to to with the branches list
+     *         what to to with the branches list.
      */
     void listLocalBranches(@Nonnull ProjectDescriptor project, AsyncCallback<List<Branch>> callback);
 
     /**
      * List remotes.
      *
-     * @param project the project descriptor
-     * @param callback what to to with the remotes list
+     * @param project
+     *         the project descriptor.
+     * @param callback
+     *         what to to with the remotes list
      */
     void listRemotes(@Nonnull ProjectDescriptor project, AsyncCallback<List<Remote>> callback);
 
     /**
      * Add a remote to the project VCS metadata.
      *
-     * @param project the project descriptor
-     * @param remote the remote name
-     * @param remoteUrl the remote URL
-     * @param callback callback
+     * @param project
+     *         the project descriptor.
+     * @param remote
+     *         the remote name.
+     * @param remoteUrl
+     *         the remote URL.
+     * @param callback
+     *         callback when the operation is done.
      */
     void addRemote(@Nonnull ProjectDescriptor project, String remote, String remoteUrl, AsyncCallback<Void> callback);
 
     /**
      * Removes a remote to the project VCS metadata.
-     * 
-     * @param project the project descriptor
-     * @param remote the remote name
-     * @param callback callback
+     *
+     * @param project
+     *         the project descriptor.
+     * @param remote
+     *         the remote name.
+     * @param callback
+     *         callback when the operation is done.
      */
     void deleteRemote(@Nonnull ProjectDescriptor project, String remote, AsyncCallback<Void> callback);
 
+    /**
+     * Push a local branch to the given remote.
+     *
+     * @param project
+     *         the project descriptor.
+     * @param remote
+     *         the remote name
+     * @param localBranchNameToPush
+     *         the local branch name
+     * @param callback
+     *         callback when the operation is done.
+     */
     void pushBranch(ProjectDescriptor project, String remote, String localBranchNameToPush, AsyncCallback<Void> callback);
 }
