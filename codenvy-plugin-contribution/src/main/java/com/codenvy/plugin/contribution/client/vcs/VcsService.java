@@ -66,6 +66,18 @@ public interface VcsService {
                       @Nonnull AsyncCallback<Branch> callback);
 
     /**
+     * Commits the current changes of the given project.
+     *
+     * @param project
+     *         the project descriptor.
+     * @param commitMessage
+     *         the commit message.
+     * @param callback
+     *         callback when the operation is done.
+     */
+    void commit(@Nonnull ProjectDescriptor project, @Nonnull String commitMessage, @Nonnull AsyncCallback<Void> callback);
+
+    /**
      * Removes a remote to the project VCS metadata.
      *
      * @param project
@@ -88,12 +100,22 @@ public interface VcsService {
     void getBranchName(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<String> callback);
 
     /**
+     * Returns if the given project has uncommitted changes.
+     *
+     * @param project
+     *         the project descriptor.
+     * @param callback
+     *         what to do if the project has uncommitted changes.
+     */
+    void hasUncommittedChanges(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<Boolean> callback);
+
+    /**
      * List the local branches.
      *
      * @param project
      *         the project descriptor.
      * @param callback
-     *         what to to with the branches list.
+     *         what to do with the branches list.
      */
     void listLocalBranches(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<List<Branch>> callback);
 
@@ -103,7 +125,7 @@ public interface VcsService {
      * @param project
      *         the project descriptor.
      * @param callback
-     *         what to to with the remotes list
+     *         what to do with the remotes list
      */
     void listRemotes(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<List<Remote>> callback);
 

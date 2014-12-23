@@ -10,19 +10,12 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.commit;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.ext.git.client.GitServiceClient;
-import com.codenvy.ide.ext.git.shared.Revision;
-import com.codenvy.ide.ext.git.shared.Status;
-import com.codenvy.ide.rest.AsyncRequestCallback;
-import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.util.loging.Log;
-import com.codenvy.ide.websocket.WebSocketException;
-import com.codenvy.ide.websocket.rest.RequestCallback;
+import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
@@ -38,24 +31,21 @@ import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresen
  */
 public class CommitPresenter implements CommitView.ActionDelegate {
 
-    private final CommitView             view;
-    private final AppContext             appContext;
-    private final GitServiceClient       gitServiceClient;
-    private final NotificationManager    notificationManager;
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private       CommitActionHandler    handler;
+    private final CommitView          view;
+    private final AppContext          appContext;
+    private final VcsService          vcsService;
+    private final NotificationManager notificationManager;
+    private       CommitActionHandler handler;
 
     @Inject
     public CommitPresenter(final CommitView view,
                            final AppContext appContext,
-                           final GitServiceClient gitServiceClient,
-                           final NotificationManager notificationManager,
-                           final DtoUnmarshallerFactory dtoUnmarshallerFactory) {
+                           final VcsService vcsService,
+                           final NotificationManager notificationManager) {
         this.view = view;
         this.appContext = appContext;
-        this.gitServiceClient = gitServiceClient;
+        this.vcsService = vcsService;
         this.notificationManager = notificationManager;
-        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
 
         this.view.setDelegate(this);
         this.view.setOkButtonEnabled(false);
@@ -92,18 +82,7 @@ public class CommitPresenter implements CommitView.ActionDelegate {
             callback.onFailure(new IllegalStateException("Opened project is not has no Git repository"));
 
         } else {
-            gitServiceClient.status(project.getRootProject(),
-                                    new AsyncRequestCallback<Status>(dtoUnmarshallerFactory.newUnmarshaller(Status.class)) {
-                                        @Override
-                                        protected void onSuccess(final Status status) {
-                                            callback.onSuccess(!status.isClean());
-                                        }
-
-                                        @Override
-                                        protected void onFailure(final Throwable exception) {
-                                            callback.onFailure(exception);
-                                        }
-                                    });
+            vcsService.hasUncommittedChanges(project.getRootProject(), callback);
         }
     }
 
@@ -111,39 +90,21 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     public void onOk() {
         final CurrentProject project = appContext.getCurrentProject();
         if (project != null) {
-            final ProjectDescriptor projectDescriptor = project.getRootProject();
-            try {
+            vcsService.commit(project.getRootProject(), view.getCommitDescription(), new AsyncCallback<Void>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    handleError(exception);
+                }
 
-                gitServiceClient.add(projectDescriptor, false, null, new RequestCallback<Void>() {
-                    @Override
-                    protected void onSuccess(Void aVoid) {
-                        gitServiceClient.commit(projectDescriptor, view.getCommitDescription(), true, false,
-                                                new AsyncRequestCallback<Revision>() {
-                                                    @Override
-                                                    protected void onSuccess(final Revision revision) {
-                                                        view.close();
+                @Override
+                public void onSuccess(final Void result) {
+                    view.close();
 
-                                                        if (handler != null) {
-                                                            handler.onCommitAction(OK);
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    protected void onFailure(final Throwable exception) {
-                                                        handleError(exception);
-                                                    }
-                                                });
+                    if (handler != null) {
+                        handler.onCommitAction(OK);
                     }
-
-                    @Override
-                    protected void onFailure(Throwable exception) {
-                        handleError(exception);
-                    }
-                });
-
-            } catch (WebSocketException exception) {
-                handleError(exception);
-            }
+                }
+            });
         }
     }
 
@@ -173,11 +134,6 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     }
 
     public interface CommitActionHandler {
-        enum CommitAction {
-            OK,
-            CONTINUE
-        }
-
         /**
          * Called when a commit actions is done on the commit view.
          *
@@ -185,5 +141,10 @@ public class CommitPresenter implements CommitView.ActionDelegate {
          *         the action.
          */
         void onCommitAction(CommitAction action);
+
+        enum CommitAction {
+            OK,
+            CONTINUE
+        }
     }
 }

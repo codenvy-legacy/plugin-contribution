@@ -14,10 +14,13 @@ import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.git.client.GitServiceClient;
+import com.codenvy.ide.ext.git.shared.Revision;
 import com.codenvy.ide.ext.git.shared.Status;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
+import com.codenvy.ide.websocket.WebSocketException;
+import com.codenvy.ide.websocket.rest.RequestCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
@@ -106,6 +109,39 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
+    public void commit(final @Nonnull ProjectDescriptor project, final @Nonnull String commitMessage,
+                       final @Nonnull AsyncCallback<Void> callback) {
+        try {
+
+            service.add(project, false, null, new RequestCallback<Void>() {
+                @Override
+                protected void onSuccess(Void aVoid) {
+
+                    service.commit(project, commitMessage, true, false, new AsyncRequestCallback<Revision>() {
+                        @Override
+                        protected void onSuccess(final Revision revision) {
+                            callback.onSuccess(null);
+                        }
+
+                        @Override
+                        protected void onFailure(final Throwable exception) {
+                            callback.onFailure(exception);
+                        }
+                    });
+                }
+
+                @Override
+                protected void onFailure(Throwable exception) {
+                    callback.onFailure(exception);
+                }
+            });
+
+        } catch (final WebSocketException exception) {
+            callback.onFailure(exception);
+        }
+    }
+
+    @Override
     public void deleteRemote(@Nonnull final ProjectDescriptor project, @Nonnull final String remote,
                              @Nonnull final AsyncCallback<Void> callback) {
         this.service.remoteDelete(project, remote, new AsyncRequestCallback<String>() {
@@ -127,6 +163,21 @@ public class GitVcsService implements VcsService {
             @Override
             protected void onSuccess(final Status result) {
                 callback.onSuccess(result.getBranchName());
+            }
+
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
+    }
+
+    @Override
+    public void hasUncommittedChanges(final @Nonnull ProjectDescriptor project, final @Nonnull AsyncCallback<Boolean> callback) {
+        service.status(project, new AsyncRequestCallback<Status>(dtoUnmarshallerFactory.newUnmarshaller(Status.class)) {
+            @Override
+            protected void onSuccess(final Status status) {
+                callback.onSuccess(!status.isClean());
             }
 
             @Override
