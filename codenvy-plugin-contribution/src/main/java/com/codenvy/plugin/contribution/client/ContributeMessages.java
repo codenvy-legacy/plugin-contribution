@@ -97,6 +97,15 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Failed creating the fork of the repository`{0}/{1}`. {2}")
     String failedCreatingUserFork(String repositoryOwner, String repositoryName, String message);
 
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Successfully pushed contribution branch to fork")
+    String successPushingBranchToFork();
+
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Pushing contribution branch to fork")
+    String pushingWorkingBranchToFork();
+
+    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Failed pushing contribution branch to fork: {0}")
+    String failedPushingBranchToFork(String cause);
+
     @DefaultMessage("You can review this pull request by following this link: {0}")
     String pullRequestlinkComment(String factoryUrl);
 

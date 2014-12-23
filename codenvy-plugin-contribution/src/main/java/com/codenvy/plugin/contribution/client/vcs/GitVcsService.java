@@ -10,6 +10,12 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.dto.DtoFactory;
@@ -139,7 +145,7 @@ public class GitVcsService implements VcsService {
     private void listBranches(final ProjectDescriptor project, final String whichBranches, final AsyncCallback<List<Branch>> callback) {
         final Unmarshallable<Array<com.codenvy.ide.ext.git.shared.Branch>> unMarshaller =
                 dtoUnmarshallerFactory.newArrayUnmarshaller(com.codenvy.ide.ext.git.shared.Branch.class);
-        this.service.branchList(project, whichBranches,
+        service.branchList(project, whichBranches,
                                 new AsyncRequestCallback<Array<com.codenvy.ide.ext.git.shared.Branch>>(unMarshaller) {
                                     @Override
                                     protected void onSuccess(final Array<com.codenvy.ide.ext.git.shared.Branch> branches) {
@@ -161,7 +167,7 @@ public class GitVcsService implements VcsService {
     public void listRemotes(final ProjectDescriptor project, final AsyncCallback<List<Remote>> callback) {
         final Unmarshallable<Array<com.codenvy.ide.ext.git.shared.Remote>> unMarshaller
             = dtoUnmarshallerFactory.newArrayUnmarshaller(com.codenvy.ide.ext.git.shared.Remote.class);
-        this.service.remoteList(project, null, false,
+        service.remoteList(project, null, false,
                                 new AsyncRequestCallback<Array<com.codenvy.ide.ext.git.shared.Remote>>(unMarshaller) {
                                     @Override
                                     protected void onSuccess(final Array<com.codenvy.ide.ext.git.shared.Remote> remotes) {
@@ -202,7 +208,7 @@ public class GitVcsService implements VcsService {
     @Override
     public void addRemote(final ProjectDescriptor project, final String remote,
                           final String remoteUrl, final AsyncCallback<Void> callback) {
-        this.service.remoteAdd(project, remote, remoteUrl, new AsyncRequestCallback<String>() {
+        service.remoteAdd(project, remote, remoteUrl, new AsyncRequestCallback<String>() {
             @Override
             protected void onSuccess(final String notUsed) {
                 callback.onSuccess(null);
@@ -220,6 +226,21 @@ public class GitVcsService implements VcsService {
             @Override
             protected void onSuccess(final String notUsed) {
                 callback.onSuccess(null);
+            }
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
+    }
+
+    @Override
+    public void pushBranch(final ProjectDescriptor project, final String remote,
+                          final String localBranchName, final AsyncCallback<Void> callback) {
+        service.push(project, Arrays.asList(localBranchName), remote, true, new AsyncRequestCallback<Void>() {
+            @Override
+            protected void onSuccess(Void result) {
+                callback.onSuccess(result);
             }
             @Override
             protected void onFailure(final Throwable exception) {

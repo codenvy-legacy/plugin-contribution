@@ -54,29 +54,31 @@ public class Context {
      */
     private String reviewFactoryUrl;
 
+    private String forkName;
+
     public ProjectDescriptor getProject() {
-        return this.project;
+        return project;
     }
 
     public void setProject(ProjectDescriptor desc) {
-        this.project = desc;
+        project = desc;
     }
 
     public Context withProject(ProjectDescriptor desc) {
-        this.project = desc;
+        project = desc;
         return this;
     }
 
     public String getWorkBranchName() {
-        return this.workBranchName;
+        return workBranchName;
     }
 
     public void setWorkBranchName(String name) {
-        this.workBranchName = name;
+        workBranchName = name;
     }
 
     public Context withWorkBranchName(String name) {
-        this.workBranchName = name;
+        workBranchName = name;
         return this;
     }
 
@@ -86,7 +88,7 @@ public class Context {
      * @return true iff the fork is ready
      */
     public boolean getForkReady() {
-        return this.forkReady;
+        return forkReady;
     }
 
     /**
@@ -96,7 +98,7 @@ public class Context {
      *         the new value
      */
     public void setForkReady(final boolean newValue) {
-        this.forkReady = newValue;
+        forkReady = newValue;
     }
 
     public String getHostUserLogin() {
@@ -140,7 +142,7 @@ public class Context {
 
     /**
      * Return the id of the pull request issued for this contribution.
-     * 
+     *
      * @return the pull request id
      */
     public String getPullRequestId() {
@@ -149,7 +151,7 @@ public class Context {
 
     /**
      * Sets the id of the pull request issued for this contribution.
-     * 
+     *
      * @param pullRequestId the new value
      */
     public void setPullRequestId(final String pullRequestId) {
@@ -188,5 +190,13 @@ public class Context {
     public Context withReviewFactoryUrl(final String factoryUrl) {
         this.reviewFactoryUrl = factoryUrl;
         return this;
+    }
+
+    public String getForkName() {
+        return forkName;
+    }
+
+    public void setForkName(String forkName) {
+        this.forkName = forkName;
     }
 }

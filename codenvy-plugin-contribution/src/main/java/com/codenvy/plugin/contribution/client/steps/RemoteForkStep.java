@@ -51,6 +51,7 @@ public class RemoteForkStep implements Step {
             @Override
             public void onSuccess(Repository fork) {
                 notificationManager.showNotification(new Notification(messages.useExistingUserFork(), Notification.Type.INFO));
+                context.setForkName(fork.getName());
             }
 
             @Override

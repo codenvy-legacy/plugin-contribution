@@ -128,6 +128,7 @@ public class AddRemoteStep implements Step {
         this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void notUsed) {
+                context.setForkName(FORK_REMOTE_NAME);
                 proceed(context, config);
             }
 

@@ -92,7 +92,7 @@ public interface VcsService {
 
     /**
      * Add a remote to the project VCS metadata.
-     * 
+     *
      * @param project the project descriptor
      * @param remote the remote name
      * @param remoteUrl the remote URL
@@ -108,4 +108,6 @@ public interface VcsService {
      * @param callback callback
      */
     void deleteRemote(@Nonnull ProjectDescriptor project, String remote, AsyncCallback<Void> callback);
+
+    void pushBranch(ProjectDescriptor project, String remote, String localBranchNameToPush, AsyncCallback<Void> callback);
 }
