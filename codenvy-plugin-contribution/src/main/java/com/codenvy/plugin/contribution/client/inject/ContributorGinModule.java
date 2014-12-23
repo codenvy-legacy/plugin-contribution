@@ -11,6 +11,8 @@
 package com.codenvy.plugin.contribution.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.codenvy.plugin.contribution.client.dialogs.commit.CommitView;
+import com.codenvy.plugin.contribution.client.dialogs.commit.CommitViewImpl;
 import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardPresenterFactory;
 import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardView;
 import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardViewImpl;
@@ -47,6 +49,9 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // bind the configure contribution dialog
         install(new GinFactoryModuleBuilder().build(PreContributeWizardPresenterFactory.class));
+
+        // bind the commit dialog view
+        bind(CommitView.class).to(CommitViewImpl.class);
 
         // bind the configure dialog view
         bind(PreContributeWizardView.class).to(PreContributeWizardViewImpl.class);

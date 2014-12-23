@@ -18,6 +18,7 @@ import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
@@ -34,7 +35,7 @@ import com.google.inject.name.Named;
 
 import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 
-public class ContributeAction extends ProjectAction {
+public class ContributeAction extends ProjectAction implements CommitPresenter.CommitActionHandler {
     /**
      * Step where the user configures the contribution.
      */
@@ -70,6 +71,11 @@ public class ContributeAction extends ProjectAction {
      */
     private final Configuration config;
 
+    /**
+     * The commit dialog presenter.
+     */
+    private final CommitPresenter commitPresenter;
+
     @Inject
     public ContributeAction(final ConfigureStep configureStep,
                             final Context context,
@@ -79,7 +85,8 @@ public class ContributeAction extends ProjectAction {
                             final NotificationManager notificationManager,
                             final @Named("restContext") String baseUrl,
                             final RemoteForkStep remoteForkStep,
-                            final RepositoryHost repositoryHost) {
+                            final RepositoryHost repositoryHost,
+                            final CommitPresenter commitPresenter) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
@@ -88,7 +95,10 @@ public class ContributeAction extends ProjectAction {
         this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
         this.context = context;
+        this.commitPresenter = commitPresenter;
         this.config = dtoFactory.createDto(Configuration.class);
+
+        this.commitPresenter.setCommitActionHandler(this);
     }
 
     @Override
@@ -99,27 +109,31 @@ public class ContributeAction extends ProjectAction {
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (!appContext.getCurrentUser().isUserPermanent()) {
-            notificationManager.showNotification(new Notification("Codenvy account is not permanent", ERROR));
+            handleError(new IllegalStateException("Codenvy account is not permanent"));
 
         } else {
-            repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+            commitPresenter.hasUncommittedChanges(new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(final Throwable exception) {
-                    final String exceptionMessage = exception.getMessage();
-                    if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
-                        authenticateOnVCSHost();
-
-                    } else {
-                        handleError(exception);
-                    }
+                    handleError(exception);
                 }
 
                 @Override
-                public void onSuccess(final HostUser user) {
-                    onVCSHostUserAuthenticated(user);
+                public void onSuccess(final Boolean hasUncommittedChanges) {
+                    if (hasUncommittedChanges) {
+                        commitPresenter.showView();
+
+                    } else {
+                        getVCSHostUserInfoWithAuthentication();
+                    }
                 }
             });
         }
+    }
+
+    @Override
+    public void onCommitAction(final CommitAction action) {
+        getVCSHostUserInfoWithAuthentication();
     }
 
     /**
@@ -152,6 +166,29 @@ public class ContributeAction extends ProjectAction {
             }
 
         }).loginWithOAuth();
+    }
+
+    /**
+     * Retrieves the VCS host user info. If the user is not authenticated on the VCS host an authentication is performed.
+     */
+    private void getVCSHostUserInfoWithAuthentication() {
+        repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                final String exceptionMessage = exception.getMessage();
+                if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+                    authenticateOnVCSHost();
+
+                } else {
+                    handleError(exception);
+                }
+            }
+
+            @Override
+            public void onSuccess(final HostUser user) {
+                onVCSHostUserAuthenticated(user);
+            }
+        });
     }
 
     /**

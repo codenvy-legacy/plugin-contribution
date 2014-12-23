@@ -63,19 +63,22 @@ public interface ContributeMessages extends Messages {
     String infoRenamedBranch(String branchName);
 
     /*
-     * Authentication dialog
+     * Commit dialog
      */
-    @Key("authentication.dialog.title")
-    String authenticationDialogTitle();
+    @Key("commit.dialog.title")
+    String commitDialogTitle();
 
-    @Key("authentication.dialog.message")
-    String authenticationDialogMessage();
+    @Key("commit.dialog.message")
+    String commitDialogMessage();
 
-    @Key("authentication.dialog.login.button.text")
-    String authenticationDialogLoginButtonText();
+    @Key("commit.dialog.description.title")
+    String commitDialogDescriptionTitle();
 
-    @Key("authentication.dialog.create.account.button.text")
-    String authenticationDialogCreateAccountButtonText();
+    @Key("commit.dialog.button.ok.text")
+    String commitDialogButtonOkText();
+
+    @Key("commit.dialog.button.continue.text")
+    String commitDialogButtonContinueText();
 
     /*
      * messages for check/create remote user fork step
@@ -104,7 +107,7 @@ public interface ContributeMessages extends Messages {
     String warnCreateFactoryFailed();
 
     @DefaultMessage("Remote with name {0} already exists.")
-    // period because that's a log, not a notification
+        // period because that's a log, not a notification
     String forekRemoteAlreadyPresent(String forkRemoteName);
 
     @DefaultMessage("Failed to set the forked repository remote. Contribution interrupted")
