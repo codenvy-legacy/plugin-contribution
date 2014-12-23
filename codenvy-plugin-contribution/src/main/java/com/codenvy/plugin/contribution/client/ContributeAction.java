@@ -76,6 +76,8 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
      */
     private final CommitPresenter commitPresenter;
 
+    private final ContributeMessages messages;
+
     @Inject
     public ContributeAction(final ConfigureStep configureStep,
                             final Context context,
@@ -90,6 +92,7 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
+        this.messages = messages;
         this.notificationManager = notificationManager;
         this.baseUrl = baseUrl;
         this.remoteForkStep = remoteForkStep;
@@ -211,7 +214,7 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
      *         the exception to handle.
      */
     private void handleError(final Throwable exception) {
-        notificationManager.showNotification(new Notification(exception.getMessage(), ERROR));
+        notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), ERROR));
         Log.error(ContributeAction.class, exception);
     }
 }

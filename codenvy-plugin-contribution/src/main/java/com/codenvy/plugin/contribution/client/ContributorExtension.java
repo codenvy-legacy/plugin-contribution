@@ -163,7 +163,7 @@ public class ContributorExtension {
                 context.setWorkBranchName(workingBranchName);
 
                 final Notification createWorkingBranchNotification =
-                        new Notification(messages.notificationCreatingNewWorkingBranch(workingBranchName), INFO, PROGRESS);
+                        new Notification(messages.prefixNotification(messages.notificationCreatingNewWorkingBranch(workingBranchName)), INFO, PROGRESS);
                 notificationManager.showNotification(createWorkingBranchNotification);
 
                 // the working branch is only created if it doesn't exist
@@ -188,7 +188,7 @@ public class ContributorExtension {
                         vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                             @Override
                             public void onSuccess(final String result) {
-                                createWorkingBranchNotification.setMessage(messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName));
+                                createWorkingBranchNotification.setMessage(messages.prefixNotification(messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName)));
 
                                 createWorkingBranchNotification.setStatus(FINISHED);
                             }
@@ -244,12 +244,11 @@ public class ContributorExtension {
      */
     private void handleError(final Throwable exception, final Notification notification) {
         if (notification != null) {
-            notification.setMessage(exception.getMessage());
+            notification.setMessage(messages.prefixNotification(exception.getMessage()));
             notification.setType(ERROR);
             notification.setStatus(FINISHED);
-
         } else {
-            notificationManager.showNotification(new Notification(exception.getMessage(), ERROR, FINISHED));
+            notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), ERROR, FINISHED));
         }
 
         Log.error(ContributeAction.class, exception);

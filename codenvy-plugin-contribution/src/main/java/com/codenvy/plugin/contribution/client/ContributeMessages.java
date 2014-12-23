@@ -80,30 +80,31 @@ public interface ContributeMessages extends Messages {
     @Key("commit.dialog.button.continue.text")
     String commitDialogButtonContinueText();
 
-    /*
-     * messages for check/create remote user fork step
+    /**
+     * prefix notification message with "Contribute Pull Request"
      */
-    public final static String CONTRIB_PR_PREFIX = "Contribute Pull Request: ";
+    @DefaultMessage("Contribute Pull Request: {0}")
+    String prefixNotification(String notificationMessage);
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Using existing user''s fork")
+    @DefaultMessage("Using existing user''s fork")
     String useExistingUserFork();
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Creating a fork the repository`{0}/{1}`")
+    @DefaultMessage("Creating a fork the repository`{0}/{1}`")
     String creatingFork(String username, String repository);
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Requested creation of a fork of the repository `{0}/{1}`")
+    @DefaultMessage("Requested creation of a fork of the repository `{0}/{1}`")
     String requestedForkCreation(String repositoryOwner, String repositoryName);
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Failed creating the fork of the repository`{0}/{1}`. {2}")
+    @DefaultMessage("Failed creating the fork of the repository`{0}/{1}`. {2}")
     String failedCreatingUserFork(String repositoryOwner, String repositoryName, String message);
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Successfully pushed contribution branch to fork")
+    @DefaultMessage("Successfully pushed contribution branch to fork")
     String successPushingBranchToFork();
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Pushing contribution branch to fork")
+    @DefaultMessage("Pushing contribution branch to fork")
     String pushingWorkingBranchToFork();
 
-    @DefaultMessage(CONTRIB_PR_PREFIX + "Failed pushing contribution branch to fork: {0}")
+    @DefaultMessage("Failed pushing contribution branch to fork: {0}")
     String failedPushingBranchToFork(String cause);
 
     @DefaultMessage("You can review this pull request by following this link: {0}")

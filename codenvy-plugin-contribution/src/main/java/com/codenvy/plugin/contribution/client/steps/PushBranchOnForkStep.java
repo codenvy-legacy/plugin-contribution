@@ -42,19 +42,19 @@ public class PushBranchOnForkStep implements Step {
 
     @Override
     public void execute(final Context context, final Configuration config) {
-        final Notification notification = new Notification(messages.pushingWorkingBranchToFork(), Notification.Type.INFO);
+        final Notification notification = new Notification(messages.prefixNotification(messages.pushingWorkingBranchToFork()), Notification.Type.INFO);
         notification.setStatus(Status.PROGRESS);
         notificationManager.showNotification(notification);
         vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>(){
             @Override
             public void onSuccess(Void result) {
-                notification.setMessage(messages.successPushingBranchToFork());
+                notification.setMessage(messages.prefixNotification(messages.successPushingBranchToFork()));
                 notification.setStatus(Status.FINISHED);
                 pullRequestStep.execute(context, config);
             }
             @Override
             public void onFailure(Throwable caught) {
-                notification.setMessage(messages.failedPushingBranchToFork(caught.getMessage()));
+                notification.setMessage(messages.prefixNotification(messages.failedPushingBranchToFork(caught.getMessage())));
                 notification.setType(Type.ERROR);
                 notification.setStatus(Status.FINISHED);
                 Log.error(getClass(), caught);

@@ -15,6 +15,7 @@ import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -35,17 +36,20 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     private final AppContext          appContext;
     private final VcsService          vcsService;
     private final NotificationManager notificationManager;
+    private final ContributeMessages  messages;
     private       CommitActionHandler handler;
 
     @Inject
     public CommitPresenter(final CommitView view,
                            final AppContext appContext,
                            final VcsService vcsService,
-                           final NotificationManager notificationManager) {
+                           final NotificationManager notificationManager,
+                           final ContributeMessages messages) {
         this.view = view;
         this.appContext = appContext;
         this.vcsService = vcsService;
         this.notificationManager = notificationManager;
+        this.messages = messages;
 
         this.view.setDelegate(this);
         this.view.setOkButtonEnabled(false);
@@ -129,7 +133,7 @@ public class CommitPresenter implements CommitView.ActionDelegate {
      *         the exception to handle.
      */
     private void handleError(final Throwable exception) {
-        notificationManager.showNotification(new Notification(exception.getMessage(), ERROR));
+        notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), ERROR));
         Log.error(CommitPresenter.class, exception);
     }
 
