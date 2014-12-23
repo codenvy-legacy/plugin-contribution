@@ -60,7 +60,7 @@ public class RemoteForkStep implements Step {
                     return;
                 }
                 notificationManager.showNotification(new Notification(exception.getMessage(), Notification.Type.ERROR));
-                Log.error(RemoteForkStep.class, exception.getMessage());
+                Log.error(RemoteForkStep.class, exception);
             }
         });
     }

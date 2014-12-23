@@ -130,7 +130,7 @@ public class CommitPresenter implements CommitView.ActionDelegate {
      */
     private void handleError(final Throwable exception) {
         notificationManager.showNotification(new Notification(exception.getMessage(), ERROR));
-        Log.error(CommitPresenter.class, exception.getMessage());
+        Log.error(CommitPresenter.class, exception);
     }
 
     public interface CommitActionHandler {

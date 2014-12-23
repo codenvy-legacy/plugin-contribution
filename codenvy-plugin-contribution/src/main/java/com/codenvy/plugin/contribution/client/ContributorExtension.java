@@ -137,7 +137,7 @@ public class ContributorExtension {
 
             @Override
             public void onFailure(Throwable exception) {
-                Log.error(ContributorExtension.class, exception.getMessage());
+                Log.error(ContributorExtension.class, exception);
             }
         });
     }
@@ -252,6 +252,6 @@ public class ContributorExtension {
             notificationManager.showNotification(new Notification(exception.getMessage(), ERROR, FINISHED));
         }
 
-        Log.error(ContributeAction.class, exception.getMessage());
+        Log.error(ContributeAction.class, exception);
     }
 }

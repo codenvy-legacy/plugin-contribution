@@ -12,7 +12,6 @@ package com.codenvy.plugin.contribution.client.steps;
 
 
 import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
@@ -93,7 +92,6 @@ public class AddRemoteStep implements Step {
             public void onSuccess(final List<Remote> result) {
                 for (final Remote remote : result) {
                     if (FORK_REMOTE_NAME.equals(remote.getName())) {
-                        Log.info(AddRemoteStep.class, messages.forekRemoteAlreadyPresent(FORK_REMOTE_NAME));
                         context.setForkedRemoteName(FORK_REMOTE_NAME);
                         if (remoteUrl.equals(remote.getUrl())) {
                             // all is correct, continue

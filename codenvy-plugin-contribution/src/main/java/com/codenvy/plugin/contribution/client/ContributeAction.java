@@ -212,6 +212,6 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
      */
     private void handleError(final Throwable exception) {
         notificationManager.showNotification(new Notification(exception.getMessage(), ERROR));
-        Log.error(ContributeAction.class, exception.getMessage());
+        Log.error(ContributeAction.class, exception);
     }
 }
