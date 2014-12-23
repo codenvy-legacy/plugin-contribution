@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import com.codenvy.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -137,6 +138,11 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
         this.delegate.updateControls();
     }
 
+    @UiHandler("branchName")
+    public void branchNamePaste(final PasteEvent event) {
+        this.delegate.updateControls();
+    }
+
     @UiHandler("pullRequestComment")
     public void pullRequestCommentChanged(final ValueChangeEvent<String> event) {
         this.delegate.updateControls();
@@ -149,6 +155,11 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
 
     @UiHandler("contribTitle")
     public void contribTitleKeyUp(final KeyUpEvent event) {
+        this.delegate.updateControls();
+    }
+
+    @UiHandler("contribTitle")
+    public void contribTitlePaste(final PasteEvent event) {
         this.delegate.updateControls();
     }
 

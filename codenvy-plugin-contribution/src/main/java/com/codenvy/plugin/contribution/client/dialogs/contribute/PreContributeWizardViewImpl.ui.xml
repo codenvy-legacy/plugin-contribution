@@ -11,7 +11,8 @@
 
 -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:my='urn:import:com.codenvy.plugin.contribution.client.dialogs.paste'>
 
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeMessages" field="messages"/>
     <ui:style>
@@ -91,11 +92,11 @@
         <div class="{style.fieldsSection}">
             <div class="{style.fieldItem}">
                 <div class="{style.label}">Branch Name</div>
-                <g:TextBox ui:field="branchName" addStyleNames="{style.field}"/>
+                <my:PasteAwareTextBox ui:field="branchName" addStyleNames="{style.field}"/>
             </div>
             <div class="{style.fieldItem}">
                 <div class="{style.label}">Contribution Title</div>
-                <g:TextBox ui:field="contribTitle" addStyleNames="{style.field}"/>
+                <my:PasteAwareTextBox ui:field="contribTitle" addStyleNames="{style.field}"/>
             </div>
             <div class="{style.fieldItem}">
                 <div class="{style.label}">Pull Request Comment</div>
