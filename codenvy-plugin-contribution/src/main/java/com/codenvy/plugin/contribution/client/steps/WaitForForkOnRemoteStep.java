@@ -92,6 +92,7 @@ public class WaitForForkOnRemoteStep implements Step {
                 for (final Repository repo : result) {
                     if (repo.getName().equals(context.getOriginRepositoryName())) {
                         callback.onSuccess(null);
+                        return;
                     }
                 }
                 callback.onFailure(null);
