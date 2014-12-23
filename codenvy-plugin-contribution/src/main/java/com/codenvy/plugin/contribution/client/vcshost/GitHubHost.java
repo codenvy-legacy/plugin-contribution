@@ -10,6 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
@@ -19,11 +24,8 @@ import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
+import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link com.codenvy.plugin.contribution.client.vcshost.RepositoryHost} implementation for GitHub.
@@ -168,7 +170,8 @@ public class GitHubHost implements RepositoryHost {
 
         final GitHubPullRequestInput input = GitHubHost.this.dtoFactory.createDto(GitHubPullRequestInput.class);
         input.withTitle(title).withHead(headBranch).withBase(baseBranch).withBody(body);
-        gitHubClientService.createPullRequest(owner, repository, input, new AsyncRequestCallback<GitHubPullRequest>() {
+        final Unmarshallable<GitHubPullRequest> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubPullRequest.class);
+        gitHubClientService.createPullRequest(owner, repository, input, new AsyncRequestCallback<GitHubPullRequest>(unmarshaller) {
 
             @Override
             protected void onSuccess(GitHubPullRequest result) {
