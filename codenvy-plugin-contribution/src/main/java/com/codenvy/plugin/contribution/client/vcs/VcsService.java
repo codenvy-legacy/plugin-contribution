@@ -32,7 +32,8 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void addRemote(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String remoteUrl, @Nonnull AsyncCallback<Void> callback);
+    void addRemote(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String remoteUrl,
+                   @Nonnull AsyncCallback<Void> callback);
 
     /**
      * Checkout a branch of the given project.
@@ -46,7 +47,8 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void checkoutBranch(@Nonnull ProjectDescriptor project, @Nonnull String branchName, boolean createNew, @Nonnull AsyncCallback<String> callback);
+    void checkoutBranch(@Nonnull ProjectDescriptor project, @Nonnull String branchName, boolean createNew,
+                        @Nonnull AsyncCallback<String> callback);
 
     /**
      * Create a branch for the given project.
@@ -60,7 +62,8 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void createBranch(@Nonnull ProjectDescriptor project, @Nonnull String name, @Nonnull String startPoint, @Nonnull AsyncCallback<Branch> callback);
+    void createBranch(@Nonnull ProjectDescriptor project, @Nonnull String name, @Nonnull String startPoint,
+                      @Nonnull AsyncCallback<Branch> callback);
 
     /**
      * Removes a remote to the project VCS metadata.
@@ -116,7 +119,8 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void pushBranch(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String localBranchNameToPush, @Nonnull AsyncCallback<Void> callback);
+    void pushBranch(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String localBranchNameToPush,
+                    @Nonnull AsyncCallback<Void> callback);
 
     /**
      * Rename a branch of the project.
@@ -130,5 +134,6 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void renameBranch(@Nonnull ProjectDescriptor project, @Nonnull String oldName, @Nonnull String newName, @Nonnull AsyncCallback<Void> callback);
+    void renameBranch(@Nonnull ProjectDescriptor project, @Nonnull String oldName, @Nonnull String newName,
+                      @Nonnull AsyncCallback<Void> callback);
 }
