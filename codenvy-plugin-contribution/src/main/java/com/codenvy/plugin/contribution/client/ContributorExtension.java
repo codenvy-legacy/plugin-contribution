@@ -163,7 +163,7 @@ public class ContributorExtension {
                 context.setWorkBranchName(workingBranchName);
 
                 final Notification createWorkingBranchNotification =
-                        new Notification("Creating a new working branch " + workingBranchName + "...", INFO, PROGRESS);
+                        new Notification(messages.notificationCreatingNewWorkingBranch(workingBranchName), INFO, PROGRESS);
                 notificationManager.showNotification(createWorkingBranchNotification);
 
                 // the working branch is only created if it doesn't exist
@@ -188,8 +188,8 @@ public class ContributorExtension {
                         vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                             @Override
                             public void onSuccess(final String result) {
-                                createWorkingBranchNotification.setMessage(
-                                        "Branch " + workingBranchName + " successfully created and checked out.");
+                                createWorkingBranchNotification.setMessage(messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName));
+
                                 createWorkingBranchNotification.setStatus(FINISHED);
                             }
 

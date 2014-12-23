@@ -83,27 +83,27 @@ public interface ContributeMessages extends Messages {
     /*
      * messages for check/create remote user fork step
      */
-    public final static String CONTRIB_ISSUE_PR_PREFIX = "Issue PR: ";
+    public final static String CONTRIB_PR_PREFIX = "Contribute Pull Request: ";
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Using existing user''s fork")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Using existing user''s fork")
     String useExistingUserFork();
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Creating a fork the repository`{0}/{1}`")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Creating a fork the repository`{0}/{1}`")
     String creatingFork(String username, String repository);
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Requested creation of a fork of the repository `{0}/{1}`")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Requested creation of a fork of the repository `{0}/{1}`")
     String requestedForkCreation(String repositoryOwner, String repositoryName);
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Failed creating the fork of the repository`{0}/{1}`. {2}")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Failed creating the fork of the repository`{0}/{1}`. {2}")
     String failedCreatingUserFork(String repositoryOwner, String repositoryName, String message);
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Successfully pushed contribution branch to fork")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Successfully pushed contribution branch to fork")
     String successPushingBranchToFork();
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Pushing contribution branch to fork")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Pushing contribution branch to fork")
     String pushingWorkingBranchToFork();
 
-    @DefaultMessage(CONTRIB_ISSUE_PR_PREFIX + "Failed pushing contribution branch to fork: {0}")
+    @DefaultMessage(CONTRIB_PR_PREFIX + "Failed pushing contribution branch to fork: {0}")
     String failedPushingBranchToFork(String cause);
 
     @DefaultMessage("You can review this pull request by following this link: {0}")
@@ -115,16 +115,22 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Could not create review factory link")
     String warnCreateFactoryFailed();
 
-    @DefaultMessage("Remote with name {0} already exists.")
+    @DefaultMessage("Remote with name {0} already exists")
         // period because that's a log, not a notification
     String forekRemoteAlreadyPresent(String forkRemoteName);
 
     @DefaultMessage("Failed to set the forked repository remote. Contribution interrupted")
     String errorRemoveRemoteFailed();
 
-    @DefaultMessage("Could not check the remotes.")
+    @DefaultMessage("Could not check the remotes")
     String warnCheckRemote();
 
     @DefaultMessage("Creation of the pull request failed. Contribution is interrupted")
     String errorPullRequestFailed();
+
+    @DefaultMessage("Creating a new working branch {0}")
+    String notificationCreatingNewWorkingBranch(String workingBranchName);
+
+    @DefaultMessage("Branch {0} successfully created and checked out")
+    String notificationBranchSuccessfullyCreatedAndCheckedOut(String workingBranchName);
 }
