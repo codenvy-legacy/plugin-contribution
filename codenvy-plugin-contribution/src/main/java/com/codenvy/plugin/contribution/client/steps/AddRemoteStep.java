@@ -94,7 +94,7 @@ public class AddRemoteStep implements Step {
                 for (final Remote remote : result) {
                     if (FORK_REMOTE_NAME.equals(remote.getName())) {
                         Log.info(AddRemoteStep.class, messages.forekRemoteAlreadyPresent(FORK_REMOTE_NAME));
-                        context.setForkName(FORK_REMOTE_NAME);
+                        context.setForkedRemoteName(FORK_REMOTE_NAME);
                         if (remoteUrl.equals(remote.getUrl())) {
                             // all is correct, continue
                             proceed(context, config);
@@ -129,7 +129,7 @@ public class AddRemoteStep implements Step {
         this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void notUsed) {
-                context.setForkName(FORK_REMOTE_NAME);
+                context.setForkedRemoteName(FORK_REMOTE_NAME);
                 proceed(context, config);
             }
 

@@ -54,7 +54,7 @@ public class Context {
      */
     private String reviewFactoryUrl;
 
-    private String forkName;
+    private String            forkedRemoteName;
 
     public ProjectDescriptor getProject() {
         return project;
@@ -192,11 +192,11 @@ public class Context {
         return this;
     }
 
-    public String getForkName() {
-        return forkName;
+    public String getForkedRemoteName() {
+        return forkedRemoteName;
     }
 
-    public void setForkName(String forkName) {
-        this.forkName = forkName;
+    public void setForkedRemoteName(String forkedRemoteName) {
+        this.forkedRemoteName = forkedRemoteName;
     }
 }
