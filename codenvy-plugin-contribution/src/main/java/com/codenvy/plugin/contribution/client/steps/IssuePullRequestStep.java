@@ -13,7 +13,9 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import javax.inject.Inject;
 
+import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.PullRequest;
@@ -34,10 +36,25 @@ public class IssuePullRequestStep implements Step {
      */
     private final Step nextStep;
 
+    /**
+     * The notification manager.
+     */
+    private final NotificationManager notificationManager;
+
+    /**
+     * The internationalizable messages.
+     */
+    private final ContributeMessages messages;
+
     @Inject
-    public IssuePullRequestStep(final RepositoryHost repositoryHost, final GenerateReviewFactory nextStep) {
+    public IssuePullRequestStep(final RepositoryHost repositoryHost,
+                                final GenerateReviewFactory nextStep,
+                                final NotificationManager notificationmanager,
+                                final ContributeMessages messages) {
         this.repositoryHost = repositoryHost;
         this.nextStep = nextStep;
+        this.notificationManager = notificationmanager;
+        this.messages = messages;
     }
 
     @Override
@@ -56,6 +73,7 @@ public class IssuePullRequestStep implements Step {
 
             @Override
             public void onFailure(Throwable caught) {
+                notificationManager.showError(messages.errorPullRequestFailed());
                 Log.error(RemoteForkStep.class, caught.getMessage());
             }
         });

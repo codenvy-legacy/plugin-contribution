@@ -124,4 +124,7 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Could not check the remotes.")
     String warnCheckRemote();
+
+    @DefaultMessage("Creation of the pull request failed. Contribution is interrupted")
+    String errorPullRequestFailed();
 }
