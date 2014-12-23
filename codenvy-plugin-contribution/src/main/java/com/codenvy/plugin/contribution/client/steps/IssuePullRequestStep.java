@@ -59,20 +59,20 @@ public class IssuePullRequestStep implements Step {
 
     @Override
     public void execute(final Context context, final Configuration config) {
-        String owner = context.getOriginRepositoryOwner();
-        String repository = context.getOriginRepositoryName();
-        String title = config.getContributionTitle();
-        String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
-        String body = config.getPullRequestComment();
+        final String owner = context.getOriginRepositoryOwner();
+        final String repository = context.getOriginRepositoryName();
+        final String title = config.getContributionTitle();
+        final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
+        final String body = config.getPullRequestComment();
         repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
 
             @Override
-            public void onSuccess(PullRequest result) {
+            public void onSuccess(final PullRequest result) {
                 onPullRequestCreated(context, config);
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onFailure(final Throwable caught) {
                 notificationManager.showError(messages.errorPullRequestFailed());
                 Log.error(RemoteForkStep.class, caught.getMessage());
             }
