@@ -32,7 +32,7 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void addRemote(@Nonnull ProjectDescriptor project, String remote, String remoteUrl, AsyncCallback<Void> callback);
+    void addRemote(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String remoteUrl, @Nonnull AsyncCallback<Void> callback);
 
     /**
      * Checkout a branch of the given project.
@@ -46,7 +46,7 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void checkoutBranch(@Nonnull ProjectDescriptor project, String branchName, boolean createNew, AsyncCallback<String> callback);
+    void checkoutBranch(@Nonnull ProjectDescriptor project, @Nonnull String branchName, boolean createNew, @Nonnull AsyncCallback<String> callback);
 
     /**
      * Create a branch for the given project.
@@ -60,7 +60,7 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void createBranch(@Nonnull ProjectDescriptor project, String name, String startPoint, AsyncCallback<Branch> callback);
+    void createBranch(@Nonnull ProjectDescriptor project, @Nonnull String name, @Nonnull String startPoint, @Nonnull AsyncCallback<Branch> callback);
 
     /**
      * Removes a remote to the project VCS metadata.
@@ -72,7 +72,7 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void deleteRemote(@Nonnull ProjectDescriptor project, String remote, AsyncCallback<Void> callback);
+    void deleteRemote(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull AsyncCallback<Void> callback);
 
     /**
      * Get the current branch for the project.
@@ -92,7 +92,7 @@ public interface VcsService {
      * @param callback
      *         what to to with the branches list.
      */
-    void listLocalBranches(@Nonnull ProjectDescriptor project, AsyncCallback<List<Branch>> callback);
+    void listLocalBranches(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<List<Branch>> callback);
 
     /**
      * List remotes.
@@ -102,7 +102,7 @@ public interface VcsService {
      * @param callback
      *         what to to with the remotes list
      */
-    void listRemotes(@Nonnull ProjectDescriptor project, AsyncCallback<List<Remote>> callback);
+    void listRemotes(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<List<Remote>> callback);
 
     /**
      * Push a local branch to the given remote.
@@ -116,7 +116,7 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void pushBranch(ProjectDescriptor project, String remote, String localBranchNameToPush, AsyncCallback<Void> callback);
+    void pushBranch(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String localBranchNameToPush, @Nonnull AsyncCallback<Void> callback);
 
     /**
      * Rename a branch of the project.
@@ -130,5 +130,5 @@ public interface VcsService {
      * @param callback
      *         callback when the operation is done.
      */
-    void renameBranch(@Nonnull ProjectDescriptor project, String oldName, String newName, AsyncCallback<Void> callback);
+    void renameBranch(@Nonnull ProjectDescriptor project, @Nonnull String oldName, @Nonnull String newName, @Nonnull AsyncCallback<Void> callback);
 }
