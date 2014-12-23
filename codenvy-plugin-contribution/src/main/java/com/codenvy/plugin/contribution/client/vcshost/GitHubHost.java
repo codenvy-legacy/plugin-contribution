@@ -174,7 +174,7 @@ public class GitHubHost implements RepositoryHost {
         gitHubClientService.createPullRequest(owner, repository, input, new AsyncRequestCallback<GitHubPullRequest>(unmarshaller) {
 
             @Override
-            protected void onSuccess(GitHubPullRequest result) {
+            protected void onSuccess(final GitHubPullRequest result) {
                 if (result != null) {
                     final PullRequest pr = GitHubHost.this.dtoFactory.createDto(PullRequest.class);
                     pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl());
@@ -185,18 +185,18 @@ public class GitHubHost implements RepositoryHost {
             }
 
             @Override
-            protected void onFailure(Throwable exception) {
+            protected void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
             }
         });
     }
 
     @Override
-    public void getUserFork(final String user, String owner, String repository, final AsyncCallback<Repository> callback) {
+    public void getUserFork(final String user, String owner, final String repository, final AsyncCallback<Repository> callback) {
         getForks(owner, repository, new AsyncCallback<List<Repository>>() {
 
             @Override
-            public void onSuccess(List<Repository> result) {
+            public void onSuccess(final List<Repository> result) {
                 // find out if current user has a fork
                 Repository fork = getUserFork(user, result);
                 if (fork != null) {
@@ -207,15 +207,15 @@ public class GitHubHost implements RepositoryHost {
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onFailure(final Throwable caught) {
                 callback.onFailure(caught);
             }
         });
     }
 
-    protected Repository getUserFork(String login, List<Repository> forks) {
+    protected Repository getUserFork(final String login, final List<Repository> forks) {
         Repository userFork = null;
-        for (Repository repository : forks) {
+        for (final Repository repository : forks) {
             String forkURL = repository.getUrl();
             if (forkURL.toLowerCase().contains("/repos/" + login + "/")) {
                 userFork = repository;
