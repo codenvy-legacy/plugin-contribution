@@ -10,18 +10,22 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
+import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
+import com.codenvy.ide.ext.github.shared.GitHubPullRequestInput;
 import com.codenvy.ide.ext.github.shared.GitHubRepository;
 import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
 import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
+import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link com.codenvy.plugin.contribution.client.vcshost.RepositoryHost} implementation for GitHub.
@@ -164,14 +168,35 @@ public class GitHubHost implements RepositoryHost {
                                   final String body,
                                   final AsyncCallback<PullRequest> callback) {
 
+        final GitHubPullRequestInput input = GitHubHost.this.dtoFactory.createDto(GitHubPullRequestInput.class);
+        input.withTitle(title).withHead(headBranch).withBase(baseBranch).withBody(body);
+        final Unmarshallable<GitHubPullRequest> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubPullRequest.class);
+        gitHubClientService.createPullRequest(owner, repository, input, new AsyncRequestCallback<GitHubPullRequest>(unmarshaller) {
+
+            @Override
+            protected void onSuccess(final GitHubPullRequest result) {
+                if (result != null) {
+                    final PullRequest pr = GitHubHost.this.dtoFactory.createDto(PullRequest.class);
+                    pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl());
+                    callback.onSuccess(pr);
+                } else {
+                    callback.onFailure(new Exception("No pull request."));
+                }
+            }
+
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
     }
 
     @Override
-    public void getUserFork(final String user, String owner, String repository, final AsyncCallback<Repository> callback) {
+    public void getUserFork(final String user, String owner, final String repository, final AsyncCallback<Repository> callback) {
         getForks(owner, repository, new AsyncCallback<List<Repository>>() {
 
             @Override
-            public void onSuccess(List<Repository> result) {
+            public void onSuccess(final List<Repository> result) {
                 // find out if current user has a fork
                 Repository fork = getUserFork(user, result);
                 if (fork != null) {
@@ -182,15 +207,15 @@ public class GitHubHost implements RepositoryHost {
             }
 
             @Override
-            public void onFailure(Throwable caught) {
+            public void onFailure(final Throwable caught) {
                 callback.onFailure(caught);
             }
         });
     }
 
-    protected Repository getUserFork(String login, List<Repository> forks) {
+    protected Repository getUserFork(final String login, final List<Repository> forks) {
         Repository userFork = null;
-        for (Repository repository : forks) {
+        for (final Repository repository : forks) {
             String forkURL = repository.getUrl();
             if (forkURL.toLowerCase().contains("/repos/" + login + "/")) {
                 userFork = repository;
