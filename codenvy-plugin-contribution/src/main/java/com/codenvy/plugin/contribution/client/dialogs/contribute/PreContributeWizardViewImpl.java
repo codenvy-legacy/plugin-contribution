@@ -10,19 +10,20 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.contribute;
 
+import javax.inject.Inject;
+
 import com.codenvy.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-
-import javax.inject.Inject;
 
 /**
  * Implementation of {@link PreContributeWizardView}.
@@ -131,6 +132,11 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
         this.delegate.updateControls();
     }
 
+    @UiHandler("branchName")
+    public void branchNameKeyUp(final KeyUpEvent event) {
+        this.delegate.updateControls();
+    }
+
     @UiHandler("pullRequestComment")
     public void pullRequestCommentChanged(final ValueChangeEvent<String> event) {
         this.delegate.updateControls();
@@ -138,6 +144,11 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
 
     @UiHandler("contribTitle")
     public void contribTitleChanged(final ValueChangeEvent<String> event) {
+        this.delegate.updateControls();
+    }
+
+    @UiHandler("contribTitle")
+    public void contribTitleKeyUp(final KeyUpEvent event) {
         this.delegate.updateControls();
     }
 
