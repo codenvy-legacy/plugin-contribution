@@ -10,6 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import java.util.HashMap;
+
+import javax.inject.Inject;
+
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
@@ -19,11 +23,13 @@ import com.codenvy.api.project.shared.dto.Source;
 import com.codenvy.ide.MimeType;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.NotificationManager;
+import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPHeader;
+import com.codenvy.ide.rest.HTTPMethod;
 import com.codenvy.ide.rest.Unmarshallable;
 import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
@@ -33,11 +39,12 @@ import com.codenvy.plugin.contribution.client.jso.JsBlob;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
+import com.google.gwt.http.client.Header;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import javax.inject.Inject;
-import java.util.HashMap;
+import com.google.gwt.xhr.client.ReadyStateChangeHandler;
+import com.google.gwt.xhr.client.XMLHttpRequest;
 
 /**
  * Generates a factory for the contribution reviewer.
@@ -155,7 +162,7 @@ public class GenerateReviewFactory implements Step {
 
     /**
      * Continue to the following step.
-     * 
+     *
      * @param context the context of the contribution
      * @param config the configuration of the contribution
      */
@@ -165,7 +172,7 @@ public class GenerateReviewFactory implements Step {
 
     /**
      * Continue to the step that is next when this one failed.
-     * 
+     *
      * @param context the context of the contribution
      * @param config the configuration of the contribution
      */
@@ -224,7 +231,7 @@ public class GenerateReviewFactory implements Step {
 
         final Unmarshallable<Factory> unmarshaller = this.dtoUnmarshallerFactory.newUnmarshaller(Factory.class);
         this.asyncRequestFactory.createGetRequest(requestUrl)
-                                .header(HTTPHeader.ACCEPT, MimeType.TEXT_PLAIN)
+                                .header(HTTPHeader.ACCEPT, MimeType.APPLICATION_JSON)
                                 .send(new AsyncRequestCallback<Factory>(unmarshaller) {
 
                                     @Override
@@ -261,27 +268,53 @@ public class GenerateReviewFactory implements Step {
     private void saveFactory(final FormData formData, final AsyncCallback<Factory> callback) {
         final String requestUrl = this.apiTemplate.saveFactory();
 
-        final Unmarshallable<String> unmarshaller = this.dtoUnmarshallerFactory.newUnmarshaller(String.class);
-        this.asyncRequestFactory.createPostRequest(requestUrl, formData)
-                                .header(HTTPHeader.ACCEPT, MimeType.APPLICATION_JSON)
-                                .send(new AsyncRequestCallback<String>(unmarshaller) {
-                                    @Override
-                                    protected void onSuccess(final String result) {
-                                        final Factory createdFactory = dtoFactory.createDtoFromJson(result, Factory.class);
+        final XMLHttpRequest xhr = XMLHttpRequest.create();
+        xhr.open(HTTPMethod.POST, requestUrl);
+        xhr.setRequestHeader(HTTPHeader.ACCEPT, MimeType.APPLICATION_JSON);
+        xhr.setOnReadyStateChange(new ReadyStateChangeHandler() {
 
-                                        if (createdFactory.getId() == null || createdFactory.getId().isEmpty()) {
-                                            final ServiceError error = dtoFactory.createDtoFromJson(result, ServiceError.class);
-                                            callback.onFailure(new Exception(error.getMessage()));
-                                        } else {
-                                            callback.onSuccess(createdFactory);
-                                        }
-                                    }
-                                    @Override
-                                    protected void onFailure(final Throwable exception) {
-                                        callback.onFailure(exception);
-                                    }
-                                });
+            @Override
+            public void onReadyStateChange(final XMLHttpRequest request) {
+                if (request.getReadyState() == XMLHttpRequest.DONE) {
+                    if (request.getStatus() == Response.SC_OK) {
+                        request.clearOnReadyStateChange();
+                        final String payLoad = request.getResponseText();
+                        final Factory createdFactory = dtoFactory.createDtoFromJson(payLoad, Factory.class);
+
+                        if (createdFactory.getId() == null || createdFactory.getId().isEmpty()) {
+                            final ServiceError error = dtoFactory.createDtoFromJson(payLoad, ServiceError.class);
+                            callback.onFailure(new Exception(error.getMessage()));
+                        } else {
+                            callback.onSuccess(createdFactory);
+                        }
+                    } else {
+                        final Response response = new ResponseImpl(request);
+                        callback.onFailure(new ServerException(response));
+                    }
+                }
+
+            }
+        });
+
+        if (!sendFormData(xhr, formData)) {
+            callback.onFailure(new Exception("Could not call service"));
+        }
     }
+
+    /**
+     * Sends the request, passing the form data as content.
+     * @param xhr the request
+     * @param formData the form data
+     * @return true iff the request was sent correctly - Note: doesn't mean the request will be succesful
+     */
+    private static final native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
+        try {
+            xhr.send(formData);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }-*/;
 
     /**
      * Template for building api urls.
@@ -289,7 +322,7 @@ public class GenerateReviewFactory implements Step {
     interface ApiUrlTemplate extends Messages {
         /**
          * Returns a 'getFactoryJson' call URL.
-         * 
+         *
          * @param workspaceId the workspace id
          * @param projectName the project name
          * @return the call URL
@@ -299,11 +332,89 @@ public class GenerateReviewFactory implements Step {
 
         /**
          * Returns a 'getFactoryJson'/saveFactory call URL.
-         * 
+         *
          * @return the call URL
          */
         @DefaultMessage("/api/factory")
         String saveFactory();
     }
 
+    /**
+     * Concrete {@link Response}, {@link #getHeaders()} copied from GWT internal.
+     */
+    private class ResponseImpl extends Response {
+        private final XMLHttpRequest request;
+
+        ResponseImpl(final XMLHttpRequest request) {
+            this.request = request;
+        }
+
+        @Override
+        public String getText() {
+            return request.getResponseText();
+        }
+
+        @Override
+        public String getStatusText() {
+            return request.getStatusText();
+        }
+
+        @Override
+        public int getStatusCode() {
+            return request.getStatus();
+        }
+
+        @Override
+        public String getHeadersAsString() {
+            return request.getAllResponseHeaders();
+        }
+
+        @Override
+        public Header[] getHeaders() {
+            final String allHeaders = request.getAllResponseHeaders();
+            final String[] unparsedHeaders = allHeaders.split("\n");
+            final Header[] parsedHeaders = new Header[unparsedHeaders.length];
+
+            for (int i = 0, n = unparsedHeaders.length; i < n; ++i) {
+              final String unparsedHeader = unparsedHeaders[i];
+
+              if (unparsedHeader.length() == 0) {
+                continue;
+              }
+
+              final int endOfNameIdx = unparsedHeader.indexOf(':');
+              if (endOfNameIdx < 0) {
+                continue;
+              }
+
+              final String name = unparsedHeader.substring(0, endOfNameIdx).trim();
+              final String value = unparsedHeader.substring(endOfNameIdx + 1).trim();
+              final Header header = new Header() {
+                @Override
+                public String getName() {
+                  return name;
+                }
+
+                @Override
+                public String getValue() {
+                  return value;
+                }
+
+                @Override
+                public String toString() {
+                  return name + " : " + value;
+                }
+              };
+
+              parsedHeaders[i] = header;
+            }
+
+            return parsedHeaders;
+        }
+
+        @Override
+        public String getHeader(final String header) {
+            return request.getResponseHeader(header);
+        }
+    }
 }
