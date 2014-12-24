@@ -41,18 +41,18 @@ public interface PreContributeWizardView extends View<PreContributeWizardView.Ac
     String getBranchName();
 
     /**
-     * Returns the current content of the pull request comment.
+     * Returns the current content of the contribution comment.
      *
-     * @return the comment
+     * @return the comment.
      */
-    String getPullRequestComment();
+    String getContributionComment();
 
     /**
-     * Returns the contribution title/
+     * Returns the contribution title.
      *
-     * @return the title
+     * @return the title.
      */
-    String getContribTitle();
+    String getContributionTitle();
 
     /**
      * Sets the enabled/disabled state of the "Contribute" button.
@@ -62,22 +62,21 @@ public interface PreContributeWizardView extends View<PreContributeWizardView.Ac
      */
     void setContributeEnabled(boolean enabled);
 
-
     /**
      * Action delegate interface for the contribution configuration dialog.
      */
     interface ActionDelegate extends Wizard.UpdateDelegate {
 
         /** Performs any actions appropriate in response to the user having pressed the Contribute button */
-        void onContributeClicked();
+        void onContribute();
 
         /** Performs any actions appropriate in response to the user having pressed the Cancel button */
-        void onCancelClicked();
+        void onCancel();
 
         /**
          * Suggests a branch name for the current work.
          *
-         * @return the suggestion
+         * @return the suggestion.
          */
         String suggestBranchName();
     }

@@ -16,22 +16,6 @@ import com.google.gwt.i18n.client.Messages;
  * Internationalizable messages for the contributor plugin.
  */
 public interface ContributeMessages extends Messages {
-
-    @DefaultMessage("Configure Contribution")
-    String preContributeWizardTitle();
-
-    @DefaultMessage("Choose a branch name for your contribution...")
-    String branchNameInputPlaceHolder();
-
-    @DefaultMessage("Type a comment text for the pull request...")
-    String pullRequestCommentPlaceHolder();
-
-    @DefaultMessage("Contribute")
-    String contributeButton();
-
-    @DefaultMessage("Cancel")
-    String cancelButton();
-
     @Key("contributor.button.name")
     String contributorButtonName();
 
@@ -79,6 +63,36 @@ public interface ContributeMessages extends Messages {
 
     @Key("commit.dialog.button.continue.text")
     String commitDialogButtonContinueText();
+
+    /*
+     * Pre-contribute wizard
+     */
+    @DefaultMessage("Configure Contribution")
+    String preContributeWizardTitle();
+
+    @DefaultMessage("Branch Name:")
+    String preContributeWizardBranchNameInputLabelText();
+
+    @DefaultMessage("Choose a branch name for your contribution...")
+    String preContributeWizardBranchNameInputPlaceHolder();
+
+    @DefaultMessage("Contribution Title:")
+    String preContributeWizardContributionTitleLabelText();
+
+    @DefaultMessage("Choose a title for your contribution...")
+    String preContributeWizardContributionTitlePlaceHolder();
+
+    @DefaultMessage("Contribution Comment:")
+    String preContributeWizardContributionCommentLabelText();
+
+    @DefaultMessage("Type a comment for your contribution...")
+    String preContributeWizardContributionCommentPlaceHolder();
+
+    @DefaultMessage("Contribute")
+    String preContributeWizardContributeButton();
+
+    @DefaultMessage("Cancel")
+    String preContributeWizardCancelButton();
 
     /**
      * prefix notification message with "Contribute Pull Request"

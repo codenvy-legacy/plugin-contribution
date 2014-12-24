@@ -16,31 +16,12 @@
 
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeMessages" field="messages"/>
     <ui:style>
-        @eval bgTopPanel com.codenvy.ide.api.theme.Style.getConsolePanelColor();
-
-        .topPanel {
-            height: 38px;
-            border-top: 1px solid #232323;
-            border-bottom: 1px solid #232323;
-            z-index: 4;
-            background-color: bgTopPanel;
-            font-size: 12px;
-        }
-
         .rootPanel {
             position: relative;
             text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-        }
-
-        .buttonSection {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-            flex-grow: 0;
-            flex-shrink: 0;
         }
 
         .fieldsSection {
@@ -60,22 +41,10 @@
             margin-bottom: 0.7em;
         }
 
-        .button {
-            width: 9em;
-            margin-left: 0.5em;
-        }
-
-        .button-blue {
-            background: #256c9f;
-            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.29), inset 0px 1px 0px 0px rgba(55, 126, 172, 1);
-            border-color: #2f3237;
-        }
-
         .label {
             width: 11em;
             flex-grow: 0;
             display: flex;
-            justify-content: flex-end;
             margin-right: 1em;
         }
 
@@ -88,24 +57,20 @@
             resize: none;
         }
     </ui:style>
-    <g:HTMLPanel width="774px" height="400px" addStyleNames="{style.rootPanel}">
+    <g:HTMLPanel width="774px" height="250px" addStyleNames="{style.rootPanel}">
         <div class="{style.fieldsSection}">
             <div class="{style.fieldItem}">
-                <div class="{style.label}">Branch Name</div>
+                <g:Label addStyleNames="{style.label}" text="{messages.preContributeWizardBranchNameInputLabelText}"/>
                 <my:PasteAwareTextBox ui:field="branchName" addStyleNames="{style.field}"/>
             </div>
             <div class="{style.fieldItem}">
-                <div class="{style.label}">Contribution Title</div>
-                <my:PasteAwareTextBox ui:field="contribTitle" addStyleNames="{style.field}"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.preContributeWizardContributionTitleLabelText}"/>
+                <my:PasteAwareTextBox ui:field="contributionTitle" addStyleNames="{style.field}"/>
             </div>
             <div class="{style.fieldItem}">
-                <div class="{style.label}">Pull Request Comment</div>
-                <g:TextArea ui:field="pullRequestComment" visibleLines="5" addStyleNames="{style.field} {style.fixed-textarea}"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.preContributeWizardContributionCommentLabelText}"/>
+                <g:TextArea ui:field="contributionComment" visibleLines="5" addStyleNames="{style.field} {style.fixed-textarea}"/>
             </div>
-        </div>
-        <div class="{style.buttonSection}">
-            <g:Button ui:field="cancelButton" ui:text="{messages.cancelButton}" addStyleNames="{style.button}"/>
-            <g:Button ui:field="contributeButton" ui:text="{messages.contributeButton}" addStyleNames="{style.button} {style.button-blue}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -10,21 +10,22 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.contribute;
 
-import javax.inject.Inject;
-
 import com.codenvy.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of {@link PreContributeWizardView}.
@@ -34,59 +35,66 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     /** The uUI binder for this component. */
     private static final PreContributeWizardViewUiBinder UI_BINDER = GWT.create(PreContributeWizardViewUiBinder.class);
 
+    /** The contribute button. */
+    private final Button contributeButton;
+
     /** The input component for the branch name. */
     @UiField
     TextBox branchName;
 
     /** The input component for the contribution title. */
     @UiField
-    TextBox contribTitle;
+    TextBox contributionTitle;
 
-    /**
-     * The input zone for the pull request comment.
-     */
+    /** The input zone for the contribution comment. */
     @UiField
-    TextArea pullRequestComment;
+    TextArea contributionComment;
 
-    /**
-     * The contribute button.
-     */
-    @UiField
-    Button contributeButton;
-
-    /**
-     * The cancel button.
-     */
-    @UiField
-    Button cancelButton;
-
-    /**
-     * The i18n messages.
-     */
+    /** The i18n messages. */
     @UiField(provided = true)
     ContributeMessages messages;
 
-    /**
-     * The bound delegate.
-     */
+    /** The bound delegate. */
     private ActionDelegate delegate;
 
     @Inject
     public PreContributeWizardViewImpl(final ContributeMessages messages) {
         this.messages = messages;
-        setWidget(UI_BINDER.createAndBindUi(this));
 
+        setWidget(UI_BINDER.createAndBindUi(this));
         setTitle(messages.preContributeWizardTitle());
 
-        this.branchName.getElement().setPropertyString("placeholder", messages.branchNameInputPlaceHolder());
-        this.pullRequestComment.getElement().setPropertyString("placeholder", messages.pullRequestCommentPlaceHolder());
+        this.branchName.getElement().setPropertyString("placeholder", messages.preContributeWizardBranchNameInputPlaceHolder());
+        this.contributionTitle.getElement().setPropertyString("placeholder", messages.preContributeWizardContributionTitlePlaceHolder());
+        this.contributionComment.getElement()
+                                .setPropertyString("placeholder", messages.preContributeWizardContributionCommentPlaceHolder());
+
+        this.contributeButton =
+                createButton(messages.preContributeWizardContributeButton(), "pre-contribute-wizard-contribute-button", new ClickHandler() {
+                    @Override
+                    public void onClick(final ClickEvent event) {
+                        delegate.onContribute();
+                    }
+                });
+        this.contributeButton.addStyleName(Window.resources.centerPanelCss().blueButton());
+
+        final Button cancelButton =
+                createButton(messages.preContributeWizardCancelButton(), "pre-contribute-wizard-cancel-button", new ClickHandler() {
+                    @Override
+                    public void onClick(final ClickEvent event) {
+                        delegate.onCancel();
+                    }
+                });
+
+        getFooter().add(this.contributeButton);
+        getFooter().add(cancelButton);
     }
 
     @Override
     public void reset() {
-        branchName.setValue(this.delegate.suggestBranchName());
-        this.pullRequestComment.setValue("");
-        this.delegate.updateControls();
+        branchName.setValue(delegate.suggestBranchName());
+        contributionComment.setValue("");
+        delegate.updateControls();
     }
 
     @Override
@@ -100,71 +108,74 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
 
     @Override
     public String getBranchName() {
-        return this.branchName.getValue();
+        return branchName.getValue();
     }
 
     @Override
-    public String getPullRequestComment() {
-        return this.pullRequestComment.getValue();
+    public String getContributionComment() {
+        return contributionComment.getValue();
     }
 
     @Override
-    public String getContribTitle() {
-        return this.contribTitle.getValue();
+    public String getContributionTitle() {
+        return contributionTitle.getValue();
     }
 
     @Override
     public void setContributeEnabled(final boolean enabled) {
-        this.contributeButton.setEnabled(enabled);
+        contributeButton.setEnabled(enabled);
     }
 
-    @UiHandler("contributeButton")
-    public void contributeClicked(final ClickEvent event) {
-        this.delegate.onContributeClicked();
-    }
-
-    @UiHandler("cancelButton")
-    public void cancelClicked(final ClickEvent event) {
-        this.delegate.onCancelClicked();
-    }
-
+    @SuppressWarnings("UnusedParameters")
     @UiHandler("branchName")
     public void branchNameChanged(final ValueChangeEvent<String> event) {
-        this.delegate.updateControls();
+        delegate.updateControls();
     }
 
+    @SuppressWarnings("UnusedParameters")
     @UiHandler("branchName")
     public void branchNameKeyUp(final KeyUpEvent event) {
-        this.delegate.updateControls();
+        delegate.updateControls();
     }
 
+    @SuppressWarnings("UnusedParameters")
     @UiHandler("branchName")
     public void branchNamePaste(final PasteEvent event) {
-        this.delegate.updateControls();
+        delegate.updateControls();
     }
 
-    @UiHandler("pullRequestComment")
-    public void pullRequestCommentChanged(final ValueChangeEvent<String> event) {
-        this.delegate.updateControls();
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("contributionComment")
+    public void contributionCommentChanged(final ValueChangeEvent<String> event) {
+        delegate.updateControls();
     }
 
-    @UiHandler("contribTitle")
-    public void contribTitleChanged(final ValueChangeEvent<String> event) {
-        this.delegate.updateControls();
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("contributionTitle")
+    public void contributionTitleChanged(final ValueChangeEvent<String> event) {
+        delegate.updateControls();
     }
 
-    @UiHandler("contribTitle")
-    public void contribTitleKeyUp(final KeyUpEvent event) {
-        this.delegate.updateControls();
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("contributionTitle")
+    public void contributionTitleKeyUp(final KeyUpEvent event) {
+        delegate.updateControls();
     }
 
-    @UiHandler("contribTitle")
-    public void contribTitlePaste(final PasteEvent event) {
-        this.delegate.updateControls();
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("contributionTitle")
+    public void contributionTitlePaste(final PasteEvent event) {
+        delegate.updateControls();
     }
 
     @Override
     public void show() {
-        super.show(this.branchName.getElement().<InputElement>cast());
+        super.show();
+        new Timer() {
+            @Override
+            public void run() {
+                branchName.setFocus(true);
+            }
+        }.schedule(300);
     }
 }
