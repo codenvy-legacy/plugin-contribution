@@ -20,9 +20,10 @@ import org.vectomatic.dom.svg.ui.SVGResource;
  */
 public interface ContributeResources extends ClientBundle {
     interface ContributeCss extends CssResource {
+        String inputError();
     }
 
-    @Source("Contribute.css")
+    @Source({"Contribute.css", "com/codenvy/ide/api/ui/style.css"})
     ContributeCss contributeCss();
 
     @Source("contribute.svg")

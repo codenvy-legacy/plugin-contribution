@@ -12,6 +12,7 @@ package com.codenvy.plugin.contribution.client.dialogs.contribute;
 
 import com.codenvy.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,9 +58,14 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     /** The bound delegate. */
     private ActionDelegate delegate;
 
+    /** The resources for the view. */
+    private final ContributeResources resources;
+
     @Inject
-    public PreContributeWizardViewImpl(final ContributeMessages messages) {
+    public PreContributeWizardViewImpl(final ContributeMessages messages,
+                                       final ContributeResources resources) {
         this.messages = messages;
+        this.resources = resources;
 
         setWidget(UI_BINDER.createAndBindUi(this));
         setTitle(messages.preContributeWizardTitle());
@@ -124,6 +130,15 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     @Override
     public void setContributeEnabled(final boolean enabled) {
         contributeButton.setEnabled(enabled);
+    }
+
+    @Override
+    public void showBranchNameError(final boolean showError) {
+        if (showError) {
+            branchName.addStyleName(resources.contributeCss().inputError());
+        } else {
+            branchName.removeStyleName(resources.contributeCss().inputError());
+        }
     }
 
     @SuppressWarnings("UnusedParameters")

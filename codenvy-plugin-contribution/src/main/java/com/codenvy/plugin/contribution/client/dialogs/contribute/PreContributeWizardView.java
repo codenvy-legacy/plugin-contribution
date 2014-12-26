@@ -63,6 +63,14 @@ public interface PreContributeWizardView extends View<PreContributeWizardView.Ac
     void setContributeEnabled(boolean enabled);
 
     /**
+     * Sets the branch name input error state.
+     *
+     * @param showError
+     *         {@code true} if the branch name is in error, {@code false} otherwise.
+     */
+    void showBranchNameError(boolean showError);
+
+    /**
      * Action delegate interface for the contribution configuration dialog.
      */
     interface ActionDelegate extends Wizard.UpdateDelegate {

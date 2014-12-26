@@ -84,16 +84,22 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
     @Override
     public void updateControls() {
-        final String branchName = this.view.getBranchName();
-        final String title = this.view.getContributionTitle();
+        final String branchName = view.getBranchName();
+        final String contributionTitle = view.getContributionTitle();
+
         boolean ready = true;
-        if (branchName == null || "".equals(branchName)) {
+        view.showBranchNameError(false);
+
+        if (branchName == null || !branchName.matches("[0-9A-Za-z-]+")) {
+            view.showBranchNameError(true);
             ready = false;
         }
-        if (title == null || "".equals(title)) {
+
+        if (contributionTitle == null || contributionTitle.trim().isEmpty()) {
             ready = false;
         }
-        this.view.setContributeEnabled(ready);
+
+        view.setContributeEnabled(ready);
     }
 
 }
