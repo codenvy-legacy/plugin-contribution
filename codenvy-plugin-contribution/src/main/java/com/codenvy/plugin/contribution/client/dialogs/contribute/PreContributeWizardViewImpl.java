@@ -141,6 +141,15 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
         }
     }
 
+    @Override
+    public void showContributionTitleError(boolean showError) {
+        if (showError) {
+            contributionTitle.addStyleName(resources.contributeCss().inputError());
+        } else {
+            contributionTitle.removeStyleName(resources.contributeCss().inputError());
+        }
+    }
+
     @SuppressWarnings("UnusedParameters")
     @UiHandler("branchName")
     public void branchNameChanged(final ValueChangeEvent<String> event) {

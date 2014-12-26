@@ -88,6 +88,7 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
         boolean ready = true;
         view.showBranchNameError(false);
+        view.showContributionTitleError(false);
 
         if (branchName == null || !branchName.matches("[0-9A-Za-z-]+")) {
             view.showBranchNameError(true);
@@ -95,6 +96,7 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
         }
 
         if (contributionTitle == null || contributionTitle.trim().isEmpty()) {
+            view.showContributionTitleError(true);
             ready = false;
         }
 

@@ -71,6 +71,14 @@ public interface PreContributeWizardView extends View<PreContributeWizardView.Ac
     void showBranchNameError(boolean showError);
 
     /**
+     * Sets the contribution title input error state.
+     *
+     * @param showError
+     *         {@code true} if the contribution title is in error, {@code false} otherwise.
+     */
+    void showContributionTitleError(boolean showError);
+
+    /**
      * Action delegate interface for the contribution configuration dialog.
      */
     interface ActionDelegate extends Wizard.UpdateDelegate {
