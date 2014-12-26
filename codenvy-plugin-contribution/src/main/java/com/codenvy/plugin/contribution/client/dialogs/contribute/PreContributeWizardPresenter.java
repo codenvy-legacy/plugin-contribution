@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
  * Dialog for the contribution configuration.
  */
 public class PreContributeWizardPresenter implements WizardDialog, PreContributeWizardView.ActionDelegate {
-
     /**
      * The component view.
      */
@@ -34,7 +33,7 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
     private final FinishContributionOperation finishContribution;
 
     /**
-     * The contribution configuration, which contains values choosen by the user.
+     * The contribution configuration, which contains values chosen by the user.
      */
     private final Configuration configuration;
 
@@ -45,7 +44,7 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
 
     @AssistedInject
-    public PreContributeWizardPresenter(final PreContributeWizardView view,
+    public PreContributeWizardPresenter(@Nonnull final PreContributeWizardView view,
                                         @Assisted @Nonnull final FinishContributionOperation finishContribution,
                                         @Assisted @Nonnull final Context context,
                                         @Assisted @Nonnull final Configuration config) {
@@ -65,21 +64,21 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
     @Override
     public void onContribute() {
-        this.configuration.withBranchName(this.view.getBranchName())
-                          .withPullRequestComment(this.view.getContributionComment())
-                          .withContributionTitle(this.view.getContributionTitle());
-        this.view.hide();
-        this.finishContribution.finishContribution(this.context, this.configuration);
+        configuration.withBranchName(view.getBranchName())
+                     .withPullRequestComment(view.getContributionComment())
+                     .withContributionTitle(view.getContributionTitle());
+        view.hide();
+        finishContribution.finishContribution(context, configuration);
     }
 
     @Override
     public void onCancel() {
-        this.view.hide();
+        view.hide();
     }
 
     @Override
     public String suggestBranchName() {
-        return this.context.getWorkBranchName();
+        return context.getWorkBranchName();
     }
 
     @Override
@@ -101,5 +100,4 @@ public class PreContributeWizardPresenter implements WizardDialog, PreContribute
 
         view.setContributeEnabled(ready);
     }
-
 }
