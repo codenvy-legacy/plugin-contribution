@@ -10,11 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcshost;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
@@ -26,6 +21,10 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link com.codenvy.plugin.contribution.client.vcshost.RepositoryHost} implementation for GitHub.

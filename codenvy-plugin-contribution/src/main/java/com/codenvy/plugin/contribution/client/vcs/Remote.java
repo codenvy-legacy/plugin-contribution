@@ -14,15 +14,14 @@ import com.codenvy.dto.shared.DTO;
 
 /**
  * Info about remote configuration.
- *
  */
 @DTO
 public interface Remote {
     String getName();
-    
+
     Remote withName(String name);
-    
+
     String getUrl();
-    
+
     Remote withUrl(String url);
 }

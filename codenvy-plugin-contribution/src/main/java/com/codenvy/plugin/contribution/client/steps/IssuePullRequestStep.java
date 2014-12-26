@@ -11,8 +11,6 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 
-import javax.inject.Inject;
-
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
@@ -22,6 +20,8 @@ import com.codenvy.plugin.contribution.client.vcshost.PullRequest;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import javax.inject.Inject;
+
 /**
  * Create the pull request on the remote VCS repository.
  */
@@ -29,7 +29,7 @@ public class IssuePullRequestStep implements Step {
 
     private static final String BASE_BRANCH = "master";
 
-    private final RepositoryHost     repositoryHost;
+    private final RepositoryHost repositoryHost;
 
     /**
      * The following step.

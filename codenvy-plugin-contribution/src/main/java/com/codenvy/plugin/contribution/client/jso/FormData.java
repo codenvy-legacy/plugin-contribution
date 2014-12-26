@@ -24,100 +24,116 @@ public class FormData extends JavaScriptObject {
 
     /**
      * Creates a new FormData.
-     * 
+     *
      * @return a FormData
      */
     public static final native FormData create() /*-{
-    return new FormData();
+        return new FormData();
     }-*/;
 
     /**
      * Creates a new FormData linked to the form element
-     * 
+     *
      * @return a FormData
      */
     public static final native FormData create(FormElement form) /*-{
-    return new FormData(form);
+        return new FormData(form);
     }-*/;
 
     /**
      * Creates a new FormData linked to the form element
-     * 
+     *
      * @return a FormData
      */
     public static final native FormData create(elemental.html.FormElement form) /*-{
-    return new FormData(form);
+        return new FormData(form);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
      */
     public final native void append(String name, String value) /*-{
-    this.append(name, value);
+        this.append(name, value);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
      */
     public final native void append(String name, int value) /*-{
-    this.append(name, value);
+        this.append(name, value);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
      */
     public final native void append(String name, double value) /*-{
-    this.append(name, value);
+        this.append(name, value);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
      */
     public final native void append(String name, Blob value) /*-{
-    this.append(name, value);
+        this.append(name, value);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
-     * @param filename the file name reported to the server
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
+     * @param filename
+     *         the file name reported to the server
      */
     public final native void append(String name, Blob value, String filename) /*-{
-    this.append(name, value, filename);
+        this.append(name, value, filename);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
      */
     public final native void append(String name, File value) /*-{
-    this.append(name, value);
+        this.append(name, value);
     }-*/;
 
     /**
      * Appends a key/value pair to the form data.
-     * 
-     * @param name the key
-     * @param value the value
-     * @param filename the file name reported to the server
+     *
+     * @param name
+     *         the key
+     * @param value
+     *         the value
+     * @param filename
+     *         the file name reported to the server
      */
     public final native void append(String name, File value, String filename) /*-{
-    this.append(name, value, filename);
+        this.append(name, value, filename);
     }-*/;
 }

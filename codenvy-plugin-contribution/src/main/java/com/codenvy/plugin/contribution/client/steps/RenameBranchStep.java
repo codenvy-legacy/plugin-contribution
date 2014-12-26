@@ -101,9 +101,11 @@ public class RenameBranchStep implements Step {
 
     /**
      * Continue with the folloing step.
-     * 
-     * @param context the contribution context
-     * @param config the configuration
+     *
+     * @param context
+     *         the contribution context
+     * @param config
+     *         the configuration
      */
     private void proceed(final Context context, final Configuration config) {
         this.nextStep.execute(context, config);
@@ -111,10 +113,13 @@ public class RenameBranchStep implements Step {
 
     /**
      * Check if the branch exists and either do the rename or return to configuration.
-     * 
-     * @param branchName the provided branch name
-     * @param context the contribution context
-     * @param config the contribution configuration
+     *
+     * @param branchName
+     *         the provided branch name
+     * @param context
+     *         the contribution context
+     * @param config
+     *         the contribution configuration
      */
     private void checkExistAndRename(final String branchName, final Context context, final Configuration config) {
         this.vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
@@ -147,10 +152,13 @@ public class RenameBranchStep implements Step {
 
     /**
      * Rename the branch.
-     * 
-     * @param branchName the provided name
-     * @param context the contribution context
-     * @param config the contribution configuration
+     *
+     * @param branchName
+     *         the provided name
+     * @param context
+     *         the contribution context
+     * @param config
+     *         the contribution configuration
      */
     private void doRename(final String branchName, final Context context, final Configuration config) {
         this.vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {

@@ -54,7 +54,7 @@ public class Context {
      */
     private String reviewFactoryUrl;
 
-    private String            forkedRemoteName;
+    private String forkedRemoteName;
 
     public ProjectDescriptor getProject() {
         return project;
@@ -152,7 +152,8 @@ public class Context {
     /**
      * Sets the id of the pull request issued for this contribution.
      *
-     * @param pullRequestId the new value
+     * @param pullRequestId
+     *         the new value
      */
     public void setPullRequestId(final String pullRequestId) {
         this.pullRequestId = pullRequestId;
@@ -165,7 +166,7 @@ public class Context {
 
     /**
      * Returns the generated review factory URL (if available).
-     * 
+     *
      * @return factory URL
      */
     public String getReviewFactoryUrl() {
@@ -174,8 +175,9 @@ public class Context {
 
     /**
      * Sets the generated review factory URL (if available).
-     * 
-     * @param factoryUrl new value
+     *
+     * @param factoryUrl
+     *         new value
      */
     public void setReviewFactoryUrl(final String factoryUrl) {
         this.reviewFactoryUrl = factoryUrl;
@@ -183,8 +185,9 @@ public class Context {
 
     /**
      * Sets the generated review factory URL (if available).
-     * 
-     * @param factoryUrl new value
+     *
+     * @param factoryUrl
+     *         new value
      * @return this object
      */
     public Context withReviewFactoryUrl(final String factoryUrl) {

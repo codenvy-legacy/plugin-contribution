@@ -10,10 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import java.util.HashMap;
-
-import javax.inject.Inject;
-
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
@@ -45,6 +41,9 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
+
+import javax.inject.Inject;
+import java.util.HashMap;
 
 /**
  * Generates a factory for the contribution reviewer.
@@ -163,8 +162,10 @@ public class GenerateReviewFactory implements Step {
     /**
      * Continue to the following step.
      *
-     * @param context the context of the contribution
-     * @param config the configuration of the contribution
+     * @param context
+     *         the context of the contribution
+     * @param config
+     *         the configuration of the contribution
      */
     private void proceed(final Context context, final Configuration config) {
         this.nextStep.execute(context, config);
@@ -173,8 +174,10 @@ public class GenerateReviewFactory implements Step {
     /**
      * Continue to the step that is next when this one failed.
      *
-     * @param context the context of the contribution
-     * @param config the configuration of the contribution
+     * @param context
+     *         the context of the contribution
+     * @param config
+     *         the configuration of the contribution
      */
     private void recover(final Context context, final Configuration config, final String cause) {
         this.notificationManager.showWarning(cause);
@@ -303,8 +306,11 @@ public class GenerateReviewFactory implements Step {
 
     /**
      * Sends the request, passing the form data as content.
-     * @param xhr the request
-     * @param formData the form data
+     *
+     * @param xhr
+     *         the request
+     * @param formData
+     *         the form data
      * @return true iff the request was sent correctly - Note: doesn't mean the request will be succesful
      */
     private static final native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
@@ -323,8 +329,10 @@ public class GenerateReviewFactory implements Step {
         /**
          * Returns a 'getFactoryJson' call URL.
          *
-         * @param workspaceId the workspace id
-         * @param projectName the project name
+         * @param workspaceId
+         *         the workspace id
+         * @param projectName
+         *         the project name
          * @return the call URL
          */
         @DefaultMessage("/api/factory/{0}/{1}")
@@ -376,37 +384,37 @@ public class GenerateReviewFactory implements Step {
             final Header[] parsedHeaders = new Header[unparsedHeaders.length];
 
             for (int i = 0, n = unparsedHeaders.length; i < n; ++i) {
-              final String unparsedHeader = unparsedHeaders[i];
+                final String unparsedHeader = unparsedHeaders[i];
 
-              if (unparsedHeader.length() == 0) {
-                continue;
-              }
-
-              final int endOfNameIdx = unparsedHeader.indexOf(':');
-              if (endOfNameIdx < 0) {
-                continue;
-              }
-
-              final String name = unparsedHeader.substring(0, endOfNameIdx).trim();
-              final String value = unparsedHeader.substring(endOfNameIdx + 1).trim();
-              final Header header = new Header() {
-                @Override
-                public String getName() {
-                  return name;
+                if (unparsedHeader.length() == 0) {
+                    continue;
                 }
 
-                @Override
-                public String getValue() {
-                  return value;
+                final int endOfNameIdx = unparsedHeader.indexOf(':');
+                if (endOfNameIdx < 0) {
+                    continue;
                 }
 
-                @Override
-                public String toString() {
-                  return name + " : " + value;
-                }
-              };
+                final String name = unparsedHeader.substring(0, endOfNameIdx).trim();
+                final String value = unparsedHeader.substring(endOfNameIdx + 1).trim();
+                final Header header = new Header() {
+                    @Override
+                    public String getName() {
+                        return name;
+                    }
 
-              parsedHeaders[i] = header;
+                    @Override
+                    public String getValue() {
+                        return value;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return name + " : " + value;
+                    }
+                };
+
+                parsedHeaders[i] = header;
             }
 
             return parsedHeaders;

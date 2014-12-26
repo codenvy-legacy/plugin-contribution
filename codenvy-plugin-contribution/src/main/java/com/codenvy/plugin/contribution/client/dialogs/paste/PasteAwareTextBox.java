@@ -58,8 +58,9 @@ public class PasteAwareTextBox extends TextBox {
 
     /**
      * Adds a {@link PasteHandler} to the component.
-     * 
-     * @param handler the handler to add
+     *
+     * @param handler
+     *         the handler to add
      * @return a registration object for removal
      */
     public HandlerRegistration addPasteHandler(final PasteHandler handler) {

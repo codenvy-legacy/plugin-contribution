@@ -50,7 +50,8 @@ public class RemoteForkStep implements Step {
 
             @Override
             public void onSuccess(Repository fork) {
-                notificationManager.showNotification(new Notification(messages.prefixNotification(messages.useExistingUserFork()), Notification.Type.INFO));
+                notificationManager.showNotification(
+                        new Notification(messages.prefixNotification(messages.useExistingUserFork()), Notification.Type.INFO));
             }
 
             @Override
@@ -59,14 +60,17 @@ public class RemoteForkStep implements Step {
                     createFork(context, owner, repository);
                     return;
                 }
-                notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), Notification.Type.ERROR));
+                notificationManager
+                        .showNotification(new Notification(messages.prefixNotification(exception.getMessage()), Notification.Type.ERROR));
                 Log.error(RemoteForkStep.class, exception);
             }
         });
     }
 
     private void createFork(final Context context, final String repositoryOwner, final String repositoryName) {
-        final Notification notification = new Notification(messages.prefixNotification(messages.creatingFork(repositoryOwner, repositoryName)), Notification.Type.INFO);
+        final Notification notification =
+                new Notification(messages.prefixNotification(messages.creatingFork(repositoryOwner, repositoryName)),
+                                 Notification.Type.INFO);
         notification.setStatus(Status.PROGRESS);
         notificationManager.showNotification(notification);
 

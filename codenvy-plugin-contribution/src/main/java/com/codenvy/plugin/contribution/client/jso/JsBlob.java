@@ -24,61 +24,66 @@ public class JsBlob extends JavaScriptObject implements Blob {
 
     /**
      * Creates a new Blob object.
-     * 
+     *
      * @return a Blob
      */
     public static final native JsBlob create() /*-{
-    return new Blob();
+        return new Blob();
     }-*/;
 
     /**
      * Creates a new Blob object.
-     * 
-     * @param blobParts parts appended to the blob
+     *
+     * @param blobParts
+     *         parts appended to the blob
      * @return a Blob
      */
-    public static final native JsBlob create(JsArray< ? > blobParts) /*-{
-    return new Blob(blobParts);
+    public static final native JsBlob create(JsArray<?> blobParts) /*-{
+        return new Blob(blobParts);
     }-*/;
 
     /**
      * Creates a new Blob object.
-     * 
-     * @param blobParts parts appended to the blob
-     * @param mediaType the media type of the resulting blob
+     *
+     * @param blobParts
+     *         parts appended to the blob
+     * @param mediaType
+     *         the media type of the resulting blob
      * @return a Blob
      */
-    public static final native JsBlob create(JsArray< ? > blobParts, String mediaType) /*-{
-    return new Blob(blobParts, { "type" : mediaType });
+    public static final native JsBlob create(JsArray<?> blobParts, String mediaType) /*-{
+        return new Blob(blobParts, { "type": mediaType });
     }-*/;
 
     /**
      * Creates a new Blob object.
-     * 
-     * @param blobParts parts appended to the blob
+     *
+     * @param blobParts
+     *         parts appended to the blob
      * @return a Blob
      */
     public static final native JsBlob create(String blobPart) /*-{
-                                                              return new Blob([ blobPart ]);
-                                                              }-*/;
+        return new Blob([ blobPart ]);
+    }-*/;
 
     /**
      * Creates a new Blob object.
-     * 
-     * @param blobParts parts appended to the blob
+     *
+     * @param blobParts
+     *         parts appended to the blob
      * @return a Blob
      */
     public static final native JsBlob create(String blobPart, String mediaType) /*-{
-    return new Blob([ blobPart ], { "type" : mediaType });
+        return new Blob([ blobPart ], { "type": mediaType });
     }-*/;
 
     @Override
     public final native double getSize() /*-{
-    return this.size;
+        return this.size;
     }-*/;
 
     @Override
     public final native String getType() /*-{
-    return this.type;
+        return this.type;
     }-*/;
 }

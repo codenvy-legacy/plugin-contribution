@@ -25,26 +25,26 @@ public class JsFile extends JavaScriptObject implements File {
 
     /**
      * Creates a new file.
-     * 
+     *
      * @return a File
      */
     public static final native JsFile create(Blob blob, String filename) /*-{
-    return new File(blob, filename);
+        return new File(blob, filename);
     }-*/;
 
     public final native double getSize() /*-{
-    return this.size;
+        return this.size;
     }-*/;
 
     public final native String getType() /*-{
-    return null;
+        return null;
     }-*/;
 
     public final native Date getLastModifiedDate() /*-{
-    return this.lastModifiedDate;
+        return this.lastModifiedDate;
     }-*/;
 
     public final native String getName() /*-{
-    return this.name;
+        return this.name;
     }-*/;
 }

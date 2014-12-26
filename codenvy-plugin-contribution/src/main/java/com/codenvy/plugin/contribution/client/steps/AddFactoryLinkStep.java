@@ -82,33 +82,39 @@ public class AddFactoryLinkStep implements Step {
 
     /**
      * Post the comment in the pull request.
-     * 
-     * @param context the context of the contribution
-     * @param config the configuration of the contribution
-     * @param factoryUrl the factory URL to include in the comment
+     *
+     * @param context
+     *         the context of the contribution
+     * @param config
+     *         the configuration of the contribution
+     * @param factoryUrl
+     *         the factory URL to include in the comment
      */
     private void sendComment(final Context context, final Configuration config, final String factoryUrl) {
         final String commentText = messages.pullRequestlinkComment(factoryUrl);
         this.repository.commentPullRequest(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
                                            context.getPullRequestId(), commentText, new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(final Void notUsed) {
-                proceed(context, config);
-            }
-            @Override
-            public void onFailure(final Throwable caught) {
-                notificationManager.showWarning(messages.warnPostFactoryLinkFailed(factoryUrl));
-                // continue anyway, this is not a hard failure
-                proceed(context, config);
-            }
-        });
+                    @Override
+                    public void onSuccess(final Void notUsed) {
+                        proceed(context, config);
+                    }
+
+                    @Override
+                    public void onFailure(final Throwable caught) {
+                        notificationManager.showWarning(messages.warnPostFactoryLinkFailed(factoryUrl));
+                        // continue anyway, this is not a hard failure
+                        proceed(context, config);
+                    }
+                });
     }
 
     /**
      * Continue to the following step.
-     * 
-     * @param context the context of the contribution
-     * @param config the configuration of the contribution
+     *
+     * @param context
+     *         the context of the contribution
+     * @param config
+     *         the configuration of the contribution
      */
     private void proceed(final Context context, final Configuration config) {
         this.nextStep.execute(context, config);

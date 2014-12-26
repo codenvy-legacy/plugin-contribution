@@ -19,9 +19,11 @@ public interface UrlTemplates extends Messages {
 
     /**
      * The git URL to a github repository.
-     * 
-     * @param user the user name
-     * @param repo the repository name
+     *
+     * @param user
+     *         the user name
+     * @param repo
+     *         the repository name
      * @return the URL
      */
     @DefaultMessage("git@github.com:{0}/{1}.git")

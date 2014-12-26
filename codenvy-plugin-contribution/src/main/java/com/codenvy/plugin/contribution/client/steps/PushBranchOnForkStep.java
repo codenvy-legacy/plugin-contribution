@@ -27,13 +27,14 @@ import javax.validation.constraints.NotNull;
 
 public class PushBranchOnForkStep implements Step {
 
-    private final Step pullRequestStep;
-    private final VcsService           vcsService;
+    private final Step                pullRequestStep;
+    private final VcsService          vcsService;
     private final NotificationManager notificationManager;
-    private final ContributeMessages messages;
+    private final ContributeMessages  messages;
 
     @Inject
-    public PushBranchOnForkStep(final IssuePullRequestStep nextStep, final @Nonnull VcsService vcsService, final @Nonnull NotificationManager notificationManager, final @NotNull ContributeMessages messages) {
+    public PushBranchOnForkStep(final IssuePullRequestStep nextStep, final @Nonnull VcsService vcsService,
+                                final @Nonnull NotificationManager notificationManager, final @NotNull ContributeMessages messages) {
         pullRequestStep = nextStep;
         this.vcsService = vcsService;
         this.notificationManager = notificationManager;
@@ -42,16 +43,18 @@ public class PushBranchOnForkStep implements Step {
 
     @Override
     public void execute(final Context context, final Configuration config) {
-        final Notification notification = new Notification(messages.prefixNotification(messages.pushingWorkingBranchToFork()), Notification.Type.INFO);
+        final Notification notification =
+                new Notification(messages.prefixNotification(messages.pushingWorkingBranchToFork()), Notification.Type.INFO);
         notification.setStatus(Status.PROGRESS);
         notificationManager.showNotification(notification);
-        vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>(){
+        vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 notification.setMessage(messages.prefixNotification(messages.successPushingBranchToFork()));
                 notification.setStatus(Status.FINISHED);
                 pullRequestStep.execute(context, config);
             }
+
             @Override
             public void onFailure(Throwable caught) {
                 notification.setMessage(messages.prefixNotification(messages.failedPushingBranchToFork(caught.getMessage())));

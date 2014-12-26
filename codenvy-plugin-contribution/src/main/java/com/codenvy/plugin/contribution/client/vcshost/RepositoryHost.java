@@ -29,11 +29,17 @@ public interface RepositoryHost {
 
     /**
      * Add a comment to a pull request.
-     * @param username the username of the owner
-     * @param repository the repository
-     * @param pullRequestId the id f the pull request
-     * @param commentText the text of the comment
-     * @param callback the callback
+     *
+     * @param username
+     *         the username of the owner
+     * @param repository
+     *         the repository
+     * @param pullRequestId
+     *         the id f the pull request
+     * @param commentText
+     *         the text of the comment
+     * @param callback
+     *         the callback
      */
     void commentPullRequest(String username, String repository,
                             String pullRequestId, String commentText, AsyncCallback<Void> callback);

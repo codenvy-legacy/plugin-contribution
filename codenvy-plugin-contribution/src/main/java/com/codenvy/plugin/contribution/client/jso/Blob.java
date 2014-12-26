@@ -20,7 +20,7 @@ public interface Blob {
      * the total number of bytes that can be read by a FileReader or FileReaderSync object, or 0 if<br>
      * the Blob has no bytes to be read. If the Blob has been neutered with close called on it, then<br>
      * size must return 0.
-     * 
+     *
      * @return the size
      */
     double getSize();
@@ -33,7 +33,7 @@ public interface Blob {
      * type cannot be determined. When the Blob is of type text/plain user agents must NOT append a charset<br>
      * parameter to the dictionary of parameters portion of the media type [MIMESNIFF]. User agents must not<br>
      * attempt heuristic determination of encoding, including statistical methods.
-     * 
+     *
      * @return the media type
      */
     String getType();
