@@ -19,7 +19,6 @@ import com.codenvy.plugin.contribution.client.vcshost.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.sun.javafx.beans.annotations.NonNull;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -37,9 +36,9 @@ public class RemoteForkStep implements Step {
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public RemoteForkStep(@NonNull final RepositoryHost repositoryHost,
-                          @NonNull final ContributeMessages messages,
-                          @NonNull final NotificationHelper notificationHelper) {
+    public RemoteForkStep(@Nonnull final RepositoryHost repositoryHost,
+                          @Nonnull final ContributeMessages messages,
+                          @Nonnull final NotificationHelper notificationHelper) {
         this.repositoryHost = repositoryHost;
         this.messages = messages;
         this.notificationHelper = notificationHelper;

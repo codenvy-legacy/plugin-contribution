@@ -29,7 +29,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.sun.javafx.beans.annotations.NonNull;
+
+import javax.annotation.Nonnull;
 
 public class ContributeAction extends ProjectAction implements CommitPresenter.CommitActionHandler {
     /**
@@ -78,17 +79,17 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
     private final ContributeMessages messages;
 
     @Inject
-    public ContributeAction(@NonNull final ConfigureStep configureStep,
-                            @NonNull final Context context,
-                            @NonNull final ContributeResources contributeResources,
-                            @NonNull final ContributeMessages messages,
-                            @NonNull final DtoFactory dtoFactory,
-                            @NonNull @Named("restContext") final String baseUrl,
-                            @NonNull final RemoteForkStep remoteForkStep,
-                            @NonNull final RepositoryHost repositoryHost,
-                            @NonNull final CommitPresenter commitPresenter,
-                            @NonNull final NotificationHelper notificationHelper,
-                            @NonNull final ContributeMessages messages1) {
+    public ContributeAction(@Nonnull final ConfigureStep configureStep,
+                            @Nonnull final Context context,
+                            @Nonnull final ContributeResources contributeResources,
+                            @Nonnull final ContributeMessages messages,
+                            @Nonnull final DtoFactory dtoFactory,
+                            @Nonnull @Named("restContext") final String baseUrl,
+                            @Nonnull final RemoteForkStep remoteForkStep,
+                            @Nonnull final RepositoryHost repositoryHost,
+                            @Nonnull final CommitPresenter commitPresenter,
+                            @Nonnull final NotificationHelper notificationHelper,
+                            @Nonnull final ContributeMessages messages1) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
