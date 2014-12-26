@@ -20,8 +20,6 @@ import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
@@ -40,9 +38,7 @@ import java.util.Map;
 
 import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
 import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
-import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.google.gwt.http.client.URL.encodeQueryString;
 
@@ -55,14 +51,14 @@ import static com.google.gwt.http.client.URL.encodeQueryString;
 public class ContributorExtension {
     private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
-    private final ActionManager       actionManager;
-    private final Context             context;
-    private final ContributeAction    contributeAction;
-    private final ContributeMessages  messages;
-    private final NotificationManager notificationManager;
-    private final VcsService          vcsService;
-    private final String              baseUrl;
-    private final AppContext          appContext;
+    private final ActionManager      actionManager;
+    private final Context            context;
+    private final ContributeAction   contributeAction;
+    private final ContributeMessages messages;
+    private final VcsService         vcsService;
+    private final String             baseUrl;
+    private final AppContext         appContext;
+    private final NotificationHelper notificationHelper;
 
     private DefaultActionGroup contributeToolbarGroup;
     private DefaultActionGroup mainToolbarGroup;
@@ -73,19 +69,19 @@ public class ContributorExtension {
                                 final ActionManager actionManager,
                                 final ContributeAction contributeAction,
                                 final ContributeMessages messages,
-                                final NotificationManager notificationManager,
                                 final VcsService gitAgent,
                                 final ContributeResources resources,
                                 final @Named("restContext") String baseUrl,
-                                final AppContext appContext) {
+                                final AppContext appContext,
+                                final NotificationHelper notificationHelper) {
         this.actionManager = actionManager;
         this.context = context;
         this.contributeAction = contributeAction;
         this.messages = messages;
-        this.notificationManager = notificationManager;
         this.vcsService = gitAgent;
         this.baseUrl = baseUrl;
         this.appContext = appContext;
+        this.notificationHelper = notificationHelper;
 
         resources.contributeCss().ensureInjected();
 
@@ -118,7 +114,7 @@ public class ContributorExtension {
         vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
 
             @Override
-            public void onSuccess(List<Remote> result) {
+            public void onSuccess(final List<Remote> result) {
                 for (Remote remote : result) {
                     if (remote.getName().equals("origin")) {
                         // save origin repository name & owner in context
@@ -136,8 +132,8 @@ public class ContributorExtension {
             }
 
             @Override
-            public void onFailure(Throwable exception) {
-                Log.error(ContributorExtension.class, exception);
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(ContributorExtension.class, exception);
             }
         });
     }
@@ -163,15 +159,15 @@ public class ContributorExtension {
                 context.setWorkBranchName(workingBranchName);
 
                 final Notification createWorkingBranchNotification =
-                        new Notification(messages.prefixNotification(messages.notificationCreatingNewWorkingBranch(workingBranchName)),
-                                         INFO, PROGRESS);
-                notificationManager.showNotification(createWorkingBranchNotification);
+                        new Notification(messages.notificationCreatingNewWorkingBranch(workingBranchName), INFO, PROGRESS);
+                notificationHelper.showNotification(createWorkingBranchNotification);
 
                 // the working branch is only created if it doesn't exist
                 vcsService.listLocalBranches(project, new AsyncCallback<List<Branch>>() {
                     @Override
                     public void onFailure(final Throwable exception) {
-                        handleError(exception, createWorkingBranchNotification);
+                        notificationHelper.finishNotificationWithError(ContributorExtension.class, exception,
+                                                                       createWorkingBranchNotification);
                     }
 
                     @Override
@@ -189,15 +185,15 @@ public class ContributorExtension {
                         vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                             @Override
                             public void onSuccess(final String result) {
-                                createWorkingBranchNotification.setMessage(messages.prefixNotification(
-                                        messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName)));
-
-                                createWorkingBranchNotification.setStatus(FINISHED);
+                                notificationHelper.finishNotification(
+                                        messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName),
+                                        createWorkingBranchNotification);
                             }
 
                             @Override
                             public void onFailure(final Throwable exception) {
-                                handleError(exception, createWorkingBranchNotification);
+                                notificationHelper.finishNotificationWithError(ContributorExtension.class, exception,
+                                                                               createWorkingBranchNotification);
                             }
                         });
                     }
@@ -234,25 +230,5 @@ public class ContributorExtension {
     private String generateWorkingBranchName() {
         final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MMddyyyy");
         return WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
-    }
-
-    /**
-     * Handles an exception and display the error message in a notification.
-     *
-     * @param exception
-     *         the exception to handle.
-     * @param notification
-     *         the notification in progress, {@code null} if none.
-     */
-    private void handleError(final Throwable exception, final Notification notification) {
-        if (notification != null) {
-            notification.setMessage(messages.prefixNotification(exception.getMessage()));
-            notification.setType(ERROR);
-            notification.setStatus(FINISHED);
-        } else {
-            notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), ERROR, FINISHED));
-        }
-
-        Log.error(ContributeAction.class, exception);
     }
 }

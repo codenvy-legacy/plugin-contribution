@@ -13,6 +13,8 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 
+import javax.annotation.Nonnull;
+
 public interface Step {
-    void execute(Context xontext, Configuration config);
+    void execute(@Nonnull Context context, @Nonnull Configuration config);
 }

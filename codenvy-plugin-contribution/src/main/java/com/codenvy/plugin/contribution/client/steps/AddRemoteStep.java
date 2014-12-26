@@ -11,8 +11,8 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 
-import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
@@ -50,11 +50,6 @@ public class AddRemoteStep implements Step {
     private final Step pushStep;
 
     /**
-     * The notification manager.
-     */
-    private final NotificationManager notificationManager;
-
-    /**
      * I18n-able messages.
      */
     private final ContributeMessages messages;
@@ -64,30 +59,35 @@ public class AddRemoteStep implements Step {
      */
     private final RepositoryHost repositoryHost;
 
+    /**
+     * Notification helper.
+     */
+    private final NotificationHelper notificationHelper;
+
     @Inject
-    public AddRemoteStep(final @Nonnull VcsService vcsService,
-                         final @Nonnull RepositoryHost repositoryHost,
-                         final @Nonnull PushBranchOnForkStep pushStep,
-                         final @Nonnull WaitForForOnRemoteStepFactory waitRemoteStepFactory,
-                         final @Nonnull NotificationManager notificationManager,
-                         final @Nonnull ContributeMessages messages) {
+    public AddRemoteStep(@Nonnull final VcsService vcsService,
+                         @Nonnull final RepositoryHost repositoryHost,
+                         @Nonnull final PushBranchOnForkStep pushStep,
+                         @Nonnull final WaitForForOnRemoteStepFactory waitRemoteStepFactory,
+                         @Nonnull final ContributeMessages messages,
+                         @Nonnull final NotificationHelper notificationHelper) {
         this.vcsService = vcsService;
         this.repositoryHost = repositoryHost;
         this.pushStep = pushStep;
         this.waitRemoteStepFactory = waitRemoteStepFactory;
-        this.notificationManager = notificationManager;
         this.messages = messages;
+        this.notificationHelper = notificationHelper;
     }
 
     @Override
-    public void execute(final Context context, final Configuration config) {
-        final String remoteUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
+        final String remoteUrl = repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
 
         checkRemotePresent(context, config, remoteUrl);
     }
 
     private void checkRemotePresent(final Context context, final Configuration config, final String remoteUrl) {
-        this.vcsService.listRemotes(context.getProject(), new AsyncCallback<List<Remote>>() {
+        vcsService.listRemotes(context.getProject(), new AsyncCallback<List<Remote>>() {
             @Override
             public void onSuccess(final List<Remote> result) {
                 for (final Remote remote : result) {
@@ -107,8 +107,8 @@ public class AddRemoteStep implements Step {
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                notificationManager.showWarning(messages.warnCheckRemote());
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showWarning(messages.warnCheckRemote());
             }
         });
     }
@@ -124,7 +124,7 @@ public class AddRemoteStep implements Step {
      *         the url of the remote
      */
     private void addRemote(final Context context, final Configuration config, final String remoteUrl) {
-        this.vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
+        vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void notUsed) {
                 context.setForkedRemoteName(FORK_REMOTE_NAME);
@@ -132,8 +132,8 @@ public class AddRemoteStep implements Step {
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                notificationManager.showError(messages.errorAddRemoteFailed());
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(AddRemoteStep.class, messages.errorAddRemoteFailed());
             }
         });
     }
@@ -149,7 +149,7 @@ public class AddRemoteStep implements Step {
      *         the url of the remote
      */
     private void replaceRemote(final Context context, final Configuration config, final String remoteUrl) {
-        this.vcsService.deleteRemote(context.getProject(), remoteUrl, new AsyncCallback<Void>() {
+        vcsService.deleteRemote(context.getProject(), remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 addRemote(context, config, remoteUrl);
@@ -157,7 +157,7 @@ public class AddRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationManager.showError(messages.errorRemoveRemoteFailed());
+                notificationHelper.showError(AddRemoteStep.class, messages.errorRemoveRemoteFailed());
             }
         });
     }
@@ -171,7 +171,7 @@ public class AddRemoteStep implements Step {
      *         the contribution configuration
      */
     private void proceed(final Context context, final Configuration config) {
-        final Step waitStep = this.waitRemoteStepFactory.create(this.pushStep);
+        final Step waitStep = waitRemoteStepFactory.create(pushStep);
         waitStep.execute(context, config);
     }
 }

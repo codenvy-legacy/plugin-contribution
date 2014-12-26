@@ -13,6 +13,8 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 
+import javax.annotation.Nonnull;
+
 /**
  * Shows final dialog : show pull request link and propose persist action
  */
@@ -23,7 +25,7 @@ public class ProposePersistStep implements Step {
     }
 
     @Override
-    public void execute(final Context context, final Configuration config) {
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         // TODO Auto-generated method stub
 
     }

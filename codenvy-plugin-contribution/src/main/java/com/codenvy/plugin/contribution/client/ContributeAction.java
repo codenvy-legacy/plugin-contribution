@@ -13,11 +13,8 @@ package com.codenvy.plugin.contribution.client;
 import com.codenvy.ide.api.action.ActionEvent;
 import com.codenvy.ide.api.action.ProjectAction;
 import com.codenvy.ide.api.app.CurrentUser;
-import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.util.Config;
-import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
 import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
@@ -33,18 +30,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
-
 public class ContributeAction extends ProjectAction implements CommitPresenter.CommitActionHandler {
     /**
      * Step where the user configures the contribution.
      */
     private final ConfigureStep configureStep;
-
-    /**
-     * The notification manager.
-     */
-    private final NotificationManager notificationManager;
 
     /**
      * The REST base URL.
@@ -76,7 +66,10 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
      */
     private final CommitPresenter commitPresenter;
 
-    private final ContributeMessages messages;
+    /**
+     * Global handler for errors.
+     */
+    private final NotificationHelper notificationHelper;
 
     @Inject
     public ContributeAction(final ConfigureStep configureStep,
@@ -84,21 +77,20 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
                             final ContributeResources contributeResources,
                             final ContributeMessages messages,
                             final DtoFactory dtoFactory,
-                            final NotificationManager notificationManager,
                             final @Named("restContext") String baseUrl,
                             final RemoteForkStep remoteForkStep,
                             final RepositoryHost repositoryHost,
-                            final CommitPresenter commitPresenter) {
+                            final CommitPresenter commitPresenter,
+                            final NotificationHelper notificationHelper) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
-        this.messages = messages;
-        this.notificationManager = notificationManager;
         this.baseUrl = baseUrl;
         this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
         this.context = context;
         this.commitPresenter = commitPresenter;
+        this.notificationHelper = notificationHelper;
         this.config = dtoFactory.createDto(Configuration.class);
 
         this.commitPresenter.setCommitActionHandler(this);
@@ -112,13 +104,13 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (!appContext.getCurrentUser().isUserPermanent()) {
-            handleError(new IllegalStateException("Codenvy account is not permanent"));
+            notificationHelper.showError(ContributeAction.class, new IllegalStateException("Codenvy account is not permanent"));
 
         } else {
             commitPresenter.hasUncommittedChanges(new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(final Throwable exception) {
-                    handleError(exception);
+                    notificationHelper.showError(ContributeAction.class, exception);
                 }
 
                 @Override
@@ -158,7 +150,7 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
                 repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
                     @Override
                     public void onFailure(final Throwable exception) {
-                        handleError(exception);
+                        notificationHelper.showError(ContributeAction.class, exception);
                     }
 
                     @Override
@@ -183,7 +175,7 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
                     authenticateOnVCSHost();
 
                 } else {
-                    handleError(exception);
+                    notificationHelper.showError(ContributeAction.class, exception);
                 }
             }
 
@@ -205,16 +197,5 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
 
         remoteForkStep.execute(context, config); // parallel with the other steps
         configureStep.execute(context, config);
-    }
-
-    /**
-     * Handles an exception and display the error message in a notification.
-     *
-     * @param exception
-     *         the exception to handle.
-     */
-    private void handleError(final Throwable exception) {
-        notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), ERROR));
-        Log.error(ContributeAction.class, exception);
     }
 }

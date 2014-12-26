@@ -19,6 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class WaitForForkOnRemoteStep implements Step {
@@ -49,13 +50,13 @@ public class WaitForForkOnRemoteStep implements Step {
     }
 
     @Override
-    public void execute(final Context context, final Configuration config) {
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         check(context, config);
     }
 
     private void wait(final Context context, final Configuration config) {
-        if (this.timer == null) {
-            this.timer = new Timer() {
+        if (timer == null) {
+            timer = new Timer() {
                 @Override
                 public void run() {
                     checkRepository(context, new AsyncCallback<Void>() {
@@ -78,7 +79,7 @@ public class WaitForForkOnRemoteStep implements Step {
 
     private void check(final Context context, final Configuration config) {
         if (context.getForkReady()) {
-            this.next.execute(context, config);
+            next.execute(context, config);
         } else {
             wait(context, config);
         }

@@ -10,10 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
@@ -29,12 +29,6 @@ import java.util.List;
  * Renames the current branch with the one provided by the user.
  */
 public class RenameBranchStep implements Step {
-
-    /**
-     * The notification manager.
-     */
-    private final NotificationManager notificationManager;
-
     /**
      * Factory for dialogs.
      */
@@ -61,23 +55,28 @@ public class RenameBranchStep implements Step {
      */
     private final ContributeMessages messages;
 
+    /**
+     * Helper to work with notification.
+     */
+    private final NotificationHelper notificationHelper;
+
     @Inject
-    public RenameBranchStep(final @Nonnull AddRemoteStep addRemoteStep,
-                            final @Nonnull Provider<ConfigureStep> configureStepProvider,
-                            final @Nonnull VcsService vcsService,
-                            final @Nonnull DialogFactory dialogFactory,
-                            final @Nonnull NotificationManager notificationManager,
-                            final @Nonnull ContributeMessages messages) {
-        this.notificationManager = notificationManager;
+    public RenameBranchStep(@Nonnull final AddRemoteStep addRemoteStep,
+                            @Nonnull final Provider<ConfigureStep> configureStepProvider,
+                            @Nonnull final VcsService vcsService,
+                            @Nonnull final DialogFactory dialogFactory,
+                            @Nonnull final ContributeMessages messages,
+                            @Nonnull final NotificationHelper notificationHelper) {
         this.dialogFactory = dialogFactory;
         this.nextStep = addRemoteStep;
         this.configureStepProvider = configureStepProvider;
         this.vcsService = vcsService;
         this.messages = messages;
+        this.notificationHelper = notificationHelper;
     }
 
     @Override
-    public void execute(final Context context, final Configuration config) {
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         if (config == null || config.getBranchName() == null || "".equals(config.getBranchName())) {
             final ConfirmCallback callback = new ConfirmCallback() {
                 @Override
@@ -85,9 +84,9 @@ public class RenameBranchStep implements Step {
                     configureStepProvider.get().execute(context, config);
                 }
             };
-            this.dialogFactory.createMessageDialog(messages.warnMissingConfigTitle(),
-                                                   messages.warnBranchEmpty(),
-                                                   callback);
+            dialogFactory.createMessageDialog(messages.warnMissingConfigTitle(),
+                                              messages.warnBranchEmpty(),
+                                              callback);
             return;
         }
         final String newBranchName = config.getBranchName();
@@ -108,7 +107,7 @@ public class RenameBranchStep implements Step {
      *         the configuration
      */
     private void proceed(final Context context, final Configuration config) {
-        this.nextStep.execute(context, config);
+        nextStep.execute(context, config);
     }
 
     /**
@@ -122,7 +121,7 @@ public class RenameBranchStep implements Step {
      *         the contribution configuration
      */
     private void checkExistAndRename(final String branchName, final Context context, final Configuration config) {
-        this.vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
             @Override
             public void onSuccess(final List<Branch> result) {
                 for (final Branch branch : result) {
@@ -145,7 +144,7 @@ public class RenameBranchStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationManager.showError(messages.errorListBranches());
+                notificationHelper.showError(RenameBranchStep.class, messages.errorListBranches());
             }
         });
     }
@@ -161,17 +160,17 @@ public class RenameBranchStep implements Step {
      *         the contribution configuration
      */
     private void doRename(final String branchName, final Context context, final Configuration config) {
-        this.vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
+        vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                notificationManager.showInfo(messages.infoRenamedBranch(branchName));
+                notificationHelper.showInfo(messages.infoRenamedBranch(branchName));
                 context.setWorkBranchName(branchName);
                 proceed(context, config);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationManager.showError(messages.errorRenameFailed());
+                notificationHelper.showError(RenameBranchStep.class, messages.errorRenameFailed());
             }
         });
 

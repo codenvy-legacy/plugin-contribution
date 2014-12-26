@@ -12,15 +12,11 @@ package com.codenvy.plugin.contribution.client.dialogs.commit;
 
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
-import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.util.loging.Log;
-import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
-import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
 import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CONTINUE;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.OK;
@@ -35,21 +31,18 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     private final CommitView          view;
     private final AppContext          appContext;
     private final VcsService          vcsService;
-    private final NotificationManager notificationManager;
-    private final ContributeMessages  messages;
+    private final NotificationHelper  notificationHelper;
     private       CommitActionHandler handler;
 
     @Inject
     public CommitPresenter(final CommitView view,
                            final AppContext appContext,
                            final VcsService vcsService,
-                           final NotificationManager notificationManager,
-                           final ContributeMessages messages) {
+                           final NotificationHelper notificationHelper) {
         this.view = view;
         this.appContext = appContext;
         this.vcsService = vcsService;
-        this.notificationManager = notificationManager;
-        this.messages = messages;
+        this.notificationHelper = notificationHelper;
 
         this.view.setDelegate(this);
         this.view.setOkButtonEnabled(false);
@@ -97,7 +90,7 @@ public class CommitPresenter implements CommitView.ActionDelegate {
             vcsService.commit(project.getRootProject(), view.getCommitDescription(), new AsyncCallback<Void>() {
                 @Override
                 public void onFailure(final Throwable exception) {
-                    handleError(exception);
+                    notificationHelper.showError(CommitPresenter.class, exception);
                 }
 
                 @Override
@@ -124,17 +117,6 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     @Override
     public void onCommitDescriptionChanged() {
         view.setOkButtonEnabled(!view.getCommitDescription().isEmpty());
-    }
-
-    /**
-     * Handles an exception and display the error message in a notification.
-     *
-     * @param exception
-     *         the exception to handle.
-     */
-    private void handleError(final Throwable exception) {
-        notificationManager.showNotification(new Notification(messages.prefixNotification(exception.getMessage()), ERROR));
-        Log.error(CommitPresenter.class, exception);
     }
 
     public interface CommitActionHandler {

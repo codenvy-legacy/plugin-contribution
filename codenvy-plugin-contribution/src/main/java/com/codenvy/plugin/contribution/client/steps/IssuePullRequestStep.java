@@ -11,15 +11,15 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 
-import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.PullRequest;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 /**
@@ -37,9 +37,9 @@ public class IssuePullRequestStep implements Step {
     private final Step nextStep;
 
     /**
-     * The notification manager.
+     * The notification helper.
      */
-    private final NotificationManager notificationManager;
+    private final NotificationHelper notificationHelper;
 
     /**
      * The internationalizable messages.
@@ -47,34 +47,33 @@ public class IssuePullRequestStep implements Step {
     private final ContributeMessages messages;
 
     @Inject
-    public IssuePullRequestStep(final RepositoryHost repositoryHost,
-                                final GenerateReviewFactory nextStep,
-                                final NotificationManager notificationmanager,
-                                final ContributeMessages messages) {
+    public IssuePullRequestStep(@Nonnull final RepositoryHost repositoryHost,
+                                @Nonnull final GenerateReviewFactory nextStep,
+                                @Nonnull final NotificationHelper notificationHelper,
+                                @Nonnull final ContributeMessages messages) {
         this.repositoryHost = repositoryHost;
         this.nextStep = nextStep;
-        this.notificationManager = notificationmanager;
+        this.notificationHelper = notificationHelper;
         this.messages = messages;
     }
 
     @Override
-    public void execute(final Context context, final Configuration config) {
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         final String owner = context.getOriginRepositoryOwner();
         final String repository = context.getOriginRepositoryName();
         final String title = config.getContributionTitle();
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
         final String body = config.getPullRequestComment();
-        repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
 
+        repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest result) {
                 onPullRequestCreated(context, config);
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                notificationManager.showError(messages.errorPullRequestFailed());
-                Log.error(RemoteForkStep.class, caught.getMessage());
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(IssuePullRequestStep.class, messages.errorPullRequestFailed());
             }
         });
     }

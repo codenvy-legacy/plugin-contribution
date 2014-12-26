@@ -18,7 +18,6 @@ import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
 import com.codenvy.api.project.shared.dto.Source;
 import com.codenvy.ide.MimeType;
 import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
@@ -29,6 +28,7 @@ import com.codenvy.ide.rest.HTTPMethod;
 import com.codenvy.ide.rest.Unmarshallable;
 import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
@@ -42,6 +42,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.HashMap;
 
@@ -98,19 +99,19 @@ public class GenerateReviewFactory implements Step {
     /**
      * The notification manager.
      */
-    private final NotificationManager notificationManager;
+    private final NotificationHelper notificationHelper;
 
     @Inject
-    public GenerateReviewFactory(final AddFactoryLinkStep nextStep,
-                                 final ProposePersistStep failureNextStep,
-                                 final ApiUrlTemplate apiUrlTemplate,
-                                 final ContributeMessages messages,
-                                 final DtoFactory dtoFactory,
-                                 final DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                                 final AsyncRequestFactory asyncRequestFactory,
-                                 final AppContext appContext,
-                                 final NotificationManager notificationManager,
-                                 final RepositoryHost repositoryHost) {
+    public GenerateReviewFactory(@Nonnull final AddFactoryLinkStep nextStep,
+                                 @Nonnull final ProposePersistStep failureNextStep,
+                                 @Nonnull final ApiUrlTemplate apiUrlTemplate,
+                                 @Nonnull final ContributeMessages messages,
+                                 @Nonnull final DtoFactory dtoFactory,
+                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                                 @Nonnull final AsyncRequestFactory asyncRequestFactory,
+                                 @Nonnull final AppContext appContext,
+                                 @Nonnull final RepositoryHost repositoryHost,
+                                 @Nonnull final NotificationHelper notificationHelper) {
         this.nextStep = nextStep;
         this.failureNextStep = failureNextStep;
 
@@ -123,13 +124,12 @@ public class GenerateReviewFactory implements Step {
 
         this.appContext = appContext;
         this.repositoryHost = repositoryHost;
-        this.notificationManager = notificationManager;
+        this.notificationHelper = notificationHelper;
     }
 
     @Override
-    public void execute(final Context context, final Configuration config) {
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         createFactory(context, new AsyncCallback<Factory>() {
-
             @Override
             public void onSuccess(final Factory factory) {
                 // find factory URL inside factory
@@ -168,7 +168,7 @@ public class GenerateReviewFactory implements Step {
      *         the configuration of the contribution
      */
     private void proceed(final Context context, final Configuration config) {
-        this.nextStep.execute(context, config);
+        nextStep.execute(context, config);
     }
 
     /**
@@ -180,9 +180,9 @@ public class GenerateReviewFactory implements Step {
      *         the configuration of the contribution
      */
     private void recover(final Context context, final Configuration config, final String cause) {
-        this.notificationManager.showWarning(cause);
+        notificationHelper.showWarning(cause);
         // continue anyway, this is not a hard failure
-        this.failureNextStep.execute(context, config);
+        failureNextStep.execute(context, config);
     }
 
     private void createFactory(final Context context, final AsyncCallback<Factory> callback) {

@@ -44,7 +44,7 @@ public class ConfigureStep implements Step {
     }
 
     @Override
-    public void execute(final Context context, final Configuration configuration) {
+    public void execute(@Nonnull final Context context, @Nonnull final Configuration configuration) {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
@@ -54,9 +54,7 @@ public class ConfigureStep implements Step {
                         nextStep.execute(context, config);
                     }
                 };
-                final PreContributeWizardPresenter dialog = ConfigureStep.this.configureWizardFactory.create(finish,
-                                                                                                             context,
-                                                                                                             configuration);
+                final PreContributeWizardPresenter dialog = configureWizardFactory.create(finish, context, configuration);
                 dialog.show();
             }
         });
