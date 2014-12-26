@@ -29,6 +29,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.sun.javafx.beans.annotations.NonNull;
 
 public class ContributeAction extends ProjectAction implements CommitPresenter.CommitActionHandler {
     /**
@@ -71,17 +72,23 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
      */
     private final NotificationHelper notificationHelper;
 
+    /**
+     * The contribute plugin messages.
+     */
+    private final ContributeMessages messages;
+
     @Inject
-    public ContributeAction(final ConfigureStep configureStep,
-                            final Context context,
-                            final ContributeResources contributeResources,
-                            final ContributeMessages messages,
-                            final DtoFactory dtoFactory,
-                            final @Named("restContext") String baseUrl,
-                            final RemoteForkStep remoteForkStep,
-                            final RepositoryHost repositoryHost,
-                            final CommitPresenter commitPresenter,
-                            final NotificationHelper notificationHelper) {
+    public ContributeAction(@NonNull final ConfigureStep configureStep,
+                            @NonNull final Context context,
+                            @NonNull final ContributeResources contributeResources,
+                            @NonNull final ContributeMessages messages,
+                            @NonNull final DtoFactory dtoFactory,
+                            @NonNull @Named("restContext") final String baseUrl,
+                            @NonNull final RemoteForkStep remoteForkStep,
+                            @NonNull final RepositoryHost repositoryHost,
+                            @NonNull final CommitPresenter commitPresenter,
+                            @NonNull final NotificationHelper notificationHelper,
+                            @NonNull final ContributeMessages messages1) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
         this.configureStep = configureStep;
@@ -91,6 +98,7 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
         this.context = context;
         this.commitPresenter = commitPresenter;
         this.notificationHelper = notificationHelper;
+        this.messages = messages1;
         this.config = dtoFactory.createDto(Configuration.class);
 
         this.commitPresenter.setCommitActionHandler(this);
@@ -150,7 +158,13 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
                 repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
                     @Override
                     public void onFailure(final Throwable exception) {
-                        notificationHelper.showError(ContributeAction.class, exception);
+                        final String exceptionMessage = exception.getMessage();
+                        if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+                            notificationHelper.showError(ContributeAction.class, messages.cannotAccessVCSHostServices());
+
+                        } else {
+                            notificationHelper.showError(ContributeAction.class, exception);
+                        }
                     }
 
                     @Override

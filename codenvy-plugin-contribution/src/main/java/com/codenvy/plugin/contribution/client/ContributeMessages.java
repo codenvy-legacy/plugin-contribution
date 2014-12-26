@@ -22,9 +22,6 @@ public interface ContributeMessages extends Messages {
     @Key("contributor.button.description")
     String contributorButtonDescription();
 
-    @DefaultMessage("Codenvy needs authorization on github to continue")
-    String repositoryHostAuthorizeMessage();
-
     @DefaultMessage("You need to provide the contribution branch name")
     String warnBranchEmpty();
 
@@ -99,6 +96,9 @@ public interface ContributeMessages extends Messages {
      */
     @DefaultMessage("Contribute Pull Request: {0}")
     String prefixNotification(String notificationMessage);
+
+    @DefaultMessage("Cannot access to VCS Host services. Check if OAuth popup is not blocked")
+    String cannotAccessVCSHostServices();
 
     @DefaultMessage("Using existing user''s fork")
     String useExistingUserFork();
