@@ -24,6 +24,7 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -50,6 +51,7 @@ import static com.google.gwt.http.client.URL.encodeQueryString;
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension {
     private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
+    private static final String ORIGIN_REMOTE_NAME         = "origin";
 
     private final ActionManager      actionManager;
     private final Context            context;
@@ -59,6 +61,7 @@ public class ContributorExtension {
     private final String             baseUrl;
     private final AppContext         appContext;
     private final NotificationHelper notificationHelper;
+    private final RepositoryHost     repositoryHost;
 
     private DefaultActionGroup contributeToolbarGroup;
     private DefaultActionGroup mainToolbarGroup;
@@ -73,7 +76,8 @@ public class ContributorExtension {
                                 final ContributeResources resources,
                                 final @Named("restContext") String baseUrl,
                                 final AppContext appContext,
-                                final NotificationHelper notificationHelper) {
+                                final NotificationHelper notificationHelper,
+                                final RepositoryHost repositoryHost) {
         this.actionManager = actionManager;
         this.context = context;
         this.contributeAction = contributeAction;
@@ -82,6 +86,7 @@ public class ContributorExtension {
         this.baseUrl = baseUrl;
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
+        this.repositoryHost = repositoryHost;
 
         resources.contributeCss().ensureInjected();
 
@@ -115,15 +120,16 @@ public class ContributorExtension {
 
             @Override
             public void onSuccess(final List<Remote> result) {
-                for (Remote remote : result) {
-                    if (remote.getName().equals("origin")) {
-                        // save origin repository name & owner in context
-                        String remoteUrl = remote.getUrl();
-                        final String repository = remoteUrl.substring(remoteUrl.lastIndexOf('/') + 1);
-                        context.setOriginRepositoryName(repository);
-                        final String remoteUrlSubstring = remoteUrl.substring(0, remoteUrl.length() - repository.length() - 1);
-                        final String owner = remoteUrlSubstring.substring(remoteUrlSubstring.lastIndexOf('/') + 1);
-                        context.setOriginRepositoryOwner(owner);
+                for (final Remote remote : result) {
+                    // save origin repository name & owner in context
+                    if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
+                        final String remoteUrl = remote.getUrl();
+                        final String repositoryName = repositoryHost.getRepositoryNameFromUrl(remoteUrl);
+                        final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(remoteUrl);
+
+                        context.setOriginRepositoryOwner(repositoryOwner);
+                        context.setOriginRepositoryName(repositoryName);
+
                         // initiate contributor button & working branch
                         onDefaultRemoteReceived(project);
                         break;

@@ -20,6 +20,8 @@ import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -31,6 +33,9 @@ import java.util.List;
  * {@link com.codenvy.plugin.contribution.client.vcshost.RepositoryHost} implementation for GitHub.
  */
 public class GitHubHost implements RepositoryHost {
+    private static final String SSH_URL_PREFIX                = "git@github.com:";
+    private static final String HTTPS_URL_PREFIX              = "https://github.com/";
+    private static final RegExp REPOSITORY_NAME_OWNER_PATTERN = RegExp.compile("([^/]+)/([^.]+)");
 
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
     private final DtoFactory             dtoFactory;
@@ -95,6 +100,26 @@ public class GitHubHost implements RepositoryHost {
                         callback.onFailure(exception);
                     }
                 });
+    }
+
+    @Nonnull
+    @Override
+    public String getRepositoryNameFromUrl(@Nonnull final String url) {
+        final String urlWithoutGitHubPrefix =
+                url.substring(url.startsWith(SSH_URL_PREFIX) ? SSH_URL_PREFIX.length() : HTTPS_URL_PREFIX.length());
+        final MatchResult result = REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix);
+
+        return result.getGroup(2);
+    }
+
+    @Nonnull
+    @Override
+    public String getRepositoryOwnerFromUrl(@Nonnull final String url) {
+        final String urlWithoutGitHubPrefix =
+                url.substring(url.startsWith(SSH_URL_PREFIX) ? SSH_URL_PREFIX.length() : HTTPS_URL_PREFIX.length());
+        final MatchResult result = REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix);
+
+        return result.getGroup(1);
     }
 
     @Override

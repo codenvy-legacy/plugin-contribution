@@ -98,6 +98,26 @@ public interface RepositoryHost {
     void getRepositoriesList(@Nonnull AsyncCallback<List<Repository>> callback);
 
     /**
+     * Returns the repository name from the given url.
+     *
+     * @param url
+     *         the url.
+     * @return the repository name, never {@code null}.
+     */
+    @Nonnull
+    String getRepositoryNameFromUrl(@Nonnull String url);
+
+    /**
+     * Returns the repository owner from the given url.
+     *
+     * @param url
+     *         the url.
+     * @return the repository owner, never {@code null}.
+     */
+    @Nonnull
+    String getRepositoryOwnerFromUrl(@Nonnull String url);
+
+    /**
      * Returns the repository fork of the given user.
      *
      * @param user
