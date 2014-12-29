@@ -19,42 +19,32 @@ public class Context {
     /** The project. */
     private ProjectDescriptor project;
 
-    /**
-     * The name of the working branch.
-     */
+    /** The name of the working branch. */
     private String workBranchName;
 
-    /**
-     * The name of the user on VCS.
-     */
+    /** The name of the user on VCS. */
     private String hostUserLogin;
 
-    /**
-     * The name of the owner of the origin repository on VCS.
-     */
+    /** The name of the owner of the origin repository on VCS. */
     private String originRepositoryOwner;
 
-    /**
-     * The name of the repository forked on VCS.
-     */
+    /** The name of the repository forked on VCS. */
     private String originRepositoryName;
 
-    /**
-     * The id of the pull request issued for the contribution.
-     */
+    /** The id of the pull request issued for the contribution. */
     private String pullRequestId;
 
-    /**
-     * Flag that tells is the fork has been seen.
-     */
+    /** Flag that tells is the fork has been seen. */
     private boolean forkReady = false;
 
-    /**
-     * The generated review factory URL.
-     */
+    /** The generated review factory URL. */
     private String reviewFactoryUrl;
 
+    /** The name of the forked remote. */
     private String forkedRemoteName;
+
+    /** The name of the forked repository. */
+    private String forkedRepositoryName;
 
     public ProjectDescriptor getProject() {
         return project;
@@ -201,5 +191,13 @@ public class Context {
 
     public void setForkedRemoteName(String forkedRemoteName) {
         this.forkedRemoteName = forkedRemoteName;
+    }
+
+    public String getForkedRepositoryName() {
+        return forkedRepositoryName;
+    }
+
+    public void setForkedRepositoryName(String forkedRepositoryName) {
+        this.forkedRepositoryName = forkedRepositoryName;
     }
 }

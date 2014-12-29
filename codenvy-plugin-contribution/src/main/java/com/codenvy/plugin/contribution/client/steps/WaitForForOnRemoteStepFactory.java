@@ -11,7 +11,7 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 /**
- * Facory for {@link WaitForForkOnRemoteStep}.
+ * Factory for {@link WaitForForkOnRemoteStep}.
  */
 public interface WaitForForOnRemoteStepFactory {
     WaitForForkOnRemoteStep create(Step nextStep);

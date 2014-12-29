@@ -144,7 +144,7 @@ public class GitVcsService implements VcsService {
     @Override
     public void deleteRemote(@Nonnull final ProjectDescriptor project, @Nonnull final String remote,
                              @Nonnull final AsyncCallback<Void> callback) {
-        this.service.remoteDelete(project, remote, new AsyncRequestCallback<String>() {
+        service.remoteDelete(project, remote, new AsyncRequestCallback<String>() {
             @Override
             protected void onSuccess(final String notUsed) {
                 callback.onSuccess(null);

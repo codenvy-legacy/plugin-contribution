@@ -252,7 +252,7 @@ public class GenerateReviewFactory implements Step {
     private Source getSource(final Context context) {
         final ImportSourceDescriptor importSourceDescriptor = this.dtoFactory.createDto(ImportSourceDescriptor.class);
 
-        final String forkRepoUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
+        final String forkRepoUrl = this.repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
         importSourceDescriptor.setLocation(forkRepoUrl);
 
         final String vcsType = context.getProject().getAttributes().get(Constants.VCS_PROVIDER_NAME).get(0);

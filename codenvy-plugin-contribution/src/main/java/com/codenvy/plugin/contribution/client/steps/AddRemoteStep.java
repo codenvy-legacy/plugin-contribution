@@ -81,7 +81,7 @@ public class AddRemoteStep implements Step {
 
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        final String remoteUrl = repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getOriginRepositoryName());
+        final String remoteUrl = repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
 
         checkRemotePresent(context, config, remoteUrl);
     }
@@ -149,7 +149,7 @@ public class AddRemoteStep implements Step {
      *         the url of the remote
      */
     private void replaceRemote(final Context context, final Configuration config, final String remoteUrl) {
-        vcsService.deleteRemote(context.getProject(), remoteUrl, new AsyncCallback<Void>() {
+        vcsService.deleteRemote(context.getProject(), FORK_REMOTE_NAME, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 addRemote(context, config, remoteUrl);

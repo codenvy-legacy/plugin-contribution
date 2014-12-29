@@ -28,7 +28,7 @@ public class WaitForForkOnRemoteStep implements Step {
     private static final int POLL_FREQUENCY_MS = 1000;
 
     /**
-     * The remote reposiory host.
+     * The remote repository host.
      */
     private final RepositoryHost repositoryHost;
 
@@ -91,7 +91,7 @@ public class WaitForForkOnRemoteStep implements Step {
             @Override
             public void onSuccess(final List<Repository> result) {
                 for (final Repository repo : result) {
-                    if (repo.getName().equals(context.getOriginRepositoryName())) {
+                    if (repo.getName().equals(context.getForkedRepositoryName())) {
                         callback.onSuccess(null);
                         return;
                     }

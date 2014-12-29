@@ -52,14 +52,15 @@ public class RemoteForkStep implements Step {
         // get list of forks existing for origin repository
         repositoryHost.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
             @Override
-            public void onSuccess(Repository fork) {
+            public void onSuccess(final Repository fork) {
+                context.setForkedRepositoryName(fork.getName());
                 notificationHelper.showInfo(messages.useExistingUserFork());
             }
 
             @Override
-            public void onFailure(Throwable exception) {
+            public void onFailure(final Throwable exception) {
                 if (exception instanceof NoUserForkException) {
-                    createFork(owner, repository);
+                    createFork(context, owner, repository);
                     return;
                 }
 
@@ -68,13 +69,14 @@ public class RemoteForkStep implements Step {
         });
     }
 
-    private void createFork(final String repositoryOwner, final String repositoryName) {
+    private void createFork(final Context context, final String repositoryOwner, final String repositoryName) {
         final Notification notification = new Notification(messages.creatingFork(repositoryOwner, repositoryName), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
         repositoryHost.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository result) {
+                context.setForkedRepositoryName(result.getName());
                 notificationHelper.finishNotification(messages.requestedForkCreation(repositoryOwner, repositoryName), notification);
             }
 
