@@ -22,6 +22,7 @@ import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class GitHubHost implements RepositoryHost {
     }
 
     @Override
-    public void getUserInfo(final AsyncCallback<HostUser> callback) {
+    public void getUserInfo(@Nonnull final AsyncCallback<HostUser> callback) {
         gitHubClientService
                 .getUserInfo(new AsyncRequestCallback<GitHubUser>(dtoUnmarshallerFactory.newUnmarshaller(GitHubUser.class)) {
                     @Override
@@ -74,7 +75,7 @@ public class GitHubHost implements RepositoryHost {
     }
 
     @Override
-    public void getRepositoriesList(final AsyncCallback<List<Repository>> callback) {
+    public void getRepositoriesList(@Nonnull final AsyncCallback<List<Repository>> callback) {
         gitHubClientService.getRepositoriesList(
                 new AsyncRequestCallback<GitHubRepositoryList>(dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
                     @Override
@@ -97,7 +98,8 @@ public class GitHubHost implements RepositoryHost {
     }
 
     @Override
-    public void getForks(final String owner, final String repository, final AsyncCallback<List<Repository>> callback) {
+    public void getForks(@Nonnull final String owner, @Nonnull final String repository,
+                         @Nonnull final AsyncCallback<List<Repository>> callback) {
         gitHubClientService.getForks(owner,
                                      repository,
                                      new AsyncRequestCallback<GitHubRepositoryList>(
@@ -122,7 +124,7 @@ public class GitHubHost implements RepositoryHost {
     }
 
     @Override
-    public void fork(final String owner, final String repository, final AsyncCallback<Repository> callback) {
+    public void fork(@Nonnull final String owner, @Nonnull final String repository, @Nonnull final AsyncCallback<Repository> callback) {
         gitHubClientService.fork(owner,
                                  repository,
                                  new AsyncRequestCallback<GitHubRepository>(
@@ -146,26 +148,27 @@ public class GitHubHost implements RepositoryHost {
                                  });
     }
 
+    @Nonnull
     @Override
-    public String makeRemoteUrl(final String username, final String repository) {
+    public String makeRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
         return urlTemplates.gitRemoteTemplate(username, repository);
     }
 
     @Override
-    public void commentPullRequest(final String username, final String repository,
-                                   final String pullRequestId, final String commentText,
-                                   final AsyncCallback<Void> callback) {
+    public void commentPullRequest(@Nonnull final String username, @Nonnull final String repository,
+                                   @Nonnull final String pullRequestId, @Nonnull final String commentText,
+                                   @Nonnull final AsyncCallback<Void> callback) {
 
     }
 
     @Override
-    public void createPullRequest(final String owner,
-                                  final String repository,
-                                  final String title,
-                                  final String headBranch,
-                                  final String baseBranch,
-                                  final String body,
-                                  final AsyncCallback<PullRequest> callback) {
+    public void createPullRequest(@Nonnull final String owner,
+                                  @Nonnull final String repository,
+                                  @Nonnull final String title,
+                                  @Nonnull final String headBranch,
+                                  @Nonnull final String baseBranch,
+                                  @Nonnull final String body,
+                                  @Nonnull final AsyncCallback<PullRequest> callback) {
 
         final GitHubPullRequestInput input = GitHubHost.this.dtoFactory.createDto(GitHubPullRequestInput.class);
         input.withTitle(title).withHead(headBranch).withBase(baseBranch).withBody(body);
@@ -191,7 +194,8 @@ public class GitHubHost implements RepositoryHost {
     }
 
     @Override
-    public void getUserFork(final String user, String owner, final String repository, final AsyncCallback<Repository> callback) {
+    public void getUserFork(@Nonnull final String user, @Nonnull String owner, @Nonnull final String repository,
+                            @Nonnull final AsyncCallback<Repository> callback) {
         getForks(owner, repository, new AsyncCallback<List<Repository>>() {
 
             @Override
