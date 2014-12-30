@@ -48,7 +48,8 @@ import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
 /**
  * Part for the contribution configuration.
  */
-public class ContributePartPresenter extends BasePresenter implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler {
+public class ContributePartPresenter extends BasePresenter
+        implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler {
     /** The component view. */
     private final ContributePartView view;
 

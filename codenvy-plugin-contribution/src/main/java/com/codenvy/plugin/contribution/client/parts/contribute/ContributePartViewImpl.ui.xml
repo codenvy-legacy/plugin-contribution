@@ -89,7 +89,8 @@
                 <g:TextArea height="80px" ui:field="contributionComment"
                             addStyleNames="{style.field} {resources.contributeCss.inputField} {style.fixed-textarea}"/>
             </div>
-            <g:Button addStyleNames="{style.contributeButton}" ui:field="contributeButton" text="{messages.contributePartContributeButton}"/>
+            <g:Button addStyleNames="{style.contributeButton}" ui:field="contributeButton"
+                      text="{messages.contributePartContributeButton}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
