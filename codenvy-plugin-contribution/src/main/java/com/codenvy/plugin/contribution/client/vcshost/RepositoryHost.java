@@ -37,7 +37,7 @@ public interface RepositoryHost {
                             @Nonnull String repository,
                             @Nonnull String pullRequestId,
                             @Nonnull String commentText,
-                            @Nonnull AsyncCallback<Void> callback);
+                            @Nonnull AsyncCallback<IssueComment> callback);
 
     /**
      * Creates a pull request.

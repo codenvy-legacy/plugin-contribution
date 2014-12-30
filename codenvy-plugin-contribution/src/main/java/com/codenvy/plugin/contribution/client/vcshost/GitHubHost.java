@@ -182,7 +182,7 @@ public class GitHubHost implements RepositoryHost {
     @Override
     public void commentPullRequest(@Nonnull final String username, @Nonnull final String repository,
                                    @Nonnull final String pullRequestId, @Nonnull final String commentText,
-                                   @Nonnull final AsyncCallback<Void> callback) {
+                                   @Nonnull final AsyncCallback<IssueComment> callback) {
 
     }
 
