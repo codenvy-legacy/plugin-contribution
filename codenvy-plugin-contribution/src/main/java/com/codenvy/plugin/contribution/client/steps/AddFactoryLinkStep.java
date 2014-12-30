@@ -15,6 +15,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcshost.IssueComment;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -80,9 +81,9 @@ public class AddFactoryLinkStep implements Step {
     private void sendComment(final Context context, final Configuration config, final String factoryUrl) {
         final String commentText = messages.pullRequestlinkComment(factoryUrl);
         repository.commentPullRequest(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
-                                      context.getPullRequestId(), commentText, new AsyncCallback<Void>() {
+                                      context.getPullRequestIssueNumber(), commentText, new AsyncCallback<IssueComment>() {
                     @Override
-                    public void onSuccess(final Void notUsed) {
+                    public void onSuccess(final IssueComment result) {
                         proceed(context, config);
                     }
 
