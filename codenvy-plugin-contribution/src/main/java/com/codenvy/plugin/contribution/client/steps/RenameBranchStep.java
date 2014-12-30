@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
@@ -19,7 +18,6 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Provider;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -40,12 +38,6 @@ public class RenameBranchStep implements Step {
     private final Step nextStep;
 
     /**
-     * A provider for configure steps. Needed in case the branch name must be asked again.<br>
-     * Also, inject a provider so there is no dependency cycle.
-     */
-    private final Provider<ConfigureStep> configureStepProvider;
-
-    /**
      * The service for VCS operations.
      */
     private final VcsService vcsService;
@@ -62,14 +54,12 @@ public class RenameBranchStep implements Step {
 
     @Inject
     public RenameBranchStep(@Nonnull final AddRemoteStep addRemoteStep,
-                            @Nonnull final Provider<ConfigureStep> configureStepProvider,
                             @Nonnull final VcsService vcsService,
                             @Nonnull final DialogFactory dialogFactory,
                             @Nonnull final ContributeMessages messages,
                             @Nonnull final NotificationHelper notificationHelper) {
         this.dialogFactory = dialogFactory;
         this.nextStep = addRemoteStep;
-        this.configureStepProvider = configureStepProvider;
         this.vcsService = vcsService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
@@ -77,18 +67,6 @@ public class RenameBranchStep implements Step {
 
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        if (config == null || config.getBranchName() == null || "".equals(config.getBranchName())) {
-            final ConfirmCallback callback = new ConfirmCallback() {
-                @Override
-                public void accepted() {
-                    configureStepProvider.get().execute(context, config);
-                }
-            };
-            dialogFactory.createMessageDialog(messages.warnMissingConfigTitle(),
-                                              messages.warnBranchEmpty(),
-                                              callback);
-            return;
-        }
         final String newBranchName = config.getBranchName();
         if (newBranchName.equals(context.getWorkBranchName())) {
             // already done, proceed
@@ -127,15 +105,9 @@ public class RenameBranchStep implements Step {
                 for (final Branch branch : result) {
                     if (branch.getDisplayName().equals(branchName)) {
                         // the branch exists
-                        final ConfirmCallback callback = new ConfirmCallback() {
-                            @Override
-                            public void accepted() {
-                                configureStepProvider.get().execute(context, config);
-                            }
-                        };
                         dialogFactory.createMessageDialog(messages.warnMissingConfigTitle(),
                                                           messages.errorBranchExists(branchName),
-                                                          callback);
+                                                          null);
                     }
                 }
                 doRename(branchName, context, config);

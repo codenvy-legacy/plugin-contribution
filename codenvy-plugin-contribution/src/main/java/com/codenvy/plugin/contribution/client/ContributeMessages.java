@@ -62,34 +62,31 @@ public interface ContributeMessages extends Messages {
     String commitDialogButtonContinueText();
 
     /*
-     * Pre-contribute wizard
+     * Contribute Part
      */
-    @DefaultMessage("Configure Contribution")
-    String preContributeWizardTitle();
+    @DefaultMessage("Contribution")
+    String contributePartTitle();
 
-    @DefaultMessage("Branch Name:")
-    String preContributeWizardBranchNameInputLabelText();
+    @DefaultMessage("Branch name:")
+    String contributePartBranchNameInputLabelText();
 
     @DefaultMessage("Choose a branch name for your contribution...")
-    String preContributeWizardBranchNameInputPlaceHolder();
+    String contributePartBranchNameInputPlaceHolder();
 
-    @DefaultMessage("Contribution Title:")
-    String preContributeWizardContributionTitleLabelText();
+    @DefaultMessage("Contribution title:")
+    String contributePartContributionTitleLabelText();
 
     @DefaultMessage("Choose a title for your contribution...")
-    String preContributeWizardContributionTitlePlaceHolder();
+    String contributePartContributionTitlePlaceHolder();
 
-    @DefaultMessage("Contribution Comment:")
-    String preContributeWizardContributionCommentLabelText();
+    @DefaultMessage("Contribution comment:")
+    String contributePartContributionCommentLabelText();
 
     @DefaultMessage("Type a comment for your contribution...")
-    String preContributeWizardContributionCommentPlaceHolder();
+    String contributePartContributionCommentPlaceHolder();
 
     @DefaultMessage("Contribute")
-    String preContributeWizardContributeButton();
-
-    @DefaultMessage("Cancel")
-    String preContributeWizardCancelButton();
+    String contributePartContributeButton();
 
     /**
      * prefix notification message with "Contribute Pull Request"

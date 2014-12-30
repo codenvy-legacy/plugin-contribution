@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
+import com.codenvy.ide.ui.Styles;
 import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.CssResource;
 
 import org.vectomatic.dom.svg.ui.SVGResource;
 
@@ -19,11 +19,10 @@ import org.vectomatic.dom.svg.ui.SVGResource;
  * Contributor plugin resources.
  */
 public interface ContributeResources extends ClientBundle {
-    interface ContributeCss extends CssResource {
-        String inputError();
+    interface ContributeCss extends Styles {
     }
 
-    @Source({"Contribute.css", "com/codenvy/ide/api/ui/style.css"})
+    @Source({"Contribute.css", "com/codenvy/ide/api/ui/style.css", "com/codenvy/ide/ui/Styles.css"})
     ContributeCss contributeCss();
 
     @Source("contribute.svg")

@@ -8,9 +8,10 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.dialogs.contribute;
+package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import com.codenvy.ide.ui.window.Window;
+import com.codenvy.ide.api.parts.PartStackUIResources;
+import com.codenvy.ide.api.parts.base.BaseView;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
@@ -21,23 +22,28 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 /**
- * Implementation of {@link PreContributeWizardView}.
+ * Implementation of {@link com.codenvy.plugin.contribution.client.parts.contribute.ContributePartView}.
  */
-public class PreContributeWizardViewImpl extends Window implements PreContributeWizardView {
+public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDelegate> implements ContributePartView {
 
     /** The uUI binder for this component. */
-    private static final PreContributeWizardViewUiBinder UI_BINDER = GWT.create(PreContributeWizardViewUiBinder.class);
+    private static final ContributePartViewUiBinder UI_BINDER = GWT.create(ContributePartViewUiBinder.class);
 
     /** The contribute button. */
-    private final Button contributeButton;
+    @UiField
+    Button contributeButton;
+
+    /** The resources for the view. */
+    @UiField(provided = true)
+    ContributeResources resources;
 
     /** The input component for the branch name. */
     @UiField
@@ -55,45 +61,28 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     @UiField(provided = true)
     ContributeMessages messages;
 
-    /** The bound delegate. */
-    private ActionDelegate delegate;
-
-    /** The resources for the view. */
-    private final ContributeResources resources;
-
     @Inject
-    public PreContributeWizardViewImpl(final ContributeMessages messages,
-                                       final ContributeResources resources) {
+    public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
+                                  @Nonnull final ContributeMessages messages,
+                                  @Nonnull final ContributeResources resources) {
+        super(partStackUIResources);
+
         this.messages = messages;
         this.resources = resources;
 
-        setWidget(UI_BINDER.createAndBindUi(this));
-        setTitle(messages.preContributeWizardTitle());
+        container.add(UI_BINDER.createAndBindUi(this));
+        setTitle(messages.contributePartTitle());
 
-        this.branchName.getElement().setPropertyString("placeholder", messages.preContributeWizardBranchNameInputPlaceHolder());
-        this.contributionTitle.getElement().setPropertyString("placeholder", messages.preContributeWizardContributionTitlePlaceHolder());
-        this.contributionComment.getElement()
-                                .setPropertyString("placeholder", messages.preContributeWizardContributionCommentPlaceHolder());
+        this.branchName.getElement().setPropertyString("placeholder", messages.contributePartBranchNameInputPlaceHolder());
+        this.contributionTitle.getElement().setPropertyString("placeholder", messages.contributePartContributionTitlePlaceHolder());
+        this.contributionComment.getElement().setPropertyString("placeholder", messages.contributePartContributionCommentPlaceHolder());
 
-        this.contributeButton =
-                createButton(messages.preContributeWizardContributeButton(), "pre-contribute-wizard-contribute-button", new ClickHandler() {
-                    @Override
-                    public void onClick(final ClickEvent event) {
-                        delegate.onContribute();
-                    }
-                });
-        this.contributeButton.addStyleName(Window.resources.centerPanelCss().blueButton());
-
-        final Button cancelButton =
-                createButton(messages.preContributeWizardCancelButton(), "pre-contribute-wizard-cancel-button", new ClickHandler() {
-                    @Override
-                    public void onClick(final ClickEvent event) {
-                        delegate.onCancel();
-                    }
-                });
-
-        getFooter().add(this.contributeButton);
-        getFooter().add(cancelButton);
+        this.contributeButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(final ClickEvent event) {
+                delegate.onContribute();
+            }
+        });
     }
 
     @Override
@@ -101,15 +90,6 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
         branchName.setValue(delegate.suggestBranchName());
         contributionComment.setValue("");
         delegate.updateControls();
-    }
-
-    @Override
-    protected void onClose() {
-    }
-
-    @Override
-    public void setDelegate(final ActionDelegate delegate) {
-        this.delegate = delegate;
     }
 
     @Override
@@ -190,16 +170,5 @@ public class PreContributeWizardViewImpl extends Window implements PreContribute
     @UiHandler("contributionTitle")
     public void contributionTitlePaste(final PasteEvent event) {
         delegate.updateControls();
-    }
-
-    @Override
-    public void show() {
-        super.show();
-        new Timer() {
-            @Override
-            public void run() {
-                branchName.setFocus(true);
-            }
-        }.schedule(300);
     }
 }

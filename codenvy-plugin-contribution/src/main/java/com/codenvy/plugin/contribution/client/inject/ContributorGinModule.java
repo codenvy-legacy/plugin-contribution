@@ -13,12 +13,11 @@ package com.codenvy.plugin.contribution.client.inject;
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitView;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitViewImpl;
-import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardPresenterFactory;
-import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardView;
-import com.codenvy.plugin.contribution.client.dialogs.contribute.PreContributeWizardViewImpl;
+import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
+import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartView;
+import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartViewImpl;
 import com.codenvy.plugin.contribution.client.steps.AddFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.AddRemoteStep;
-import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactory;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.ProposePersistStep;
@@ -47,14 +46,11 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(VcsService.class).to(GitVcsService.class);
         bind(RepositoryHost.class).to(GitHubHost.class);
 
-        // bind the configure contribution dialog
-        install(new GinFactoryModuleBuilder().build(PreContributeWizardPresenterFactory.class));
-
         // bind the commit dialog view
         bind(CommitView.class).to(CommitViewImpl.class);
 
-        // bind the configure dialog view
-        bind(PreContributeWizardView.class).to(PreContributeWizardViewImpl.class);
+        // bind the part view
+        bind(ContributePartView.class).to(ContributePartViewImpl.class);
 
         // the contribution context singleton
         bind(Context.class).in(Singleton.class);
@@ -67,7 +63,6 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(PushBranchOnForkStep.class);
         bind(RenameBranchStep.class);
         bind(AddRemoteStep.class);
-        bind(ConfigureStep.class);
         bind(RemoteForkStep.class);
         install(new GinFactoryModuleBuilder().build(WaitForForOnRemoteStepFactory.class));
     }

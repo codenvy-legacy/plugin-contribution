@@ -20,6 +20,7 @@ import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.notification.Notification;
+import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
@@ -53,15 +54,16 @@ public class ContributorExtension {
     private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
     private static final String ORIGIN_REMOTE_NAME         = "origin";
 
-    private final ActionManager      actionManager;
-    private final Context            context;
-    private final ContributeAction   contributeAction;
-    private final ContributeMessages messages;
-    private final VcsService         vcsService;
-    private final String             baseUrl;
-    private final AppContext         appContext;
-    private final NotificationHelper notificationHelper;
-    private final RepositoryHost     repositoryHost;
+    private final ActionManager           actionManager;
+    private final Context                 context;
+    private final ContributeAction        contributeAction;
+    private final ContributeMessages      messages;
+    private final VcsService              vcsService;
+    private final String                  baseUrl;
+    private final AppContext              appContext;
+    private final NotificationHelper      notificationHelper;
+    private final RepositoryHost          repositoryHost;
+    private final ContributePartPresenter contributePartPresenter;
 
     private DefaultActionGroup contributeToolbarGroup;
     private DefaultActionGroup mainToolbarGroup;
@@ -77,7 +79,8 @@ public class ContributorExtension {
                                 final @Named("restContext") String baseUrl,
                                 final AppContext appContext,
                                 final NotificationHelper notificationHelper,
-                                final RepositoryHost repositoryHost) {
+                                final RepositoryHost repositoryHost,
+                                final ContributePartPresenter contributePartPresenter) {
         this.actionManager = actionManager;
         this.context = context;
         this.contributeAction = contributeAction;
@@ -87,8 +90,10 @@ public class ContributorExtension {
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
         this.repositoryHost = repositoryHost;
+        this.contributePartPresenter = contributePartPresenter;
 
         resources.contributeCss().ensureInjected();
+        contributePartPresenter.process();
 
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
@@ -191,6 +196,7 @@ public class ContributorExtension {
                         vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                             @Override
                             public void onSuccess(final String result) {
+                                contributePartPresenter.showContributePart();
                                 notificationHelper.finishNotification(
                                         messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName),
                                         createWorkingBranchNotification);

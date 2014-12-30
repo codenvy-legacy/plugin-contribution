@@ -16,7 +16,6 @@ import com.codenvy.ide.api.app.CurrentUser;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.util.Config;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
-import com.codenvy.plugin.contribution.client.steps.ConfigureStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
@@ -33,11 +32,6 @@ import com.google.inject.name.Named;
 import javax.annotation.Nonnull;
 
 public class ContributeAction extends ProjectAction implements CommitPresenter.CommitActionHandler {
-    /**
-     * Step where the user configures the contribution.
-     */
-    private final ConfigureStep configureStep;
-
     /**
      * The REST base URL.
      */
@@ -79,8 +73,7 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
     private final ContributeMessages messages;
 
     @Inject
-    public ContributeAction(@Nonnull final ConfigureStep configureStep,
-                            @Nonnull final Context context,
+    public ContributeAction(@Nonnull final Context context,
                             @Nonnull final ContributeResources contributeResources,
                             @Nonnull final ContributeMessages messages,
                             @Nonnull final DtoFactory dtoFactory,
@@ -92,7 +85,6 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
                             @Nonnull final ContributeMessages messages1) {
         super(messages.contributorButtonName(), messages.contributorButtonDescription(), contributeResources.contributeButton());
 
-        this.configureStep = configureStep;
         this.baseUrl = baseUrl;
         this.remoteForkStep = remoteForkStep;
         this.repositoryHost = repositoryHost;
@@ -211,6 +203,5 @@ public class ContributeAction extends ProjectAction implements CommitPresenter.C
         context.setHostUserLogin(user.getLogin());
 
         remoteForkStep.execute(context, config); // parallel with the other steps
-        configureStep.execute(context, config);
     }
 }

@@ -8,30 +8,20 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.dialogs.contribute;
+package com.codenvy.plugin.contribution.client.parts.contribute;
 
 import com.codenvy.ide.api.mvp.View;
-import com.codenvy.ide.api.wizard.Wizard;
+import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 
 /**
  * Interface for the contribution configuration shown when the user decides to send their contribution.
  */
-public interface PreContributeWizardView extends View<PreContributeWizardView.ActionDelegate> {
+public interface ContributePartView extends View<ContributePartView.ActionDelegate> {
 
     /**
-     * Resets the dialog fields to their initial value.
+     * Resets the part fields to their initial value.
      */
     void reset();
-
-    /**
-     * Shows the dialog.
-     */
-    void show();
-
-    /**
-     * Hide the dialog.
-     */
-    void hide();
 
     /**
      * Returns the current content of the branch name.
@@ -81,13 +71,12 @@ public interface PreContributeWizardView extends View<PreContributeWizardView.Ac
     /**
      * Action delegate interface for the contribution configuration dialog.
      */
-    interface ActionDelegate extends Wizard.UpdateDelegate {
-
+    interface ActionDelegate extends BaseActionDelegate {
         /** Performs any actions appropriate in response to the user having pressed the Contribute button */
         void onContribute();
 
-        /** Performs any actions appropriate in response to the user having pressed the Cancel button */
-        void onCancel();
+        /** Performs any action when view state is modified. */
+        void updateControls();
 
         /**
          * Suggests a branch name for the current work.
