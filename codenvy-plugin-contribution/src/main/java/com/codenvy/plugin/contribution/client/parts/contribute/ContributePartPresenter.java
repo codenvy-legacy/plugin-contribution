@@ -10,17 +10,31 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
+import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentUser;
 import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.ide.dto.DtoFactory;
+import com.codenvy.ide.util.Config;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
+import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
+import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcshost.HostUser;
+import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
+import com.codenvy.security.oauth.JsOAuthWindow;
+import com.codenvy.security.oauth.OAuthCallback;
+import com.codenvy.security.oauth.OAuthStatus;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.inject.name.Named;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -34,7 +48,7 @@ import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
 /**
  * Part for the contribution configuration.
  */
-public class ContributePartPresenter extends BasePresenter implements ContributePartView.ActionDelegate {
+public class ContributePartPresenter extends BasePresenter implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -56,6 +70,24 @@ public class ContributePartPresenter extends BasePresenter implements Contribute
     /** The rename branch step. */
     private final RenameBranchStep renameBranchStep;
 
+    /** The notification helper. */
+    private final NotificationHelper notificationHelper;
+
+    /** The application context. */
+    private final AppContext appContext;
+
+    /** The commit dialog presenter. */
+    private final CommitPresenter commitPresenter;
+
+    /** The repository host. */
+    private final RepositoryHost repositoryHost;
+
+    /** The remote fork step. */
+    private final RemoteForkStep remoteForkStep;
+
+    /** The rest context base url. */
+    private final String baseUrl;
+
     /** The project action handler registration. */
     private HandlerRegistration projectActionHandler;
 
@@ -66,16 +98,29 @@ public class ContributePartPresenter extends BasePresenter implements Contribute
                                    @Nonnull final EventBus eventBus,
                                    @Nonnull final WorkspaceAgent workspaceAgent,
                                    @Nonnull final RenameBranchStep renameBranchStep,
-                                   @Nonnull final DtoFactory dtoFactory) {
+                                   @Nonnull final DtoFactory dtoFactory,
+                                   @Nonnull final NotificationHelper notificationHelper,
+                                   @Nonnull final AppContext appContext,
+                                   @Nonnull final CommitPresenter commitPresenter,
+                                   @Nonnull final RepositoryHost repositoryHost,
+                                   @Nonnull final RemoteForkStep remoteForkStep,
+                                   @Nonnull @Named("restContext") final String baseUrl) {
         this.view = view;
         this.eventBus = eventBus;
         this.workspaceAgent = workspaceAgent;
+        this.notificationHelper = notificationHelper;
+        this.appContext = appContext;
+        this.commitPresenter = commitPresenter;
+        this.repositoryHost = repositoryHost;
+        this.remoteForkStep = remoteForkStep;
+        this.baseUrl = baseUrl;
         this.configuration = dtoFactory.createDto(Configuration.class);
         this.context = context;
         this.messages = messages;
         this.renameBranchStep = renameBranchStep;
 
         this.view.setDelegate(this);
+        this.commitPresenter.setCommitActionHandler(this);
     }
 
     public void process() {
@@ -100,11 +145,27 @@ public class ContributePartPresenter extends BasePresenter implements Contribute
 
     @Override
     public void onContribute() {
-        configuration.withBranchName(view.getBranchName())
-                     .withPullRequestComment(view.getContributionComment())
-                     .withContributionTitle(view.getContributionTitle());
+        if (!appContext.getCurrentUser().isUserPermanent()) {
+            notificationHelper.showError(ContributePartPresenter.class, new IllegalStateException("Codenvy account is not permanent"));
 
-        renameBranchStep.execute(context, configuration);
+        } else {
+            commitPresenter.hasUncommittedChanges(new AsyncCallback<Boolean>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    notificationHelper.showError(ContributePartPresenter.class, exception);
+                }
+
+                @Override
+                public void onSuccess(final Boolean hasUncommittedChanges) {
+                    if (hasUncommittedChanges) {
+                        commitPresenter.showView();
+
+                    } else {
+                        getVCSHostUserInfoWithAuthentication();
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -160,5 +221,88 @@ public class ContributePartPresenter extends BasePresenter implements Contribute
     @Override
     public int getSize() {
         return 350;
+    }
+
+    @Override
+    public void onCommitAction(final CommitPresenter.CommitActionHandler.CommitAction action) {
+        getVCSHostUserInfoWithAuthentication();
+    }
+
+    /**
+     * Authenticates the user on the VCS Host.
+     */
+    private void authenticateOnVCSHost() {
+        final CurrentUser currentUser = appContext.getCurrentUser();
+        final String authUrl = baseUrl
+                               + "/oauth/authenticate?oauth_provider=github&userId=" + currentUser.getProfile().getId()
+                               + "&scope=user,repo,write:public_key&redirect_after_login="
+                               + Window.Location.getProtocol() + "//"
+                               + Window.Location.getHost() + "/ws/"
+                               + Config.getWorkspaceName();
+
+        new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
+            @Override
+            public void onAuthenticated(final OAuthStatus authStatus) {
+                // maybe it's possible to avoid this request if authStatus contains the vcs host user.
+                repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        final String exceptionMessage = exception.getMessage();
+                        if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+                            notificationHelper.showError(ContributePartPresenter.class, messages.cannotAccessVCSHostServices());
+
+                        } else {
+                            notificationHelper.showError(ContributePartPresenter.class, exception);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(final HostUser user) {
+                        onVCSHostUserAuthenticated(user);
+                    }
+                });
+            }
+
+        }).loginWithOAuth();
+    }
+
+    /**
+     * Retrieves the VCS host user info. If the user is not authenticated on the VCS host an authentication is performed.
+     */
+    private void getVCSHostUserInfoWithAuthentication() {
+        repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                final String exceptionMessage = exception.getMessage();
+                if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+                    authenticateOnVCSHost();
+
+                } else {
+                    notificationHelper.showError(ContributePartPresenter.class, exception);
+                }
+            }
+
+            @Override
+            public void onSuccess(final HostUser user) {
+                onVCSHostUserAuthenticated(user);
+            }
+        });
+    }
+
+    /**
+     * Checks that the user authenticated on the VCS Host is authenticated on Codenvy.
+     *
+     * @param user
+     *         the user authenticated on the VCS Host.
+     */
+    private void onVCSHostUserAuthenticated(final HostUser user) {
+        context.setHostUserLogin(user.getLogin());
+
+        configuration.withBranchName(view.getBranchName())
+                     .withPullRequestComment(view.getContributionComment())
+                     .withContributionTitle(view.getContributionTitle());
+
+        remoteForkStep.execute(context, configuration); // parallel with the other steps
+        renameBranchStep.execute(context, configuration);
     }
 }

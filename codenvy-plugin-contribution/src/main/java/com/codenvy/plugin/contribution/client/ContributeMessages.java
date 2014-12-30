@@ -16,12 +16,6 @@ import com.google.gwt.i18n.client.Messages;
  * Internationalizable messages for the contributor plugin.
  */
 public interface ContributeMessages extends Messages {
-    @Key("contributor.button.name")
-    String contributorButtonName();
-
-    @Key("contributor.button.description")
-    String contributorButtonDescription();
-
     @DefaultMessage("You need to provide the contribution branch name")
     String warnBranchEmpty();
 

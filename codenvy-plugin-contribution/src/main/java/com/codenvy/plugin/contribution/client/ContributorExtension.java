@@ -12,10 +12,7 @@ package com.codenvy.plugin.contribution.client;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.action.ActionManager;
-import com.codenvy.ide.api.action.DefaultActionGroup;
 import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.constraints.Anchor;
-import com.codenvy.ide.api.constraints.Constraints;
 import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
@@ -38,8 +35,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.codenvy.ide.api.action.IdeActions.GROUP_MAIN_TOOLBAR;
-import static com.codenvy.ide.api.action.IdeActions.GROUP_RUN_TOOLBAR;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.google.gwt.http.client.URL.encodeQueryString;
@@ -54,9 +49,7 @@ public class ContributorExtension {
     private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
     private static final String ORIGIN_REMOTE_NAME         = "origin";
 
-    private final ActionManager           actionManager;
     private final Context                 context;
-    private final ContributeAction        contributeAction;
     private final ContributeMessages      messages;
     private final VcsService              vcsService;
     private final String                  baseUrl;
@@ -65,14 +58,10 @@ public class ContributorExtension {
     private final RepositoryHost          repositoryHost;
     private final ContributePartPresenter contributePartPresenter;
 
-    private DefaultActionGroup contributeToolbarGroup;
-    private DefaultActionGroup mainToolbarGroup;
-
     @Inject
     public ContributorExtension(final Context context,
                                 final EventBus eventBus,
                                 final ActionManager actionManager,
-                                final ContributeAction contributeAction,
                                 final ContributeMessages messages,
                                 final VcsService gitAgent,
                                 final ContributeResources resources,
@@ -81,9 +70,7 @@ public class ContributorExtension {
                                 final NotificationHelper notificationHelper,
                                 final RepositoryHost repositoryHost,
                                 final ContributePartPresenter contributePartPresenter) {
-        this.actionManager = actionManager;
         this.context = context;
-        this.contributeAction = contributeAction;
         this.messages = messages;
         this.vcsService = gitAgent;
         this.baseUrl = baseUrl;
@@ -157,15 +144,6 @@ public class ContributorExtension {
 
             final String contributeAttribute = attributes.get(ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY).get(0);
             if ("true".equalsIgnoreCase(contributeAttribute)) {
-
-                // branch specified in factory.json has been already checkout at this point
-                // register & display contribute button
-                actionManager.registerAction(messages.contributorButtonName(), contributeAction);
-                mainToolbarGroup = (DefaultActionGroup)actionManager.getAction(GROUP_MAIN_TOOLBAR);
-                contributeToolbarGroup = new DefaultActionGroup(GROUP_MAIN_TOOLBAR, false, actionManager);
-                contributeToolbarGroup.add(contributeAction);
-                mainToolbarGroup.add(contributeToolbarGroup, new Constraints(Anchor.AFTER, GROUP_RUN_TOOLBAR));
-
                 final String workingBranchName = generateWorkingBranchName();
                 context.setWorkBranchName(workingBranchName);
 
@@ -215,11 +193,7 @@ public class ContributorExtension {
     }
 
     private void exitContributeMode() {
-        // remove contribute button
-        actionManager.unregisterAction(messages.contributorButtonName());
-        if (mainToolbarGroup != null && contributeToolbarGroup != null) {
-            mainToolbarGroup.remove(contributeToolbarGroup);
-        }
+        //TODO remove the part
     }
 
     /**

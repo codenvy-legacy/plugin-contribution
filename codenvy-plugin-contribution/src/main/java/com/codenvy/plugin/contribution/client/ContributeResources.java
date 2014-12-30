@@ -13,8 +13,6 @@ package com.codenvy.plugin.contribution.client;
 import com.codenvy.ide.ui.Styles;
 import com.google.gwt.resources.client.ClientBundle;
 
-import org.vectomatic.dom.svg.ui.SVGResource;
-
 /**
  * Contributor plugin resources.
  */
@@ -24,7 +22,4 @@ public interface ContributeResources extends ClientBundle {
 
     @Source({"Contribute.css", "com/codenvy/ide/api/ui/style.css", "com/codenvy/ide/ui/Styles.css"})
     ContributeCss contributeCss();
-
-    @Source("contribute.svg")
-    SVGResource contributeButton();
 }
