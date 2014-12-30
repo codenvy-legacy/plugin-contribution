@@ -31,8 +31,8 @@ public class Context {
     /** The name of the repository forked on VCS. */
     private String originRepositoryName;
 
-    /** The id of the pull request issued for the contribution. */
-    private String pullRequestId;
+    /** The issue number of the pull request issued for the contribution. */
+    private String pullRequestIssueNumber;
 
     /** Flag that tells is the fork has been seen. */
     private boolean forkReady = false;
@@ -131,26 +131,26 @@ public class Context {
     }
 
     /**
-     * Return the id of the pull request issued for this contribution.
+     * Return the issue number of the pull request issued for this contribution.
      *
      * @return the pull request id
      */
-    public String getPullRequestId() {
-        return pullRequestId;
+    public String getPullRequestIssueNumber() {
+        return pullRequestIssueNumber;
     }
 
     /**
-     * Sets the id of the pull request issued for this contribution.
+     * Sets the issue number of the pull request issued for this contribution.
      *
-     * @param pullRequestId
+     * @param pullRequestIssueNumber
      *         the new value
      */
-    public void setPullRequestId(final String pullRequestId) {
-        this.pullRequestId = pullRequestId;
+    public void setPullRequestIssueNumber(final String pullRequestIssueNumber) {
+        this.pullRequestIssueNumber = pullRequestIssueNumber;
     }
 
-    public Context withPullRequestId(final String pullRequestId) {
-        this.pullRequestId = pullRequestId;
+    public Context withPullRequestIssueNumber(final String pullRequestIssueNumber) {
+        this.pullRequestIssueNumber = pullRequestIssueNumber;
         return this;
     }
 

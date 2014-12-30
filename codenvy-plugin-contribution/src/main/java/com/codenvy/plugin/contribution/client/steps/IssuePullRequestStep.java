@@ -68,6 +68,7 @@ public class IssuePullRequestStep implements Step {
         repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest result) {
+                context.setPullRequestIssueNumber(result.getNumber());
                 onPullRequestCreated(context, config);
             }
 
