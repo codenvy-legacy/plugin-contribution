@@ -12,6 +12,8 @@ package com.codenvy.plugin.contribution.client.vcshost;
 
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
+import com.codenvy.ide.ext.github.shared.GitHubIssueComment;
+import com.codenvy.ide.ext.github.shared.GitHubIssueCommentInput;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequestInput;
 import com.codenvy.ide.ext.github.shared.GitHubRepository;
@@ -183,7 +185,26 @@ public class GitHubHost implements RepositoryHost {
     public void commentPullRequest(@Nonnull final String username, @Nonnull final String repository,
                                    @Nonnull final String pullRequestId, @Nonnull final String commentText,
                                    @Nonnull final AsyncCallback<IssueComment> callback) {
+        final GitHubIssueCommentInput input = GitHubHost.this.dtoFactory.createDto(GitHubIssueCommentInput.class);
+        input.withBody(commentText);
+        final Unmarshallable<GitHubIssueComment> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubIssueComment.class);
+        gitHubClientService.commentIssue(username, repository, pullRequestId, input, new AsyncRequestCallback<GitHubIssueComment>(unmarshaller) {
 
+            @Override
+            protected void onSuccess(GitHubIssueComment result) {
+                if (result != null) {
+                    final IssueComment comment = GitHubHost.this.dtoFactory.createDto(IssueComment.class);
+                    comment.withId(result.getId()).withUrl(result.getUrl()).withBody(result.getBody());
+                } else {
+                    callback.onFailure(new Exception("No pull request comment."));
+                }
+            }
+
+            @Override
+            protected void onFailure(Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
     }
 
     @Override
