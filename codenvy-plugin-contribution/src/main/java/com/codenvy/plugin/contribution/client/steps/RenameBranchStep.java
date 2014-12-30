@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
@@ -77,7 +78,7 @@ public class RenameBranchStep implements Step {
     }
 
     /**
-     * Continue with the folloing step.
+     * Continue with the following step.
      *
      * @param context
      *         the contribution context
@@ -107,7 +108,13 @@ public class RenameBranchStep implements Step {
                         // the branch exists
                         dialogFactory.createMessageDialog(messages.warnMissingConfigTitle(),
                                                           messages.errorBranchExists(branchName),
-                                                          null);
+                                                          new ConfirmCallback() {
+                                                              @Override
+                                                              public void accepted() {
+                                                                  //TODO open the contribute part with branch name in error
+                                                                  //TODO maybe it's better to check if the branch exist before contribute click
+                                                              }
+                                                          });
                     }
                 }
                 doRename(branchName, context, config);
