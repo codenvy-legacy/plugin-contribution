@@ -11,6 +11,11 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 
+import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
+import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+
+import com.codenvy.ide.api.notification.Notification;
+import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
@@ -65,16 +70,21 @@ public class IssuePullRequestStep implements Step {
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
         final String body = config.getPullRequestComment();
 
+        final Notification notification = new Notification(messages.issuingPullRequest(), INFO, PROGRESS);
+        notificationHelper.showNotification(notification);
+
         repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest result) {
                 context.setPullRequestIssueNumber(result.getNumber());
+                notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getUrl()), notification);
                 onPullRequestCreated(context, config);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
-                notificationHelper.showError(IssuePullRequestStep.class, messages.errorPullRequestFailed());
+                notificationHelper.finishNotificationWithError(IssuePullRequestStep.class, messages.errorPullRequestFailed(), notification);
+                Log.error(getClass(), exception);
             }
         });
     }

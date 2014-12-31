@@ -143,9 +143,16 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Creation of the pull request failed. Contribution is interrupted")
     String errorPullRequestFailed();
 
+    @DefaultMessage("Creating the pull request for your contribution")
+    String issuingPullRequest();
+
+    @DefaultMessage("The Pull Request for your contribution has been created. {0}")
+    String successIssuingPullRequest(String url);
+
     @DefaultMessage("Creating a new working branch {0}")
     String notificationCreatingNewWorkingBranch(String workingBranchName);
 
     @DefaultMessage("Branch {0} successfully created and checked out")
     String notificationBranchSuccessfullyCreatedAndCheckedOut(String workingBranchName);
+
 }
