@@ -146,7 +146,7 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Creating the pull request for your contribution")
     String issuingPullRequest();
 
-    @DefaultMessage("The Pull Request for your contribution has been created. {0}")
+    @DefaultMessage("The Pull Request for your contribution has been created. <a href=\"{0}\">{0}</a>")
     String successIssuingPullRequest(String url);
 
     @DefaultMessage("Creating a new working branch {0}")
