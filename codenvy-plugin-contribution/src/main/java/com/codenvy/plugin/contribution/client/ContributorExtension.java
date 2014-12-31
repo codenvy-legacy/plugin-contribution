@@ -80,7 +80,6 @@ public class ContributorExtension {
         this.contributePartPresenter = contributePartPresenter;
 
         resources.contributeCss().ensureInjected();
-        contributePartPresenter.process();
 
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
@@ -174,6 +173,7 @@ public class ContributorExtension {
                         vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                             @Override
                             public void onSuccess(final String result) {
+                                contributePartPresenter.open();
                                 contributePartPresenter.showContributePart();
                                 notificationHelper.finishNotification(
                                         messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName),
@@ -193,7 +193,7 @@ public class ContributorExtension {
     }
 
     private void exitContributeMode() {
-        //TODO remove the part
+        contributePartPresenter.remove();
     }
 
     /**

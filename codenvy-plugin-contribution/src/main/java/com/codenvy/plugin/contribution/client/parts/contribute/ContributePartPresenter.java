@@ -12,8 +12,6 @@ package com.codenvy.plugin.contribution.client.parts.contribute;
 
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentUser;
-import com.codenvy.ide.api.event.ProjectActionEvent;
-import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.ide.dto.DtoFactory;
@@ -35,8 +33,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.name.Named;
-import com.google.web.bindery.event.shared.EventBus;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,9 +48,6 @@ public class ContributePartPresenter extends BasePresenter
         implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler {
     /** The component view. */
     private final ContributePartView view;
-
-    /** THe event bus. */
-    private final EventBus eventBus;
 
     /** The workspace agent. */
     private final WorkspaceAgent workspaceAgent;
@@ -89,14 +82,10 @@ public class ContributePartPresenter extends BasePresenter
     /** The rest context base url. */
     private final String baseUrl;
 
-    /** The project action handler registration. */
-    private HandlerRegistration projectActionHandler;
-
     @Inject
     public ContributePartPresenter(@Nonnull final ContributePartView view,
                                    @Nonnull final Context context,
                                    @Nonnull final ContributeMessages messages,
-                                   @Nonnull final EventBus eventBus,
                                    @Nonnull final WorkspaceAgent workspaceAgent,
                                    @Nonnull final RenameBranchStep renameBranchStep,
                                    @Nonnull final DtoFactory dtoFactory,
@@ -107,7 +96,6 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final RemoteForkStep remoteForkStep,
                                    @Nonnull @Named("restContext") final String baseUrl) {
         this.view = view;
-        this.eventBus = eventBus;
         this.workspaceAgent = workspaceAgent;
         this.notificationHelper = notificationHelper;
         this.appContext = appContext;
@@ -124,19 +112,12 @@ public class ContributePartPresenter extends BasePresenter
         this.commitPresenter.setCommitActionHandler(this);
     }
 
-    public void process() {
-        projectActionHandler = eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
-            @Override
-            public void onProjectOpened(ProjectActionEvent event) {
-                workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, FIRST);
-            }
+    public void open() {
+        workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, FIRST);
+    }
 
-            @Override
-            public void onProjectClosed(ProjectActionEvent event) {
-                workspaceAgent.removePart(ContributePartPresenter.this);
-                projectActionHandler.removeHandler();
-            }
-        });
+    public void remove() {
+        workspaceAgent.removePart(ContributePartPresenter.this);
     }
 
     public void showContributePart() {
