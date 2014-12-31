@@ -225,7 +225,7 @@ public class GitHubHost implements RepositoryHost {
             protected void onSuccess(final GitHubPullRequest result) {
                 if (result != null) {
                     final PullRequest pr = GitHubHost.this.dtoFactory.createDto(PullRequest.class);
-                    pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl());
+                    pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl()).withHtmlUrl(result.getHtmlUrl());
                     callback.onSuccess(pr);
                 } else {
                     callback.onFailure(new Exception("No pull request."));

@@ -77,7 +77,7 @@ public class IssuePullRequestStep implements Step {
             @Override
             public void onSuccess(final PullRequest result) {
                 context.setPullRequestIssueNumber(result.getNumber());
-                notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getUrl()), notification);
+                notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()), notification);
                 onPullRequestCreated(context, config);
             }
 

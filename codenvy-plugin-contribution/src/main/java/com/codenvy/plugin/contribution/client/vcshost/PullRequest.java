@@ -37,6 +37,17 @@ public interface PullRequest {
     PullRequest withUrl(String url);
 
     /**
+     * Get pull request html URL.
+     *
+     * @return {@link String} html_url
+     */
+    String getHtmlUrl();
+
+    void setHtmlUrl(String htmlUrl);
+
+    PullRequest withHtmlUrl(String htmlUrl);
+
+    /**
      * Get pull request number.
      *
      * @return {@link String} number
