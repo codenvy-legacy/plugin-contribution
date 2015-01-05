@@ -61,6 +61,9 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Contribution")
     String contributePartTitle();
 
+    @DefaultMessage("Configure Contribution")
+    String contributePartConfigureContributionSectionTitle();
+
     @DefaultMessage("Branch name:")
     String contributePartBranchNameInputLabelText();
 
