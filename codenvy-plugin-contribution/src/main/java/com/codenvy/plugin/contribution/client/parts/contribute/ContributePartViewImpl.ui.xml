@@ -1,0 +1,96 @@
+<!--
+
+    Copyright (c) 2014 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
+
+-->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:my='urn:import:com.codenvy.plugin.contribution.client.dialogs.paste'>
+
+    <ui:with type="com.codenvy.plugin.contribution.client.ContributeMessages" field="messages"/>
+    <ui:with type="com.codenvy.plugin.contribution.client.ContributeResources" field="resources"/>
+    <ui:style>
+        .rootPanel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .fieldsSection {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            flex-shrink: 1;
+            padding-top: 2em;
+            padding-right: 2em;
+            padding-left: 2em;
+        }
+
+        .fieldItem {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-bottom: 1em;
+        }
+
+        .label {
+            width: 11em;
+            flex-grow: 0;
+            display: flex;
+            margin-bottom: 0.5em;
+        }
+
+        .field {
+            flex-grow: 1;
+        }
+
+        .fixed-textarea {
+            overflow: scroll;
+            resize: none;
+        }
+
+        .contributeButton {
+            align-self: flex-end;
+            width: 120px;
+            background: #256c9f;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.29), inset 0px 1px 0px 0px rgba(55, 126, 172, 1);
+            border-color: #2f3237;
+        }
+
+        .contributeButton:hover {
+            background: #18537e;
+        }
+
+        .contributeButton[disabled], .contributeButton[disabled]:HOVER {
+            background: rgba(37, 108, 159, 0.35);
+            color: rgba(255, 255, 255, 0.35);
+        }
+    </ui:style>
+    <g:HTMLPanel addStyleNames="{style.rootPanel}">
+        <div class="{style.fieldsSection}">
+            <div class="{style.fieldItem}">
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartBranchNameInputLabelText}"/>
+                <my:PasteAwareTextBox ui:field="branchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
+            </div>
+            <div class="{style.fieldItem}">
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartContributionTitleLabelText}"/>
+                <my:PasteAwareTextBox ui:field="contributionTitle" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
+            </div>
+            <div class="{style.fieldItem}">
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartContributionCommentLabelText}"/>
+                <g:TextArea height="80px" ui:field="contributionComment"
+                            addStyleNames="{style.field} {resources.contributeCss.inputField} {style.fixed-textarea}"/>
+            </div>
+            <g:Button addStyleNames="{style.contributeButton}" ui:field="contributeButton"
+                      text="{messages.contributePartContributeButton}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
