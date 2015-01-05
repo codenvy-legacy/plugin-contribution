@@ -86,7 +86,7 @@ public final class NotificationHelper {
     }
 
     /**
-     * Finish a notification in progress.
+     * Finish a notification in progress with an error.
      *
      * @param cls
      *         the class where the exception is caught.
@@ -102,7 +102,7 @@ public final class NotificationHelper {
     }
 
     /**
-     * Finish a notification in progress.
+     * Finish a notification in progress with an error.
      *
      * @param cls
      *         the class where the exception is caught.
@@ -117,6 +117,19 @@ public final class NotificationHelper {
         notification.setType(ERROR);
         finishNotification(exception.getMessage(), notification);
         Log.error(cls, exception);
+    }
+
+    /**
+     * Finish a notification in progress with a warning.
+     *
+     * @param message
+     *         the warning message.
+     * @param notification
+     *         the notification to finish.
+     */
+    public void finishNotificationWithWarning(@Nonnull final String message, @Nonnull final Notification notification) {
+        notification.setType(WARNING);
+        finishNotification(message, notification);
     }
 
     /**

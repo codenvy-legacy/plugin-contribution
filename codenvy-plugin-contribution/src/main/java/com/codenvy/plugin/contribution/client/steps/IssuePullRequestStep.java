@@ -11,11 +11,7 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 
-import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-
 import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
@@ -27,28 +23,27 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
+import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+
 /**
  * Create the pull request on the remote VCS repository.
  */
 public class IssuePullRequestStep implements Step {
 
-    private static final String BASE_BRANCH = "master";
+    private static final String BASE_BRANCH                   = "master";
+    private static final String EXISTING_PULL_REQUEST_MESSAGE = "A pull request already exists for ";
 
+    /** The host repository. */
     private final RepositoryHost repositoryHost;
 
-    /**
-     * The following step.
-     */
+    /** The following step. */
     private final Step nextStep;
 
-    /**
-     * The notification helper.
-     */
+    /** The notification helper. */
     private final NotificationHelper notificationHelper;
 
-    /**
-     * The internationalizable messages.
-     */
+    /** The internationalizable messages. */
     private final ContributeMessages messages;
 
     @Inject
@@ -83,8 +78,13 @@ public class IssuePullRequestStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                notificationHelper.finishNotificationWithError(IssuePullRequestStep.class, messages.errorPullRequestFailed(), notification);
-                Log.error(getClass(), exception);
+                if (exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch)) {
+                    notificationHelper.finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch), notification);
+
+                } else {
+                    notificationHelper
+                            .finishNotificationWithError(IssuePullRequestStep.class, messages.errorPullRequestFailed(), notification);
+                }
             }
         });
     }

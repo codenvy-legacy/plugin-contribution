@@ -91,9 +91,7 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Cancel")
     String preContributeWizardCancelButton();
 
-    /**
-     * prefix notification message with "Contribute Pull Request"
-     */
+    /** prefix notification message with "Contribute Pull Request". */
     @DefaultMessage("Contribute Pull Request: {0}")
     String prefixNotification(String notificationMessage);
 
@@ -139,6 +137,9 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Could not check the remotes")
     String warnCheckRemote();
+
+    @DefaultMessage("The existing pull request for {0} has been updated")
+    String warnPullRequestUpdated(String headBranch);
 
     @DefaultMessage("Creation of the pull request failed. Contribution is interrupted")
     String errorPullRequestFailed();
