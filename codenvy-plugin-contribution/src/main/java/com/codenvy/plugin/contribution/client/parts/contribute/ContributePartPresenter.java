@@ -20,7 +20,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
-import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
+import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
@@ -62,7 +62,7 @@ public class ContributePartPresenter extends BasePresenter
     private final ContributeMessages messages;
 
     /** The rename branch step. */
-    private final RenameBranchStep renameBranchStep;
+    private final RenameWorkBranchStep renameWorkBranchStep;
 
     /** The notification helper. */
     private final NotificationHelper notificationHelper;
@@ -87,7 +87,7 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final Context context,
                                    @Nonnull final ContributeMessages messages,
                                    @Nonnull final WorkspaceAgent workspaceAgent,
-                                   @Nonnull final RenameBranchStep renameBranchStep,
+                                   @Nonnull final RenameWorkBranchStep renameWorkBranchStep,
                                    @Nonnull final DtoFactory dtoFactory,
                                    @Nonnull final NotificationHelper notificationHelper,
                                    @Nonnull final AppContext appContext,
@@ -106,7 +106,7 @@ public class ContributePartPresenter extends BasePresenter
         this.configuration = dtoFactory.createDto(Configuration.class);
         this.context = context;
         this.messages = messages;
-        this.renameBranchStep = renameBranchStep;
+        this.renameWorkBranchStep = renameWorkBranchStep;
 
         this.view.setDelegate(this);
         this.commitPresenter.setCommitActionHandler(this);
@@ -285,6 +285,6 @@ public class ContributePartPresenter extends BasePresenter
                      .withContributionTitle(view.getContributionTitle());
 
         remoteForkStep.execute(context, configuration); // parallel with the other steps
-        renameBranchStep.execute(context, configuration);
+        renameWorkBranchStep.execute(context, configuration);
     }
 }

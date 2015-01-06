@@ -22,31 +22,24 @@ import com.google.inject.assistedinject.AssistedInject;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class WaitForForkOnRemoteStep implements Step {
-
+public class WaitForkOnRemoteStep implements Step {
     /** The frequency of the checks on the remote. */
     private static final int POLL_FREQUENCY_MS = 1000;
 
-    /**
-     * The remote repository host.
-     */
+    /** The remote repository host. */
     private final RepositoryHost repositoryHost;
 
-    /**
-     * The following step.
-     */
-    private final Step next;
+    /** The following step. */
+    private final Step nextStep;
 
-    /**
-     * The timer used for waiting.
-     */
+    /** The timer used for waiting. */
     private Timer timer;
 
     @AssistedInject
-    public WaitForForkOnRemoteStep(final RepositoryHost host,
-                                   final @Assisted Step nextStep) {
+    public WaitForkOnRemoteStep(@Nonnull final RepositoryHost host,
+                                @Nonnull final @Assisted Step nextStep) {
         this.repositoryHost = host;
-        this.next = nextStep;
+        this.nextStep = nextStep;
     }
 
     @Override
@@ -79,7 +72,7 @@ public class WaitForForkOnRemoteStep implements Step {
 
     private void check(final Context context, final Configuration config) {
         if (context.getForkReady()) {
-            next.execute(context, config);
+            nextStep.execute(context, config);
         } else {
             wait(context, config);
         }

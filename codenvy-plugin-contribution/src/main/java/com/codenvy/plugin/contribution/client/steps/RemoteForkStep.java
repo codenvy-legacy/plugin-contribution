@@ -30,9 +30,13 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
  * Create a fork of the contributed project (upstream) to push the user's contribution.
  */
 public class RemoteForkStep implements Step {
+    /** The repository host. */
+    private final RepositoryHost repositoryHost;
 
-    private final RepositoryHost     repositoryHost;
+    /** I18n messages. */
     private final ContributeMessages messages;
+
+    /** The notification helper. */
     private final NotificationHelper notificationHelper;
 
     @Inject

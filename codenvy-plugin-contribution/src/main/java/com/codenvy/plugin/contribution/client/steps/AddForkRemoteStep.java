@@ -27,47 +27,34 @@ import java.util.List;
 /**
  * Adds the forked remote repository to the remotes of the project.
  */
-public class AddRemoteStep implements Step {
-
-    /**
-     * The local name of the forked repository remote.
-     */
+public class AddForkRemoteStep implements Step {
+    /** The local name of the forked repository remote. */
     private final static String FORK_REMOTE_NAME = "fork";
 
-    /**
-     * The service for VCS operations.
-     */
+    /** The service for VCS operations. */
     private final VcsService vcsService;
 
-    /**
-     * The following step.
-     */
-    private final Step pushStep;
+    /** The following step. */
+    private final Step nextStep;
 
-    /**
-     * I18n-able messages.
-     */
+    /** I18n-able messages. */
     private final ContributeMessages messages;
 
-    /**
-     * The remote repository host.
-     */
+    /** The remote repository host. */
     private final RepositoryHost repositoryHost;
 
-    /**
-     * Notification helper.
-     */
+    /** Notification helper. */
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public AddRemoteStep(@Nonnull final VcsService vcsService,
-                         @Nonnull final RepositoryHost repositoryHost,
-                         @Nonnull final PushBranchOnForkStep pushStep,
-                         @Nonnull final ContributeMessages messages,
-                         @Nonnull final NotificationHelper notificationHelper) {
+    public AddForkRemoteStep(@Nonnull final VcsService vcsService,
+                             @Nonnull final RepositoryHost repositoryHost,
+                             @Nonnull final PushBranchOnForkStep nextStep,
+                             @Nonnull final ContributeMessages messages,
+                             @Nonnull final NotificationHelper notificationHelper) {
         this.vcsService = vcsService;
         this.repositoryHost = repositoryHost;
-        this.pushStep = pushStep;
+        this.nextStep = nextStep;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
     }
@@ -126,7 +113,7 @@ public class AddRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                notificationHelper.showError(AddRemoteStep.class, messages.errorAddRemoteFailed());
+                notificationHelper.showError(AddForkRemoteStep.class, messages.errorAddRemoteFailed());
             }
         });
     }
@@ -150,7 +137,7 @@ public class AddRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationHelper.showError(AddRemoteStep.class, messages.errorRemoveRemoteFailed());
+                notificationHelper.showError(AddForkRemoteStep.class, messages.errorRemoveRemoteFailed());
             }
         });
     }
@@ -164,6 +151,6 @@ public class AddRemoteStep implements Step {
      *         the contribution configuration
      */
     private void proceed(final Context context, final Configuration config) {
-        pushStep.execute(context, config);
+        nextStep.execute(context, config);
     }
 }

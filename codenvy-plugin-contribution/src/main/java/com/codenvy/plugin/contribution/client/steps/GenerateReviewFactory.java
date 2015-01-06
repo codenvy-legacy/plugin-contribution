@@ -50,59 +50,38 @@ import java.util.HashMap;
  * Generates a factory for the contribution reviewer.
  */
 public class GenerateReviewFactory implements Step {
-
-    /**
-     * The following step.
-     */
+    /** The following step. */
     private final Step nextStep;
 
-    /**
-     * The following step when failing.
-     */
+    /** The following step when failing. */
     private final Step failureNextStep;
 
-    /**
-     * The i18n-able messages.
-     */
+    /** The i18n-able messages. */
     private final ContributeMessages messages;
 
-    /**
-     * Template for building api urls.
-     */
+    /** Template for building api urls. */
     private final ApiUrlTemplate apiTemplate;
 
-    /**
-     * The DTO factory.
-     */
+    /** The DTO factory. */
     private final DtoFactory dtoFactory;
 
-    /**
-     * Factory for async requests.
-     */
+    /** Factory for async requests. */
     private final AsyncRequestFactory asyncRequestFactory;
 
-    /**
-     * Unmarshaller for DTOs.
-     */
+    /** Unmarshaller for DTOs. */
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
-    /**
-     * The app context.
-     */
+    /** The app context. */
     private final AppContext appContext;
 
-    /**
-     * The remote VCS repository.
-     */
+    /** The remote VCS repository. */
     private final RepositoryHost repositoryHost;
 
-    /**
-     * The notification manager.
-     */
+    /** The notification manager. */
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public GenerateReviewFactory(@Nonnull final AddFactoryLinkStep nextStep,
+    public GenerateReviewFactory(@Nonnull final AddReviewFactoryLinkStep nextStep,
                                  @Nonnull final ProposePersistStep failureNextStep,
                                  @Nonnull final ApiUrlTemplate apiUrlTemplate,
                                  @Nonnull final ContributeMessages messages,
@@ -126,6 +105,24 @@ public class GenerateReviewFactory implements Step {
         this.repositoryHost = repositoryHost;
         this.notificationHelper = notificationHelper;
     }
+
+    /**
+     * Sends the request, passing the form data as content.
+     *
+     * @param xhr
+     *         the request
+     * @param formData
+     *         the form data
+     * @return true iff the request was sent correctly - Note: doesn't mean the request will be succesful
+     */
+    private static final native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
+        try {
+            xhr.send(formData);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }-*/;
 
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
@@ -303,24 +300,6 @@ public class GenerateReviewFactory implements Step {
             callback.onFailure(new Exception("Could not call service"));
         }
     }
-
-    /**
-     * Sends the request, passing the form data as content.
-     *
-     * @param xhr
-     *         the request
-     * @param formData
-     *         the form data
-     * @return true iff the request was sent correctly - Note: doesn't mean the request will be succesful
-     */
-    private static final native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
-        try {
-            xhr.send(formData);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }-*/;
 
     /**
      * Template for building api urls.

@@ -30,9 +30,8 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
  * Create the pull request on the remote VCS repository.
  */
 public class IssuePullRequestStep implements Step {
-
-    private static final String DEFAULT_BASE_BRANCH                   = "master";
-    private static final String EXISTING_PULL_REQUEST_MESSAGE         = "A pull request already exists for ";
+    private static final String DEFAULT_BASE_BRANCH           = "master";
+    private static final String EXISTING_PULL_REQUEST_MESSAGE = "A pull request already exists for ";
 
     /** The host repository. */
     private final RepositoryHost repositoryHost;
@@ -69,25 +68,30 @@ public class IssuePullRequestStep implements Step {
         final Notification notification = new Notification(messages.issuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        repositoryHost.createPullRequest(owner, repository, title, headBranch, (baseBranch != null ? baseBranch : DEFAULT_BASE_BRANCH), body, new AsyncCallback<PullRequest>() {
-            @Override
-            public void onSuccess(final PullRequest result) {
-                context.setPullRequestIssueNumber(result.getNumber());
-                notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()), notification);
-                onPullRequestCreated(context, config);
-            }
+        repositoryHost
+                .createPullRequest(owner, repository, title, headBranch, (baseBranch != null ? baseBranch : DEFAULT_BASE_BRANCH), body,
+                                   new AsyncCallback<PullRequest>() {
+                                       @Override
+                                       public void onSuccess(final PullRequest result) {
+                                           context.setPullRequestIssueNumber(result.getNumber());
+                                           notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()),
+                                                                                 notification);
+                                           onPullRequestCreated(context, config);
+                                       }
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                if (exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch)) {
-                    notificationHelper.finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch), notification);
+                                       @Override
+                                       public void onFailure(final Throwable exception) {
+                                           if (exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch)) {
+                                               notificationHelper.finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch),
+                                                                                                notification);
 
-                } else {
-                    notificationHelper
-                            .finishNotificationWithError(IssuePullRequestStep.class, messages.errorPullRequestFailed(), notification);
-                }
-            }
-        });
+                                           } else {
+                                               notificationHelper
+                                                       .finishNotificationWithError(IssuePullRequestStep.class,
+                                                                                    messages.errorPullRequestFailed(), notification);
+                                           }
+                                       }
+                                   });
     }
 
     protected void onPullRequestCreated(final Context context, final Configuration config) {

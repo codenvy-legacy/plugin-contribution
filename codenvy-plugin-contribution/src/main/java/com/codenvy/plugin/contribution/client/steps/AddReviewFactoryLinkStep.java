@@ -25,32 +25,24 @@ import javax.inject.Inject;
 /**
  * Adds a factory link to the contribution in a comment of the pull request.
  */
-public class AddFactoryLinkStep implements Step {
-    /**
-     * The following step.
-     */
+public class AddReviewFactoryLinkStep implements Step {
+    /** The following step. */
     private final Step nextStep;
 
-    /**
-     * The remote VCS repository.
-     */
+    /** The remote VCS repository. */
     private final RepositoryHost repository;
 
-    /**
-     * The i18n-able messages.
-     */
+    /** The i18n-able messages. */
     private final ContributeMessages messages;
 
-    /**
-     * Helper to work with notifications.
-     */
+    /** Helper to work with notifications. */
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public AddFactoryLinkStep(final ProposePersistStep nextStep,
-                              final RepositoryHost repositoryHost,
-                              final ContributeMessages messages,
-                              final NotificationHelper notificationHelper) {
+    public AddReviewFactoryLinkStep(@Nonnull final ProposePersistStep nextStep,
+                                    @Nonnull final RepositoryHost repositoryHost,
+                                    @Nonnull final ContributeMessages messages,
+                                    @Nonnull final NotificationHelper notificationHelper) {
         this.messages = messages;
         this.notificationHelper = notificationHelper;
         this.nextStep = nextStep;
@@ -60,7 +52,7 @@ public class AddFactoryLinkStep implements Step {
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         if (context.getReviewFactoryUrl() == null) {
-            Log.debug(AddFactoryLinkStep.class, "Not factory Url; continue to next step.");
+            Log.debug(AddReviewFactoryLinkStep.class, "Not factory Url; continue to next step.");
             proceed(context, config);
         } else {
             // post the comment

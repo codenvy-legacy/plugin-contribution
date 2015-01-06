@@ -15,15 +15,15 @@ import com.codenvy.plugin.contribution.client.dialogs.commit.CommitView;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitViewImpl;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartView;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartViewImpl;
-import com.codenvy.plugin.contribution.client.steps.AddFactoryLinkStep;
-import com.codenvy.plugin.contribution.client.steps.AddRemoteStep;
+import com.codenvy.plugin.contribution.client.steps.AddForkRemoteStep;
+import com.codenvy.plugin.contribution.client.steps.AddReviewFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactory;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.ProposePersistStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
-import com.codenvy.plugin.contribution.client.steps.RenameBranchStep;
-import com.codenvy.plugin.contribution.client.steps.WaitForForOnRemoteStepFactory;
+import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
+import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -56,13 +56,13 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // the steps
         bind(ProposePersistStep.class);
-        bind(AddFactoryLinkStep.class);
+        bind(AddReviewFactoryLinkStep.class);
         bind(GenerateReviewFactory.class);
         bind(IssuePullRequestStep.class);
         bind(PushBranchOnForkStep.class);
-        bind(RenameBranchStep.class);
-        bind(AddRemoteStep.class);
+        bind(RenameWorkBranchStep.class);
+        bind(AddForkRemoteStep.class);
         bind(RemoteForkStep.class);
-        install(new GinFactoryModuleBuilder().build(WaitForForOnRemoteStepFactory.class));
+        install(new GinFactoryModuleBuilder().build(WaitForkOnRemoteStepFactory.class));
     }
 }

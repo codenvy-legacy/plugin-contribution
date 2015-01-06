@@ -25,11 +25,20 @@ import javax.validation.constraints.NotNull;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 
+/**
+ * Push the local contribution branch on the user fork.
+ */
 public class PushBranchOnForkStep implements Step {
+    /** The next step. */
+    private final Step nextStep;
 
-    private final Step               pullRequestStep;
-    private final VcsService         vcsService;
+    /** The vcs service. */
+    private final VcsService vcsService;
+
+    /** The notification helper. */
     private final NotificationHelper notificationHelper;
+
+    /** The i18-n messages. */
     private final ContributeMessages messages;
 
     @Inject
@@ -37,7 +46,7 @@ public class PushBranchOnForkStep implements Step {
                                 @Nonnull final VcsService vcsService,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @NotNull final ContributeMessages messages) {
-        this.pullRequestStep = nextStep;
+        this.nextStep = nextStep;
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
@@ -52,7 +61,7 @@ public class PushBranchOnForkStep implements Step {
             @Override
             public void onSuccess(final Void result) {
                 notificationHelper.finishNotification(messages.successPushingBranchToFork(), notification);
-                pullRequestStep.execute(context, config);
+                nextStep.execute(context, config);
             }
 
             @Override

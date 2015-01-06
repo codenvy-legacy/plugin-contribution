@@ -27,41 +27,31 @@ import java.util.List;
 /**
  * Renames the current branch with the one provided by the user.
  */
-public class RenameBranchStep implements Step {
-    /**
-     * Factory for dialogs.
-     */
+public class RenameWorkBranchStep implements Step {
+    /** Factory for dialogs. */
     private final DialogFactory dialogFactory;
 
-    /**
-     * The following step.
-     */
+    /** The following step. */
     private final Step nextStep;
 
-    /**
-     * The service for VCS operations.
-     */
+    /** The service for VCS operations. */
     private final VcsService vcsService;
 
-    /**
-     * I18n-able messages.
-     */
+    /** I18n-able messages. */
     private final ContributeMessages messages;
 
-    /**
-     * Helper to work with notification.
-     */
+    /** Helper to work with notification. */
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public RenameBranchStep(@Nonnull final AddRemoteStep addRemoteStep,
-                            @Nonnull final VcsService vcsService,
-                            @Nonnull final DialogFactory dialogFactory,
-                            @Nonnull final ContributeMessages messages,
-                            @Nonnull final NotificationHelper notificationHelper,
-                            @Nonnull final WaitForForOnRemoteStepFactory waitRemoteStepFactory) {
+    public RenameWorkBranchStep(@Nonnull final AddForkRemoteStep addForkRemoteStep,
+                                @Nonnull final VcsService vcsService,
+                                @Nonnull final DialogFactory dialogFactory,
+                                @Nonnull final ContributeMessages messages,
+                                @Nonnull final NotificationHelper notificationHelper,
+                                @Nonnull final WaitForkOnRemoteStepFactory waitRemoteStepFactory) {
         this.dialogFactory = dialogFactory;
-        this.nextStep = waitRemoteStepFactory.create(addRemoteStep);
+        this.nextStep = waitRemoteStepFactory.create(addForkRemoteStep);
         this.vcsService = vcsService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
@@ -124,7 +114,7 @@ public class RenameBranchStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationHelper.showError(RenameBranchStep.class, messages.errorListBranches());
+                notificationHelper.showError(RenameWorkBranchStep.class, messages.errorListBranches());
             }
         });
     }
@@ -150,7 +140,7 @@ public class RenameBranchStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationHelper.showError(RenameBranchStep.class, messages.errorRenameFailed());
+                notificationHelper.showError(RenameWorkBranchStep.class, messages.errorRenameFailed());
             }
         });
 
