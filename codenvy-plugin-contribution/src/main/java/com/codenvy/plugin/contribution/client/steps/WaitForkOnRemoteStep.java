@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.Repository;
@@ -18,9 +19,12 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+
+import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.CREATE_FORK;
 
 public class WaitForkOnRemoteStep implements Step {
     /** The frequency of the checks on the remote. */
@@ -32,14 +36,19 @@ public class WaitForkOnRemoteStep implements Step {
     /** The following step. */
     private final Step nextStep;
 
+    /** The event bus. */
+    private final EventBus eventBus;
+
     /** The timer used for waiting. */
     private Timer timer;
 
     @AssistedInject
     public WaitForkOnRemoteStep(@Nonnull final RepositoryHost host,
-                                @Nonnull final @Assisted Step nextStep) {
+                                @Nonnull final @Assisted Step nextStep,
+                                @Nonnull final EventBus eventBus) {
         this.repositoryHost = host;
         this.nextStep = nextStep;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -60,6 +69,7 @@ public class WaitForkOnRemoteStep implements Step {
 
                         @Override
                         public void onSuccess(final Void result) {
+                            eventBus.fireEvent(new StepDoneEvent(CREATE_FORK));
                             context.setForkReady(true);
                             check(context, config);
                         }

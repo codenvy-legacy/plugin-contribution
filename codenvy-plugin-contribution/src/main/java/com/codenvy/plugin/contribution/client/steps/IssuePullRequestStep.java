@@ -14,17 +14,20 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
+import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.PullRequest;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.ISSUE_PULL_REQUEST;
 
 /**
  * Create the pull request on the remote VCS repository.
@@ -45,15 +48,20 @@ public class IssuePullRequestStep implements Step {
     /** The internationalizable messages. */
     private final ContributeMessages messages;
 
+    /** The event bus. */
+    private final EventBus eventBus;
+
     @Inject
     public IssuePullRequestStep(@Nonnull final RepositoryHost repositoryHost,
                                 @Nonnull final GenerateReviewFactory nextStep,
                                 @Nonnull final NotificationHelper notificationHelper,
-                                @Nonnull final ContributeMessages messages) {
+                                @Nonnull final ContributeMessages messages,
+                                @Nonnull final EventBus eventBus) {
         this.repositoryHost = repositoryHost;
         this.nextStep = nextStep;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -68,30 +76,34 @@ public class IssuePullRequestStep implements Step {
         final Notification notification = new Notification(messages.issuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        repositoryHost
-                .createPullRequest(owner, repository, title, headBranch, (baseBranch != null ? baseBranch : DEFAULT_BASE_BRANCH), body,
-                                   new AsyncCallback<PullRequest>() {
-                                       @Override
-                                       public void onSuccess(final PullRequest result) {
-                                           context.setPullRequestIssueNumber(result.getNumber());
-                                           notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()),
-                                                                                 notification);
-                                           onPullRequestCreated(context, config);
-                                       }
+        repositoryHost.createPullRequest(owner, repository, title, headBranch, (baseBranch != null ? baseBranch : DEFAULT_BASE_BRANCH),
+                                         body,
+                                         new AsyncCallback<PullRequest>() {
+                                             @Override
+                                             public void onSuccess(final PullRequest result) {
+                                                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST));
+                                                 context.setPullRequestIssueNumber(result.getNumber());
+                                                 notificationHelper
+                                                         .finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()),
+                                                                             notification);
+                                                 onPullRequestCreated(context, config);
+                                             }
 
-                                       @Override
-                                       public void onFailure(final Throwable exception) {
-                                           if (exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch)) {
-                                               notificationHelper.finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch),
-                                                                                                notification);
+                                             @Override
+                                             public void onFailure(final Throwable exception) {
+                                                 if (exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch)) {
+                                                     notificationHelper
+                                                             .finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch),
+                                                                                            notification);
 
-                                           } else {
-                                               notificationHelper
-                                                       .finishNotificationWithError(IssuePullRequestStep.class,
-                                                                                    messages.errorPullRequestFailed(), notification);
-                                           }
-                                       }
-                                   });
+                                                 } else {
+                                                     notificationHelper
+                                                             .finishNotificationWithError(IssuePullRequestStep.class,
+                                                                                          messages.errorPullRequestFailed(), notification);
+                                                 }
+                                             }
+                                         });
+
     }
 
     protected void onPullRequestCreated(final Context context, final Configuration config) {

@@ -181,6 +181,12 @@ public class GitHubHost implements RepositoryHost {
         return urlTemplates.gitRemoteTemplate(username, repository);
     }
 
+    @Nonnull
+    @Override
+    public String makePullRequestUrl(@Nonnull String username, @Nonnull String repository, @Nonnull String pullRequestNumber) {
+        return urlTemplates.gitPullRequestTemplate(username, repository, pullRequestNumber);
+    }
+
     @Override
     public void commentPullRequest(@Nonnull final String username, @Nonnull final String repository,
                                    @Nonnull final String pullRequestId, @Nonnull final String commentText,

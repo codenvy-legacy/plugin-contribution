@@ -17,17 +17,21 @@ import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
+import static com.google.gwt.dom.client.Style.Display.BLOCK;
+import static com.google.gwt.dom.client.Style.Display.NONE;
 
 /**
  * Implementation of {@link com.codenvy.plugin.contribution.client.parts.contribute.ContributePartView}.
@@ -61,6 +65,30 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiField(provided = true)
     ContributeMessages messages;
 
+    /** The contribution status section. */
+    @UiField
+    HTMLPanel statusSection;
+
+    /** The create fork check box. */
+    @UiField
+    CheckBox createForkCheckBox;
+
+    /** The push branch check box. */
+    @UiField
+    CheckBox pushBranchCheckBox;
+
+    /** The issue pull request check box. */
+    @UiField
+    CheckBox issuePullRequestCheckBox;
+
+    /** The status section footer. */
+    @UiField
+    HTMLPanel statusSectionFooter;
+
+    /** Open on repository host button. */
+    @UiField
+    Button openOnRepositoryHostButton;
+
     @Inject
     public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
                                   @Nonnull final ContributeMessages messages,
@@ -70,25 +98,27 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         this.messages = messages;
         this.resources = resources;
 
-        container.add(UI_BINDER.createAndBindUi(this));
+        this.container.add(UI_BINDER.createAndBindUi(this));
         setTitle(messages.contributePartTitle());
 
+        this.statusSection.setVisible(false);
         this.branchName.getElement().setPropertyString("placeholder", messages.contributePartBranchNameInputPlaceHolder());
         this.contributionTitle.getElement().setPropertyString("placeholder", messages.contributePartContributionTitlePlaceHolder());
         this.contributionComment.getElement().setPropertyString("placeholder", messages.contributePartContributionCommentPlaceHolder());
-
-        this.contributeButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(final ClickEvent event) {
-                delegate.onContribute();
-            }
-        });
     }
 
     @Override
     public void reset() {
         branchName.setValue(delegate.suggestBranchName());
         contributionComment.setValue("");
+        contributeButton.getElement().getStyle().setDisplay(BLOCK);
+
+        statusSection.setVisible(false);
+        statusSectionFooter.setVisible(false);
+        createForkCheckBox.setValue(false);
+        pushBranchCheckBox.setValue(false);
+        issuePullRequestCheckBox.setValue(false);
+
         delegate.updateControls();
     }
 
@@ -113,6 +143,11 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
+    public void hideContribute() {
+        contributeButton.getElement().getStyle().setDisplay(NONE);
+    }
+
+    @Override
     public void showBranchNameError(final boolean showError) {
         if (showError) {
             branchName.addStyleName(resources.contributeCss().inputError());
@@ -128,6 +163,31 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         } else {
             contributionTitle.removeStyleName(resources.contributeCss().inputError());
         }
+    }
+
+    @Override
+    public void showStatusSection() {
+        statusSection.setVisible(true);
+    }
+
+    @Override
+    public void checkCreateForkCheckBox() {
+        createForkCheckBox.setValue(true);
+    }
+
+    @Override
+    public void checkPushBranchCheckBox() {
+        pushBranchCheckBox.setValue(true);
+    }
+
+    @Override
+    public void checkIssuePullRequestCheckBox() {
+        issuePullRequestCheckBox.setValue(true);
+    }
+
+    @Override
+    public void showStatusSectionFooter() {
+        statusSectionFooter.setVisible(true);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -158,6 +218,18 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiHandler("contributionTitle")
     public void contributionTitleChanged(final ValueChangeEvent<String> event) {
         delegate.updateControls();
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("openOnRepositoryHostButton")
+    public void openOnRepositoryHostClick(final ClickEvent event) {
+        delegate.onOpenOnRepositoryHost();
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("contributeButton")
+    public void contributeClick(final ClickEvent event) {
+        delegate.onContribute();
     }
 
     @SuppressWarnings("UnusedParameters")

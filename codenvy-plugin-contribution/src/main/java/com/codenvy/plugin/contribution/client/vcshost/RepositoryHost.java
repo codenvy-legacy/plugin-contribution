@@ -150,4 +150,18 @@ public interface RepositoryHost {
      */
     @Nonnull
     String makeRemoteUrl(@Nonnull String username, @Nonnull String repository);
+
+    /**
+     * Makes the pull request url for the given username, repository and pull request number.
+     *
+     * @param username
+     *         the user name.
+     * @param repository
+     *         the repository name.
+     * @param pullRequestNumber
+     *         the pull request number.
+     * @return the remote url, never {@code null}.
+     */
+    @Nonnull
+    String makePullRequestUrl(@Nonnull String username, @Nonnull String repository, @Nonnull String pullRequestNumber);
 }

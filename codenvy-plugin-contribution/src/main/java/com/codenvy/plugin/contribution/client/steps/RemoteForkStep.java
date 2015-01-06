@@ -13,18 +13,21 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
+import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcshost.Repository;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.CREATE_FORK;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
@@ -38,14 +41,17 @@ public class RemoteForkStep implements Step {
 
     /** The notification helper. */
     private final NotificationHelper notificationHelper;
+    private final EventBus           eventBus;
 
     @Inject
     public RemoteForkStep(@Nonnull final RepositoryHost repositoryHost,
                           @Nonnull final ContributeMessages messages,
-                          @Nonnull final NotificationHelper notificationHelper) {
+                          @Nonnull final NotificationHelper notificationHelper,
+                          @Nonnull final EventBus eventBus) {
         this.repositoryHost = repositoryHost;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -57,6 +63,7 @@ public class RemoteForkStep implements Step {
         repositoryHost.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository fork) {
+                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK));
                 context.setForkedRepositoryName(fork.getName());
                 notificationHelper.showInfo(messages.useExistingUserFork());
             }

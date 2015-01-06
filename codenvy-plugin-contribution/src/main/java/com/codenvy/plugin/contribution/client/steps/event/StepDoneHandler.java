@@ -8,17 +8,25 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-.blueButton {
-    background: #256c9f;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.29), inset 0 1px 0 0 rgba(55, 126, 172, 1);
-    border-color: #2f3237;
-}
+package com.codenvy.plugin.contribution.client.steps.event;
 
-.blueButton:hover {
-    background: #18537e;
-}
+import com.google.gwt.event.shared.EventHandler;
 
-.blueButton[disabled], .blueButton[disabled]:hover {
-    background: rgba(37, 108, 159, 0.35);
-    color: rgba(255, 255, 255, 0.35);
+import javax.annotation.Nonnull;
+
+import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step;
+
+/**
+ * Handler for step event.
+ *
+ * @author Kevin Pollet
+ */
+public interface StepDoneHandler extends EventHandler {
+    /**
+     * Called when a step is done.
+     *
+     * @param step
+     *         the finished step.
+     */
+    void onStepDone(@Nonnull Step step);
 }

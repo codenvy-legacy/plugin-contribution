@@ -53,6 +53,11 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setContributeEnabled(boolean enabled);
 
     /**
+     * Hides the contribute button.
+     */
+    void hideContribute();
+
+    /**
      * Sets the branch name input error state.
      *
      * @param showError
@@ -69,11 +74,39 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void showContributionTitleError(boolean showError);
 
     /**
+     * Shows the status section.
+     */
+    void showStatusSection();
+
+    /**
+     * Checks the create fork status checkbox.
+     */
+    void checkCreateForkCheckBox();
+
+    /**
+     * Show the status footer.
+     */
+    void showStatusSectionFooter();
+
+    /**
+     * Checks the push branch status checkbox.
+     */
+    void checkPushBranchCheckBox();
+
+    /**
+     * Checks the issue pull request status checkbox.
+     */
+    void checkIssuePullRequestCheckBox();
+
+    /**
      * Action delegate interface for the contribution configuration dialog.
      */
     interface ActionDelegate extends BaseActionDelegate {
         /** Performs any actions appropriate in response to the user having pressed the Contribute button */
         void onContribute();
+
+        /** Performs any action appropriate in response to the user having pressed the open on repository host button */
+         void onOpenOnRepositoryHost();
 
         /** Performs any action when view state is modified. */
         void updateControls();

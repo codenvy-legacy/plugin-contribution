@@ -83,7 +83,28 @@ public interface ContributeMessages extends Messages {
     String contributePartContributionCommentPlaceHolder();
 
     @DefaultMessage("Contribute")
-    String contributePartContributeButton();
+    String contributePartContributeButtonText();
+
+    @DefaultMessage("Status")
+    String contributePartStatusSectionTitle();
+
+    @DefaultMessage("Fork created")
+    String contributePartCreateForkLabelText();
+
+    @DefaultMessage("Branch pushed on your fork")
+    String contributePartPushBranchLabelText();
+
+    @DefaultMessage("Pull request Issued")
+    String contributePartIssuePullRequestLabelText();
+
+    @DefaultMessage("Your Contribution has successfully been issued!")
+    String contributePartContributionIssuedLabelText();
+
+    @DefaultMessage("Open in permanent workspace")
+    String contributePartPersistButtonText();
+
+    @DefaultMessage("Open on GitHub")
+    String contributePartGithubButtonText();
 
     /** prefix notification message with "Contribute Pull Request". */
     @DefaultMessage("Contribute Pull Request: {0}")

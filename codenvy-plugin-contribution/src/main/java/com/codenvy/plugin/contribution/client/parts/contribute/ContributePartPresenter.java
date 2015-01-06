@@ -21,6 +21,8 @@ import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
 import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
+import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
+import com.codenvy.plugin.contribution.client.steps.event.StepDoneHandler;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcshost.HostUser;
@@ -33,6 +35,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.inject.name.Named;
+import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +43,7 @@ import javax.inject.Inject;
 
 import static com.codenvy.ide.api.constraints.Constraints.FIRST;
 import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
+import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step;
 
 /**
  * Part for the contribution configuration.
@@ -94,7 +98,8 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final CommitPresenter commitPresenter,
                                    @Nonnull final RepositoryHost repositoryHost,
                                    @Nonnull final RemoteForkStep remoteForkStep,
-                                   @Nonnull @Named("restContext") final String baseUrl) {
+                                   @Nonnull @Named("restContext") final String baseUrl,
+                                   @Nonnull final EventBus eventBus) {
         this.view = view;
         this.workspaceAgent = workspaceAgent;
         this.notificationHelper = notificationHelper;
@@ -110,6 +115,24 @@ public class ContributePartPresenter extends BasePresenter
 
         this.view.setDelegate(this);
         this.commitPresenter.setCommitActionHandler(this);
+
+        eventBus.addHandler(StepDoneEvent.TYPE, new StepDoneHandler() {
+            @Override
+            public void onStepDone(@Nonnull final Step step) {
+                switch (step) {
+                    case CREATE_FORK:
+                        view.checkCreateForkCheckBox();
+                        break;
+                    case PUSH_BRANCH:
+                        view.checkPushBranchCheckBox();
+                        break;
+                    case ISSUE_PULL_REQUEST:
+                        view.checkIssuePullRequestCheckBox();
+                        view.showStatusSectionFooter();
+                        break;
+                }
+            }
+        });
     }
 
     public void open() {
@@ -148,6 +171,12 @@ public class ContributePartPresenter extends BasePresenter
                 }
             });
         }
+    }
+
+    @Override
+    public void onOpenOnRepositoryHost() {
+        Window.open(repositoryHost.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
+                                                      context.getPullRequestIssueNumber()), "", "");
     }
 
     @Override
@@ -278,6 +307,9 @@ public class ContributePartPresenter extends BasePresenter
      *         the user authenticated on the VCS Host.
      */
     private void onVCSHostUserAuthenticated(final HostUser user) {
+        view.hideContribute();
+        view.showStatusSection();
+
         context.setHostUserLogin(user.getLogin());
 
         configuration.withBranchName(view.getBranchName())

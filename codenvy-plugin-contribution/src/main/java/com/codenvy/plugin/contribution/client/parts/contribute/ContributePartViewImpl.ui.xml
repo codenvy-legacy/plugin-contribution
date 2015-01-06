@@ -17,20 +17,13 @@
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeMessages" field="messages"/>
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeResources" field="resources"/>
     <ui:style>
-        .rootPanel {
+        .panel {
             font-size: 11px;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
         }
 
-        .rootPanel .section {
-            border-bottom: 1px solid #232323;
-        }
-
-        .section:last-child {
-            border-bottom: none;
+        .border {
+            border-top: 1px solid #232323;
         }
 
         .section {
@@ -39,7 +32,7 @@
             padding: 1em 2em 1em 2em;
         }
 
-        .sectionTitle {
+        .section .title {
             margin-bottom: 1em;
             color: #808080;
             text-shadow: 0 1px 0 rgba(0, 0, 0, 1);
@@ -55,11 +48,11 @@
             margin-bottom: 1em;
         }
 
-        .field {
+        .fieldItem .field {
             flex-grow: 1;
         }
 
-        .fieldLabel {
+        .fieldItem .label {
             width: 11em;
             flex-grow: 0;
             display: flex;
@@ -74,38 +67,97 @@
         .contributeButton {
             align-self: flex-end;
             width: 120px;
-            background: #256c9f;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.29), inset 0 1px 0 0 rgba(55, 126, 172, 1);
-            border-color: #2f3237;
         }
 
-        .contributeButton:hover {
-            background: #18537e;
+        .statusStep {
+            display: flex;
+            flex-direction: row;
+            margin-top: 1em;
+            margin-bottom: 1em;
+            height: 24px;
         }
 
-        .contributeButton[disabled], .contributeButton[disabled]:hover {
-            background: rgba(37, 108, 159, 0.35);
-            color: rgba(255, 255, 255, 0.35);
+        .statusStep .number {
+            color: #47afdd;
+            border: 1px solid #a1a1a1;
+            border-radius: 14px;
+            text-align: center;
+            width: 22px;
+            height: 22px;
+            background-color: #353535;
+            align-self: center;
+            margin-right: 15px;
+            line-height: 24px
+        }
+
+        .statusStep .label {
+            align-self: center;
+        }
+
+        .statusStep .checkBox {
+            display: flex;
+            justify-content: flex-end;
+            align-self: center;
+            flex-grow: 2;
+        }
+
+        .footer {
+            margin-top: 1em;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer .item {
+            margin-bottom: 1em;
+            flex-direction: column;
+            align-self: center;
+            width: auto;
+            line-height: 20px;
         }
     </ui:style>
-    <g:HTMLPanel addStyleNames="{style.rootPanel}">
-        <div class="{style.section}">
-            <g:Label addStyleNames="{style.sectionTitle}" text="{messages.contributePartConfigureContributionSectionTitle}"/>
+    <g:HTMLPanel addStyleNames="{style.panel}">
+        <g:HTMLPanel addStyleNames="{style.section}">
+            <g:Label addStyleNames="{style.title}" text="{messages.contributePartConfigureContributionSectionTitle}"/>
             <div class="{style.fieldItem}">
-                <g:Label addStyleNames="{style.fieldLabel}" text="{messages.contributePartBranchNameInputLabelText}"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartBranchNameInputLabelText}"/>
                 <my:PasteAwareTextBox ui:field="branchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
             </div>
             <div class="{style.fieldItem}">
-                <g:Label addStyleNames="{style.fieldLabel}" text="{messages.contributePartContributionTitleLabelText}"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartContributionTitleLabelText}"/>
                 <my:PasteAwareTextBox ui:field="contributionTitle" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
             </div>
             <div class="{style.fieldItem}">
-                <g:Label addStyleNames="{style.fieldLabel}" text="{messages.contributePartContributionCommentLabelText}"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartContributionCommentLabelText}"/>
                 <g:TextArea height="80px" ui:field="contributionComment"
                             addStyleNames="{style.field} {resources.contributeCss.inputField} {style.fixed-textarea}"/>
             </div>
-            <g:Button addStyleNames="{style.contributeButton}" ui:field="contributeButton"
-                      text="{messages.contributePartContributeButton}"/>
-        </div>
+            <g:Button addStyleNames="{style.contributeButton} {resources.contributeCss.blueButton}" ui:field="contributeButton"
+                      text="{messages.contributePartContributeButtonText}"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
+            <g:Label addStyleNames="{style.title}" text="{messages.contributePartStatusSectionTitle}"/>
+            <div class="{style.statusStep}">
+                <g:Label addStyleNames="{style.number}" text="1"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartCreateForkLabelText}"/>
+                <g:CheckBox ui:field="createForkCheckBox" enabled="false" addStyleNames="{style.checkBox}"/>
+            </div>
+            <div class="{style.statusStep}">
+                <g:Label addStyleNames="{style.number}" text="2"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartPushBranchLabelText}"/>
+                <g:CheckBox ui:field="pushBranchCheckBox" enabled="false" addStyleNames="{style.checkBox}"/>
+            </div>
+            <div class="{style.statusStep}">
+                <g:Label addStyleNames="{style.number}" text="3"/>
+                <g:Label addStyleNames="{style.label}" text="{messages.contributePartIssuePullRequestLabelText}"/>
+                <g:CheckBox ui:field="issuePullRequestCheckBox" enabled="false" addStyleNames="{style.checkBox}"/>
+            </div>
+            <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
+                <g:Label addStyleNames="{style.item}" text="{messages.contributePartContributionIssuedLabelText}"/>
+                <g:Button addStyleNames="{resources.contributeCss.blueButton} {style.item}"
+                          text="{messages.contributePartPersistButtonText}"/>
+                <g:Button ui:field="openOnRepositoryHostButton" addStyleNames="{style.item}"
+                          text="{messages.contributePartGithubButtonText}"/>
+            </g:HTMLPanel>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

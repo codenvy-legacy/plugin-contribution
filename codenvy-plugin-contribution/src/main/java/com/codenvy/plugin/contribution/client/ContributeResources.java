@@ -18,6 +18,7 @@ import com.google.gwt.resources.client.ClientBundle;
  */
 public interface ContributeResources extends ClientBundle {
     interface ContributeCss extends Styles {
+        String blueButton();
     }
 
     @Source({"Contribute.css", "com/codenvy/ide/api/ui/style.css", "com/codenvy/ide/ui/Styles.css"})

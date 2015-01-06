@@ -16,16 +16,29 @@ import com.google.gwt.i18n.client.Messages;
  * Templates for repository URLs.
  */
 public interface UrlTemplates extends Messages {
-
     /**
      * The git URL to a github repository.
      *
-     * @param user
-     *         the user name
-     * @param repo
-     *         the repository name
+     * @param username
+     *         the username name.
+     * @param repository
+     *         the repository name.
      * @return the URL
      */
     @DefaultMessage("git@github.com:{0}/{1}.git")
-    String gitRemoteTemplate(String user, String repo);
+    String gitRemoteTemplate(String username, String repository);
+
+    /**
+     * The git URL to a pull request.
+     *
+     * @param username
+     *         the username name.
+     * @param repository
+     *         the repository name.
+     * @param pullRequestNumber
+     *         the pull request number.
+     * @return the URL
+     */
+    @DefaultMessage("https://github.com/{0}/{1}/pull/{2}")
+    String gitPullRequestTemplate(String username, String repository, String pullRequestNumber);
 }
