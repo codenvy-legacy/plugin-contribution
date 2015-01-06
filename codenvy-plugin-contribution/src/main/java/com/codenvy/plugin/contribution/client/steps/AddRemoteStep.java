@@ -40,11 +40,6 @@ public class AddRemoteStep implements Step {
     private final VcsService vcsService;
 
     /**
-     * The factory used to create "wait" steps.
-     */
-    private final WaitForForOnRemoteStepFactory waitRemoteStepFactory;
-
-    /**
      * The following step.
      */
     private final Step pushStep;
@@ -68,13 +63,11 @@ public class AddRemoteStep implements Step {
     public AddRemoteStep(@Nonnull final VcsService vcsService,
                          @Nonnull final RepositoryHost repositoryHost,
                          @Nonnull final PushBranchOnForkStep pushStep,
-                         @Nonnull final WaitForForOnRemoteStepFactory waitRemoteStepFactory,
                          @Nonnull final ContributeMessages messages,
                          @Nonnull final NotificationHelper notificationHelper) {
         this.vcsService = vcsService;
         this.repositoryHost = repositoryHost;
         this.pushStep = pushStep;
-        this.waitRemoteStepFactory = waitRemoteStepFactory;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
     }
@@ -171,7 +164,6 @@ public class AddRemoteStep implements Step {
      *         the contribution configuration
      */
     private void proceed(final Context context, final Configuration config) {
-        final Step waitStep = waitRemoteStepFactory.create(pushStep);
-        waitStep.execute(context, config);
+        pushStep.execute(context, config);
     }
 }

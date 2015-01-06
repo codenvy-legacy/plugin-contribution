@@ -58,9 +58,10 @@ public class RenameBranchStep implements Step {
                             @Nonnull final VcsService vcsService,
                             @Nonnull final DialogFactory dialogFactory,
                             @Nonnull final ContributeMessages messages,
-                            @Nonnull final NotificationHelper notificationHelper) {
+                            @Nonnull final NotificationHelper notificationHelper,
+                            @Nonnull final WaitForForOnRemoteStepFactory waitRemoteStepFactory) {
         this.dialogFactory = dialogFactory;
-        this.nextStep = addRemoteStep;
+        this.nextStep = waitRemoteStepFactory.create(addRemoteStep);
         this.vcsService = vcsService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
