@@ -31,8 +31,8 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
  */
 public class IssuePullRequestStep implements Step {
 
-    private static final String BASE_BRANCH                   = "master";
-    private static final String EXISTING_PULL_REQUEST_MESSAGE = "A pull request already exists for ";
+    private static final String DEFAULT_BASE_BRANCH                   = "master";
+    private static final String EXISTING_PULL_REQUEST_MESSAGE         = "A pull request already exists for ";
 
     /** The host repository. */
     private final RepositoryHost repositoryHost;
@@ -62,13 +62,14 @@ public class IssuePullRequestStep implements Step {
         final String owner = context.getOriginRepositoryOwner();
         final String repository = context.getOriginRepositoryName();
         final String title = config.getContributionTitle();
+        final String baseBranch = context.getClonedBranchName();
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
         final String body = config.getPullRequestComment();
 
         final Notification notification = new Notification(messages.issuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        repositoryHost.createPullRequest(owner, repository, title, headBranch, BASE_BRANCH, body, new AsyncCallback<PullRequest>() {
+        repositoryHost.createPullRequest(owner, repository, title, headBranch, (baseBranch != null ? baseBranch : DEFAULT_BASE_BRANCH), body, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest result) {
                 context.setPullRequestIssueNumber(result.getNumber());

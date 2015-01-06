@@ -19,6 +19,9 @@ public class Context {
     /** The project. */
     private ProjectDescriptor project;
 
+    /** The name of the cloned branch. */
+    private String clonedBranchName;
+
     /** The name of the working branch. */
     private String workBranchName;
 
@@ -56,6 +59,19 @@ public class Context {
 
     public Context withProject(ProjectDescriptor desc) {
         project = desc;
+        return this;
+    }
+
+    public String getClonedBranchName() {
+        return clonedBranchName;
+    }
+
+    public void setClonedBranchName(String name) {
+        clonedBranchName = name;
+    }
+
+    public Context withClonedBranchName(String name) {
+        clonedBranchName = name;
         return this;
     }
 
