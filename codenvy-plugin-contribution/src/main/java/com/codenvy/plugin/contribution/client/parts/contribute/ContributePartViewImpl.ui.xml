@@ -18,6 +18,7 @@
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeResources" field="resources"/>
     <ui:style>
         .rootPanel {
+            font-size: 11px;
             position: relative;
             display: flex;
             flex-direction: column;
