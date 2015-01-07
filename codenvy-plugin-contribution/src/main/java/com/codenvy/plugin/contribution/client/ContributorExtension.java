@@ -114,9 +114,9 @@ public class ContributorExtension {
                 for (final Remote remote : result) {
                     // save origin repository name & owner in context
                     if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
-                        final String remoteUrl = remote.getUrl();
-                        final String repositoryName = repositoryHost.getRepositoryNameFromUrl(remoteUrl);
-                        final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(remoteUrl);
+                        final String resultRemoteUrl = remote.getUrl();
+                        final String repositoryName = repositoryHost.getRepositoryNameFromUrl(resultRemoteUrl);
+                        final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(resultRemoteUrl);
 
                         context.setOriginRepositoryOwner(repositoryOwner);
                         context.setOriginRepositoryName(repositoryName);
@@ -130,6 +130,7 @@ public class ContributorExtension {
                                 }
                             }
                         }
+                        final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
                         contributePartPresenter.setRepositoryUrl(remoteUrl);
 
                         // initiate contributor button & working branch
