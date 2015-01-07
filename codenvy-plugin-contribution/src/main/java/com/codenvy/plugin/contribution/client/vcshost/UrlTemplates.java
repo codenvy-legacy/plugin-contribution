@@ -17,7 +17,7 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface UrlTemplates extends Messages {
     /**
-     * The git URL to a github repository.
+     * The git SSH URL to a github repository.
      *
      * @param username
      *         the username name.
@@ -26,7 +26,19 @@ public interface UrlTemplates extends Messages {
      * @return the URL
      */
     @DefaultMessage("git@github.com:{0}/{1}.git")
-    String gitRemoteTemplate(String username, String repository);
+    String gitSSHRemoteTemplate(String username, String repository);
+
+    /**
+     * The git HTTP URL to a github repository.
+     *
+     * @param username
+     *         the username name.
+     * @param repository
+     *         the repository name.
+     * @return the URL
+     */
+    @DefaultMessage("https://github.com/{0}/{1}.git")
+    String gitHttpRemoteTemplate(String username, String repository);
 
     /**
      * The git URL to a pull request.

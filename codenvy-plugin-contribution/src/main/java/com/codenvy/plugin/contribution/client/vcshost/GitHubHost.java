@@ -177,8 +177,14 @@ public class GitHubHost implements RepositoryHost {
 
     @Nonnull
     @Override
-    public String makeRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
-        return urlTemplates.gitRemoteTemplate(username, repository);
+    public String makeSSHRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
+        return urlTemplates.gitSSHRemoteTemplate(username, repository);
+    }
+
+    @Nonnull
+    @Override
+    public String makeHttpRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
+        return urlTemplates.gitHttpRemoteTemplate(username, repository);
     }
 
     @Nonnull

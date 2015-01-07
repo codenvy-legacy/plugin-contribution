@@ -61,7 +61,7 @@ public class AddForkRemoteStep implements Step {
 
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        final String remoteUrl = repositoryHost.makeRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+        final String remoteUrl = repositoryHost.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
 
         checkRemotePresent(context, config, remoteUrl);
     }

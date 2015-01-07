@@ -140,7 +140,7 @@ public interface RepositoryHost {
     void getUserInfo(@Nonnull AsyncCallback<HostUser> callback);
 
     /**
-     * Makes the remote url for the given username and repository.
+     * Makes the remote SSH url for the given username and repository.
      *
      * @param username
      *         the user name.
@@ -149,7 +149,19 @@ public interface RepositoryHost {
      * @return the remote url, never {@code null}.
      */
     @Nonnull
-    String makeRemoteUrl(@Nonnull String username, @Nonnull String repository);
+    String makeSSHRemoteUrl(@Nonnull String username, @Nonnull String repository);
+
+    /**
+     * Makes the remote HTTP url for the given username and repository.
+     *
+     * @param username
+     *         the user name.
+     * @param repository
+     *         the repository name.
+     * @return the remote url, never {@code null}.
+     */
+    @Nonnull
+    String makeHttpRemoteUrl(@Nonnull String username, @Nonnull String repository);
 
     /**
      * Makes the pull request url for the given username, repository and pull request number.
