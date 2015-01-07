@@ -12,11 +12,11 @@ package com.codenvy.plugin.contribution.client.parts.contribute;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 /**
  * {@link com.google.gwt.uibinder.client.UiBinder} interface for the configure contribution dialog.
  */
 @UiTemplate("com.codenvy.plugin.contribution.client.parts.contribute.ContributePartViewImpl.ui.xml")
-public interface ContributePartViewUiBinder extends UiBinder<HTMLPanel, ContributePartViewImpl> {
+public interface ContributePartViewUiBinder extends UiBinder<ScrollPanel, ContributePartViewImpl> {
 }

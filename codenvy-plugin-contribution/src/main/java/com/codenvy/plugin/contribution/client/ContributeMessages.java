@@ -64,6 +64,15 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Configure Contribution")
     String contributePartConfigureContributionSectionTitle();
 
+    @DefaultMessage("Project Information")
+    String contributePartProjectInformationSectionTitle();
+
+    @DefaultMessage("Repository URL:")
+    String contributePartRepositoryUrlLabelText();
+
+    @DefaultMessage("Cloned branch:")
+    String contributePartClonedBranchLabelText();
+
     @DefaultMessage("Branch name:")
     String contributePartBranchNameInputLabelText();
 

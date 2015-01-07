@@ -148,6 +148,14 @@ public class ContributePartPresenter extends BasePresenter
         workspaceAgent.setActivePart(this);
     }
 
+    public void setRepositoryUrl(String url) {
+        view.setRepositoryUrl(url);
+    }
+
+    public void setClonedBranch(String branch) {
+        view.setClonedBranch(branch);
+    }
+
     @Override
     public void onContribute() {
         if (!appContext.getCurrentUser().isUserPermanent()) {

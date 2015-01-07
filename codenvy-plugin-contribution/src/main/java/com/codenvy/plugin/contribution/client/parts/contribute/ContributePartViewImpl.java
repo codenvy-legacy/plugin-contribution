@@ -21,9 +21,11 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -48,6 +50,14 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     /** The resources for the view. */
     @UiField(provided = true)
     ContributeResources resources;
+
+    /** The component for the URL of factory repository. */
+    @UiField
+    Anchor repositoryUrl;
+
+    /** The component for the name of cloned branch. */
+    @UiField
+    Label clonedBranch;
 
     /** The input component for the branch name. */
     @UiField
@@ -120,6 +130,17 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         issuePullRequestCheckBox.setValue(false);
 
         delegate.updateControls();
+    }
+
+    @Override
+    public void setRepositoryUrl(String url) {
+        repositoryUrl.setHref(url);
+        repositoryUrl.setText(url);
+    }
+
+    @Override
+    public void setClonedBranch(String branch) {
+        clonedBranch.setText(branch);
     }
 
     @Override
