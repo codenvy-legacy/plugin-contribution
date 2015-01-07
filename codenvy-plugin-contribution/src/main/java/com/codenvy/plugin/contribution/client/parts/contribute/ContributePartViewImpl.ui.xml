@@ -62,6 +62,16 @@
             text-decoration: underline;
         }
 
+		.link:hover {
+            color: #61b7ef;
+            text-decoration: underline;
+        }
+
+		.link:visited {
+            color: #61b7ef;
+            text-decoration: underline;
+        }
+
 		.left {
             float: left;
         }
