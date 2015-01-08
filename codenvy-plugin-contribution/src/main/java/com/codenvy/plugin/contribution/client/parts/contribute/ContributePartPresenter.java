@@ -297,7 +297,6 @@ public class ContributePartPresenter extends BasePresenter
      *         the user authenticated on the VCS Host.
      */
     private void onVCSHostUserAuthenticated(final HostUser user) {
-        view.hideContribute();
         view.showStatusSection();
 
         context.setHostUserLogin(user.getLogin());
