@@ -11,7 +11,6 @@
 package com.codenvy.plugin.contribution.client;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.ide.api.action.ActionManager;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
@@ -37,7 +36,10 @@ import java.util.Map;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static com.google.gwt.http.client.URL.encodeQueryString;
+import static java.lang.Boolean.TRUE;
 
 /**
  * @author Stephane Tournie
@@ -61,7 +63,6 @@ public class ContributorExtension {
     @Inject
     public ContributorExtension(final Context context,
                                 final EventBus eventBus,
-                                final ActionManager actionManager,
                                 final ContributeMessages messages,
                                 final VcsService gitAgent,
                                 final ContributeResources resources,
@@ -101,107 +102,108 @@ public class ContributorExtension {
      *         the load event.
      */
     private void initContributeMode(final ProjectActionEvent event) {
-        if (!appContext.getCurrentUser().isUserPermanent()) {
-            authenticateWithVCSHost();
-        }
-
         final ProjectDescriptor project = event.getProject();
-        // get origin repository's URL from default remote
-        vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
+        final Map<String, List<String>> attributes = project.getAttributes();
 
-            @Override
-            public void onSuccess(final List<Remote> result) {
-                for (final Remote remote : result) {
-                    // save origin repository name & owner in context
-                    if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
-                        final String resultRemoteUrl = remote.getUrl();
-                        final String repositoryName = repositoryHost.getRepositoryNameFromUrl(resultRemoteUrl);
-                        final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(resultRemoteUrl);
+        if (attributes != null && attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+            final String contributeAttribute = attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0);
 
-                        context.setOriginRepositoryOwner(repositoryOwner);
-                        context.setOriginRepositoryName(repositoryName);
+            if (String.valueOf(TRUE).equalsIgnoreCase(contributeAttribute) && isGitRepository(project)) {
+                if (!appContext.getCurrentUser().isUserPermanent()) {
+                    authenticateWithVCSHost();
+                }
 
-                        // set project information
-                        if (appContext.getFactory() != null) {
-                            Map<String, String> parametersMap = appContext.getFactory().getSource().getProject().getParameters();
-                            for (String parameter : parametersMap.keySet()) {
-                                if ("branch".equals(parameter)) {
-                                    contributePartPresenter.setClonedBranch(parametersMap.get(parameter));
+                // get origin repository's URL from default remote
+                vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
+                    @Override
+                    public void onSuccess(final List<Remote> result) {
+                        for (final Remote remote : result) {
+
+                            // save origin repository name & owner in context
+                            if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
+                                final String resultRemoteUrl = remote.getUrl();
+                                final String repositoryName = repositoryHost.getRepositoryNameFromUrl(resultRemoteUrl);
+                                final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(resultRemoteUrl);
+
+                                context.setOriginRepositoryOwner(repositoryOwner);
+                                context.setOriginRepositoryName(repositoryName);
+
+                                // set project information
+                                if (appContext.getFactory() != null) {
+                                    Map<String, String> parametersMap = appContext.getFactory().getSource().getProject().getParameters();
+                                    for (String parameter : parametersMap.keySet()) {
+                                        if ("branch".equals(parameter)) {
+                                            contributePartPresenter.setClonedBranch(parametersMap.get(parameter));
+                                        }
+                                    }
                                 }
+
+                                final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
+                                contributePartPresenter.setRepositoryUrl(remoteUrl);
+
+                                onDefaultRemoteReceived(project);
+                                break;
                             }
                         }
-                        final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
-                        contributePartPresenter.setRepositoryUrl(remoteUrl);
-
-                        // initiate contributor button & working branch
-                        onDefaultRemoteReceived(project);
-                        break;
                     }
-                }
+
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        notificationHelper.showError(ContributorExtension.class, exception);
+                    }
+                });
             }
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                notificationHelper.showError(ContributorExtension.class, exception);
-            }
-        });
+        }
     }
 
     private void onDefaultRemoteReceived(final ProjectDescriptor project) {
         context.setProject(project);
 
-        final Map<String, List<String>> attributes = project.getAttributes();
-        if (attributes != null && attributes.containsKey(ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY)) {
+        final String workingBranchName = generateWorkingBranchName();
+        context.setWorkBranchName(workingBranchName);
 
-            final String contributeAttribute = attributes.get(ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY).get(0);
-            if ("true".equalsIgnoreCase(contributeAttribute)) {
-                final String workingBranchName = generateWorkingBranchName();
-                context.setWorkBranchName(workingBranchName);
+        final Notification createWorkingBranchNotification =
+                new Notification(messages.notificationCreatingNewWorkingBranch(workingBranchName), INFO, PROGRESS);
+        notificationHelper.showNotification(createWorkingBranchNotification);
 
-                final Notification createWorkingBranchNotification =
-                        new Notification(messages.notificationCreatingNewWorkingBranch(workingBranchName), INFO, PROGRESS);
-                notificationHelper.showNotification(createWorkingBranchNotification);
+        // the working branch is only created if it doesn't exist
+        vcsService.listLocalBranches(project, new AsyncCallback<List<Branch>>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                notificationHelper.finishNotificationWithError(ContributorExtension.class, exception, createWorkingBranchNotification);
+            }
 
-                // the working branch is only created if it doesn't exist
-                vcsService.listLocalBranches(project, new AsyncCallback<List<Branch>>() {
+            @Override
+            public void onSuccess(final List<Branch> branches) {
+                boolean workingBranchExists = false;
+
+                for (final Branch oneBranch : branches) {
+                    if (workingBranchName.equals(oneBranch.getDisplayName())) {
+                        workingBranchExists = true;
+                        break;
+                    }
+                }
+
+                // shorthand for create + checkout new temporary working branch -> checkout -b branchName
+                vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                     @Override
-                    public void onFailure(final Throwable exception) {
-                        notificationHelper.finishNotificationWithError(ContributorExtension.class, exception,
-                                                                       createWorkingBranchNotification);
+                    public void onSuccess(final String result) {
+                        contributePartPresenter.open();
+                        contributePartPresenter.showContributePart();
+                        notificationHelper.finishNotification(
+                                messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName),
+                                createWorkingBranchNotification);
                     }
 
                     @Override
-                    public void onSuccess(final List<Branch> branches) {
-                        boolean workingBranchExists = false;
-
-                        for (final Branch oneBranch : branches) {
-                            if (workingBranchName.equals(oneBranch.getDisplayName())) {
-                                workingBranchExists = true;
-                                break;
-                            }
-                        }
-
-                        // shorthand for create + checkout new temporary working branch -> checkout -b branchName
-                        vcsService.checkoutBranch(project, workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
-                            @Override
-                            public void onSuccess(final String result) {
-                                contributePartPresenter.open();
-                                contributePartPresenter.showContributePart();
-                                notificationHelper.finishNotification(
-                                        messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName),
-                                        createWorkingBranchNotification);
-                            }
-
-                            @Override
-                            public void onFailure(final Throwable exception) {
-                                notificationHelper.finishNotificationWithError(ContributorExtension.class, exception,
-                                                                               createWorkingBranchNotification);
-                            }
-                        });
+                    public void onFailure(final Throwable exception) {
+                        notificationHelper
+                                .finishNotificationWithError(ContributorExtension.class, exception, createWorkingBranchNotification);
                     }
                 });
             }
-        }
+        });
     }
 
     private void exitContributeMode() {
