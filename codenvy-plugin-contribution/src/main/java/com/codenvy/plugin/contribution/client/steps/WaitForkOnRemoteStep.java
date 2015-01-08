@@ -69,7 +69,8 @@ public class WaitForkOnRemoteStep implements Step {
 
                         @Override
                         public void onSuccess(final Void result) {
-                            eventBus.fireEvent(new StepDoneEvent(CREATE_FORK));
+                            eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
+
                             context.setForkReady(true);
                             check(context, config);
                         }

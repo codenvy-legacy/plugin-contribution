@@ -25,8 +25,8 @@ public interface StepDoneHandler extends EventHandler {
     /**
      * Called when a step is done.
      *
-     * @param step
-     *         the finished step.
+     * @param event
+     *         the event.
      */
-    void onStepDone(@Nonnull Step step);
+    void onStepDone(@Nonnull StepDoneEvent event);
 }

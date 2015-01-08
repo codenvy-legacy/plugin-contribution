@@ -23,17 +23,20 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+
+import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static com.google.gwt.dom.client.Style.Display.BLOCK;
 import static com.google.gwt.dom.client.Style.Display.NONE;
+import static com.google.gwt.dom.client.Style.Unit.PX;
 
 /**
  * Implementation of {@link com.codenvy.plugin.contribution.client.parts.contribute.ContributePartView}.
@@ -79,17 +82,17 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiField
     HTMLPanel statusSection;
 
-    /** The create fork check box. */
+    /** The create fork status panel. */
     @UiField
-    CheckBox createForkCheckBox;
+    SimplePanel createForkStatus;
 
-    /** The push branch check box. */
+    /** The push branch status panel. */
     @UiField
-    CheckBox pushBranchCheckBox;
+    SimplePanel pushBranchStatus;
 
-    /** The issue pull request check box. */
+    /** The issue pull request status panel. */
     @UiField
-    CheckBox issuePullRequestCheckBox;
+    SimplePanel issuePullRequestStatus;
 
     /** The status section footer. */
     @UiField
@@ -125,9 +128,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
         statusSection.setVisible(false);
         statusSectionFooter.setVisible(false);
-        createForkCheckBox.setValue(false);
-        pushBranchCheckBox.setValue(false);
-        issuePullRequestCheckBox.setValue(false);
+        createForkStatus.clear();
+        pushBranchStatus.clear();
+        issuePullRequestStatus.clear();
 
         delegate.updateControls();
     }
@@ -192,18 +195,30 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void checkCreateForkCheckBox() {
-        createForkCheckBox.setValue(true);
+    public void setCreateForkStatus(final boolean success) {
+        createForkStatus.clear();
+        createForkStatus.add(getStatusImage(success));
+    }
+
+
+    @Override
+    public void setPushBranchStatus(final boolean success) {
+        pushBranchStatus.clear();
+        pushBranchStatus.add(getStatusImage(success));
     }
 
     @Override
-    public void checkPushBranchCheckBox() {
-        pushBranchCheckBox.setValue(true);
+    public void setIssuePullRequestStatus(final boolean success) {
+        issuePullRequestStatus.clear();
+        issuePullRequestStatus.add(getStatusImage(success));
     }
 
-    @Override
-    public void checkIssuePullRequestCheckBox() {
-        issuePullRequestCheckBox.setValue(true);
+    private SVGImage getStatusImage(final boolean success) {
+        final SVGImage image = new SVGImage(success ? resources.ok() : resources.error());
+        image.getElement().getStyle().setWidth(20, PX);
+        image.getElement().getStyle().setProperty("fill", success ? "#72BE5A" : "#CF3C3E");
+
+        return image;
     }
 
     @Override

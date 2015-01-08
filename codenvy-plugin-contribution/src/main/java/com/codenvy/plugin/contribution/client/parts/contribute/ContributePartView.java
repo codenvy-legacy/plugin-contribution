@@ -25,13 +25,11 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
 
     /**
      * Set factory's repository URL.
-     *
      */
     void setRepositoryUrl(String url);
 
     /**
      * Set factory's cloned branch name.
-     *
      */
     void setClonedBranch(String branch);
 
@@ -91,24 +89,33 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void showStatusSection();
 
     /**
-     * Checks the create fork status checkbox.
-     */
-    void checkCreateForkCheckBox();
-
-    /**
      * Show the status footer.
      */
     void showStatusSectionFooter();
 
     /**
-     * Checks the push branch status checkbox.
+     * Sets the create fork step status.
+     *
+     * @param success
+     *         {@code true} if success, {@code false} if error.
      */
-    void checkPushBranchCheckBox();
+    void setCreateForkStatus(boolean success);
 
     /**
-     * Checks the issue pull request status checkbox.
+     * Sets the push branch step status.
+     *
+     * @param success
+     *         {@code true} if success, {@code false} if error.
      */
-    void checkIssuePullRequestCheckBox();
+    void setPushBranchStatus(boolean success);
+
+    /**
+     * Sets the issue pull request step status.
+     *
+     * @param success
+     *         {@code true} if success, {@code false} if error.
+     */
+    void setIssuePullRequestStatus(boolean success);
 
     /**
      * Action delegate interface for the contribution configuration dialog.
@@ -118,7 +125,7 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
         void onContribute();
 
         /** Performs any action appropriate in response to the user having pressed the open on repository host button */
-         void onOpenOnRepositoryHost();
+        void onOpenOnRepositoryHost();
 
         /** Performs any action when view state is modified. */
         void updateControls();

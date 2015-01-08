@@ -43,13 +43,12 @@ import javax.inject.Inject;
 
 import static com.codenvy.ide.api.constraints.Constraints.FIRST;
 import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
-import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step;
 
 /**
  * Part for the contribution configuration.
  */
 public class ContributePartPresenter extends BasePresenter
-        implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler {
+        implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler, StepDoneHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -115,24 +114,7 @@ public class ContributePartPresenter extends BasePresenter
 
         this.view.setDelegate(this);
         this.commitPresenter.setCommitActionHandler(this);
-
-        eventBus.addHandler(StepDoneEvent.TYPE, new StepDoneHandler() {
-            @Override
-            public void onStepDone(@Nonnull final Step step) {
-                switch (step) {
-                    case CREATE_FORK:
-                        view.checkCreateForkCheckBox();
-                        break;
-                    case PUSH_BRANCH:
-                        view.checkPushBranchCheckBox();
-                        break;
-                    case ISSUE_PULL_REQUEST:
-                        view.checkIssuePullRequestCheckBox();
-                        view.showStatusSectionFooter();
-                        break;
-                }
-            }
-        });
+        eventBus.addHandler(StepDoneEvent.TYPE, this);
     }
 
     public void open() {
@@ -326,5 +308,29 @@ public class ContributePartPresenter extends BasePresenter
 
         remoteForkStep.execute(context, configuration); // parallel with the other steps
         renameWorkBranchStep.execute(context, configuration);
+    }
+
+    @Override
+    public void onStepDone(@Nonnull final StepDoneEvent event) {
+        switch (event.getStep()) {
+            case CREATE_FORK: {
+                view.setCreateForkStatus(event.isSuccess());
+            }
+            break;
+
+            case PUSH_BRANCH: {
+                view.setPushBranchStatus(event.isSuccess());
+            }
+            break;
+
+            case ISSUE_PULL_REQUEST: {
+                view.setIssuePullRequestStatus(event.isSuccess());
+                if (event.isSuccess()) {
+                    view.showStatusSectionFooter();
+                }
+            }
+            break;
+
+        }
     }
 }

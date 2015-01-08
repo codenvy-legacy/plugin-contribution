@@ -52,22 +52,12 @@
             flex-grow: 1;
         }
 
-		.horizontal {
+        .horizontal {
             display: inline-block;
             text-align: right;
         }
 
-		.link {
-            color: #61b7ef;
-            text-decoration: underline;
-        }
-
-		.link:hover {
-            color: #61b7ef;
-            text-decoration: underline;
-        }
-
-		.link:visited {
+        .link, .link:hover, .link:visited {
             color: #61b7ef;
             text-decoration: underline;
         }
@@ -93,7 +83,7 @@
             width: 120px;
         }
 
-        .statusStep {
+        .step {
             display: flex;
             flex-direction: row;
             margin-top: 1em;
@@ -101,7 +91,7 @@
             height: 24px;
         }
 
-        .statusStep .number {
+        .step .number {
             color: #47afdd;
             border: 1px solid #a1a1a1;
             border-radius: 14px;
@@ -114,11 +104,11 @@
             line-height: 22px
         }
 
-        .statusStep .label {
+        .step .label {
             align-self: center;
         }
 
-        .statusStep .checkBox {
+        .step .status {
             display: flex;
             justify-content: flex-end;
             align-self: center;
@@ -172,20 +162,20 @@
 	        </g:HTMLPanel>
 	        <g:HTMLPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
 	            <g:Label addStyleNames="{style.title}" text="{messages.contributePartStatusSectionTitle}"/>
-	            <div class="{style.statusStep}">
+	            <div class="{style.step}">
 	                <g:Label addStyleNames="{style.number}" text="1"/>
 	                <g:Label addStyleNames="{style.label}" text="{messages.contributePartCreateForkLabelText}"/>
-	                <g:CheckBox ui:field="createForkCheckBox" enabled="false" addStyleNames="{style.checkBox}"/>
+	                <g:SimplePanel addStyleNames="{style.status}" ui:field="createForkStatus"/>
 	            </div>
-	            <div class="{style.statusStep}">
+	            <div class="{style.step}">
 	                <g:Label addStyleNames="{style.number}" text="2"/>
 	                <g:Label addStyleNames="{style.label}" text="{messages.contributePartPushBranchLabelText}"/>
-	                <g:CheckBox ui:field="pushBranchCheckBox" enabled="false" addStyleNames="{style.checkBox}"/>
+                    <g:SimplePanel addStyleNames="{style.status}" ui:field="pushBranchStatus"/>
 	            </div>
-	            <div class="{style.statusStep}">
+	            <div class="{style.step}">
 	                <g:Label addStyleNames="{style.number}" text="3"/>
 	                <g:Label addStyleNames="{style.label}" text="{messages.contributePartIssuePullRequestLabelText}"/>
-	                <g:CheckBox ui:field="issuePullRequestCheckBox" enabled="false" addStyleNames="{style.checkBox}"/>
+                    <g:SimplePanel addStyleNames="{style.status}" ui:field="issuePullRequestStatus"/>
 	            </div>
 	            <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
 	                <g:Label addStyleNames="{style.item}" text="{messages.contributePartContributionIssuedLabelText}"/>

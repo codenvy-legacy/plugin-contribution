@@ -69,40 +69,38 @@ public class IssuePullRequestStep implements Step {
         final String owner = context.getOriginRepositoryOwner();
         final String repository = context.getOriginRepositoryName();
         final String title = config.getContributionTitle();
-        final String baseBranch = context.getClonedBranchName();
+        final String baseBranch = context.getClonedBranchName() != null ? context.getClonedBranchName() : DEFAULT_BASE_BRANCH;
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
         final String body = config.getPullRequestComment();
 
         final Notification notification = new Notification(messages.issuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        repositoryHost.createPullRequest(owner, repository, title, headBranch, (baseBranch != null ? baseBranch : DEFAULT_BASE_BRANCH),
-                                         body,
-                                         new AsyncCallback<PullRequest>() {
-                                             @Override
-                                             public void onSuccess(final PullRequest result) {
-                                                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST));
-                                                 context.setPullRequestIssueNumber(result.getNumber());
-                                                 notificationHelper
-                                                         .finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()),
-                                                                             notification);
-                                                 onPullRequestCreated(context, config);
-                                             }
+        repositoryHost.createPullRequest(owner, repository, title, headBranch, baseBranch, body, new AsyncCallback<PullRequest>() {
+            @Override
+            public void onSuccess(final PullRequest result) {
+                eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
 
-                                             @Override
-                                             public void onFailure(final Throwable exception) {
-                                                 if (exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch)) {
-                                                     notificationHelper
-                                                             .finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch),
-                                                                                            notification);
+                context.setPullRequestIssueNumber(result.getNumber());
+                notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()), notification);
+                onPullRequestCreated(context, config);
+            }
 
-                                                 } else {
-                                                     notificationHelper
-                                                             .finishNotificationWithError(IssuePullRequestStep.class,
-                                                                                          messages.errorPullRequestFailed(), notification);
-                                                 }
-                                             }
-                                         });
+            @Override
+            public void onFailure(final Throwable exception) {
+                final boolean isExistingPullRequest = exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch);
+                eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, isExistingPullRequest));
+
+                if (isExistingPullRequest) {
+                    notificationHelper.finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch), notification);
+
+                } else {
+                    eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
+                    notificationHelper.finishNotificationWithError(IssuePullRequestStep.class, messages.errorPullRequestFailed(),
+                                                                   notification);
+                }
+            }
+        });
 
     }
 

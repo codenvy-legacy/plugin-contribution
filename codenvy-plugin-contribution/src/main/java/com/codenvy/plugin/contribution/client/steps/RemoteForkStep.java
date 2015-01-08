@@ -63,7 +63,8 @@ public class RemoteForkStep implements Step {
         repositoryHost.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository fork) {
-                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK));
+                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
+
                 context.setForkedRepositoryName(fork.getName());
                 notificationHelper.showInfo(messages.useExistingUserFork());
             }
@@ -75,6 +76,7 @@ public class RemoteForkStep implements Step {
                     return;
                 }
 
+                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
                 notificationHelper.showError(RemoteForkStep.class, exception);
             }
         });
@@ -87,12 +89,16 @@ public class RemoteForkStep implements Step {
         repositoryHost.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository result) {
+                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
+
                 context.setForkedRepositoryName(result.getName());
                 notificationHelper.finishNotification(messages.requestedForkCreation(repositoryOwner, repositoryName), notification);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
+                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
+
                 final String errorMessage = messages.failedCreatingUserFork(repositoryOwner, repositoryName, exception.getMessage());
                 notificationHelper.finishNotificationWithError(RemoteForkStep.class, errorMessage, notification);
             }

@@ -24,8 +24,12 @@ public class StepDoneEvent extends GwtEvent<StepDoneHandler> {
     /** The step. */
     private final Step step;
 
-    public StepDoneEvent(final Step step) {
+    /** The done step status. */
+    private final boolean success;
+
+    public StepDoneEvent(final Step step, final boolean success) {
         this.step = step;
+        this.success = success;
     }
 
     @Override
@@ -35,7 +39,15 @@ public class StepDoneEvent extends GwtEvent<StepDoneHandler> {
 
     @Override
     protected void dispatch(final StepDoneHandler handler) {
-        handler.onStepDone(step);
+        handler.onStepDone(this);
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public Step getStep() {
+        return step;
     }
 
     public enum Step {

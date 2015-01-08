@@ -68,13 +68,16 @@ public class PushBranchOnForkStep implements Step {
         vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH));
+                eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, true));
+
                 notificationHelper.finishNotification(messages.successPushingBranchToFork(), notification);
                 nextStep.execute(context, config);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
+                eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, false));
+
                 final String errorMessage = messages.failedPushingBranchToFork(exception.getMessage());
                 notificationHelper.finishNotificationWithError(PushBranchOnForkStep.class, errorMessage, notification);
             }
