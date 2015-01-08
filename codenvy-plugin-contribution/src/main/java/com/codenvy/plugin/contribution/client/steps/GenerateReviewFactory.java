@@ -13,20 +13,16 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
-import com.codenvy.api.project.shared.Constants;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
 import com.codenvy.api.project.shared.dto.Source;
-import com.codenvy.ide.MimeType;
 import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.ide.commons.exception.ServerException;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
-import com.codenvy.ide.rest.HTTPHeader;
 import com.codenvy.ide.rest.HTTPMethod;
-import com.codenvy.ide.rest.Unmarshallable;
-import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.jso.Blob;
@@ -45,6 +41,11 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.HashMap;
+
+import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
+import static com.codenvy.ide.MimeType.APPLICATION_JSON;
+import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 
 /**
  * Generates a factory for the contribution reviewer.
@@ -115,7 +116,7 @@ public class GenerateReviewFactory implements Step {
      *         the form data
      * @return true iff the request was sent correctly - Note: doesn't mean the request will be succesful
      */
-    private static final native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
+    private static native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
         try {
             xhr.send(formData);
             return true;
@@ -213,7 +214,7 @@ public class GenerateReviewFactory implements Step {
                 factory.getProject().setVisibility("public");
 
                 // the new factory is not a 'contribute workflow factory'
-                factory.getProject().getAttributes().remove(ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY);
+                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
                 callback.onSuccess(factory);
             }
 
@@ -226,51 +227,54 @@ public class GenerateReviewFactory implements Step {
 
     private void exportProject(final AsyncCallback<Factory> callback) {
         final String workspaceId = appContext.getWorkspace().getId();
-        final String projectName = appContext.getCurrentProject().getRootProject().getName();
-        final String requestUrl = this.apiTemplate.getFactoryJson(workspaceId, projectName);
 
-        final Unmarshallable<Factory> unmarshaller = this.dtoUnmarshallerFactory.newUnmarshaller(Factory.class);
-        this.asyncRequestFactory.createGetRequest(requestUrl)
-                                .header(HTTPHeader.ACCEPT, MimeType.APPLICATION_JSON)
-                                .send(new AsyncRequestCallback<Factory>(unmarshaller) {
+        final CurrentProject currentProject = appContext.getCurrentProject();
+        if (currentProject != null) {
+            final String projectName = currentProject.getRootProject().getName();
+            final String requestUrl = apiTemplate.getFactoryJson(workspaceId, projectName);
 
-                                    @Override
-                                    protected void onSuccess(final Factory result) {
-                                        callback.onSuccess(result);
-                                    }
+            asyncRequestFactory.createGetRequest(requestUrl)
+                               .header(ACCEPT, APPLICATION_JSON)
+                               .send(new AsyncRequestCallback<Factory>(dtoUnmarshallerFactory.newUnmarshaller(Factory.class)) {
 
-                                    @Override
-                                    protected void onFailure(final Throwable exception) {
-                                        callback.onFailure(exception);
-                                    }
-                                });
+                                   @Override
+                                   protected void onSuccess(final Factory result) {
+                                       callback.onSuccess(result);
+                                   }
+
+                                   @Override
+                                   protected void onFailure(final Throwable exception) {
+                                       callback.onFailure(exception);
+                                   }
+                               });
+        }
     }
 
     private Source getSource(final Context context) {
-        final ImportSourceDescriptor importSourceDescriptor = this.dtoFactory.createDto(ImportSourceDescriptor.class);
+        final ImportSourceDescriptor importSourceDescriptor = dtoFactory.createDto(ImportSourceDescriptor.class);
 
-        final String forkRepoUrl = this.repositoryHost.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+        final String forkRepoUrl = repositoryHost.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
         importSourceDescriptor.setLocation(forkRepoUrl);
 
-        final String vcsType = context.getProject().getAttributes().get(Constants.VCS_PROVIDER_NAME).get(0);
+        final String vcsType = context.getProject().getAttributes().get(VCS_PROVIDER_NAME).get(0);
         importSourceDescriptor.setType(vcsType);
 
 
         importSourceDescriptor.setParameters(new HashMap<String, String>());
         // keep VCS information
         importSourceDescriptor.getParameters().put("keepVcs", "true");
-        // Use the contributin branch
+        // Use the contribution branch
         importSourceDescriptor.getParameters().put("branch", context.getWorkBranchName());
 
         return dtoFactory.createDto(Source.class).withProject(importSourceDescriptor);
     }
 
     private void saveFactory(final FormData formData, final AsyncCallback<Factory> callback) {
-        final String requestUrl = this.apiTemplate.saveFactory();
+        final String requestUrl = apiTemplate.saveFactory();
 
         final XMLHttpRequest xhr = XMLHttpRequest.create();
         xhr.open(HTTPMethod.POST, requestUrl);
-        xhr.setRequestHeader(HTTPHeader.ACCEPT, MimeType.APPLICATION_JSON);
+        xhr.setRequestHeader(ACCEPT, APPLICATION_JSON);
         xhr.setOnReadyStateChange(new ReadyStateChangeHandler() {
 
             @Override
