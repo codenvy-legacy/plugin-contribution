@@ -8,14 +8,14 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcshost;
+package com.codenvy.plugin.contribution.client.vcshost.dto;
 
 import com.codenvy.dto.shared.DTO;
 
 @DTO
-public interface IssueComment {
+public interface PullRequest {
     /**
-     * Get comment id.
+     * Get pull request id.
      *
      * @return {@link String} id
      */
@@ -23,10 +23,10 @@ public interface IssueComment {
 
     void setId(String id);
 
-    IssueComment withId(String id);
+    PullRequest withId(String id);
 
     /**
-     * Get comment URL.
+     * Get pull request URL.
      *
      * @return {@link String} url
      */
@@ -34,16 +34,38 @@ public interface IssueComment {
 
     void setUrl(String url);
 
-    IssueComment withUrl(String url);
+    PullRequest withUrl(String url);
 
     /**
-     * Get comment body.
+     * Get pull request html URL.
      *
-     * @return {@link String} body
+     * @return {@link String} html_url
      */
-    String getBody();
+    String getHtmlUrl();
 
-    void setBody(String body);
+    void setHtmlUrl(String htmlUrl);
 
-    IssueComment withBody(String body);
+    PullRequest withHtmlUrl(String htmlUrl);
+
+    /**
+     * Get pull request number.
+     *
+     * @return {@link String} number
+     */
+    String getNumber();
+
+    void setNumber(String number);
+
+    PullRequest withNumber(String number);
+
+    /**
+     * Get pull request state.
+     *
+     * @return {@link String} state
+     */
+    String getState();
+
+    void setState(String state);
+
+    PullRequest withState(String state);
 }
