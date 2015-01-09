@@ -20,6 +20,8 @@
         .panel {
             font-size: 11px;
             position: relative;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         .border {
