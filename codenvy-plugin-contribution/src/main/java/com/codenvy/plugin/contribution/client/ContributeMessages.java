@@ -103,10 +103,10 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Branch pushed on your fork")
     String contributePartPushBranchLabelText();
 
-    @DefaultMessage("Pull request Issued")
+    @DefaultMessage("Pull request issued")
     String contributePartIssuePullRequestLabelText();
 
-    @DefaultMessage("Your Contribution has successfully been issued!")
+    @DefaultMessage("Your contribution has successfully been issued!")
     String contributePartContributionIssuedLabelText();
 
     @DefaultMessage("Open on GitHub")
