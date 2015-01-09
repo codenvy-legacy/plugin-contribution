@@ -98,65 +98,70 @@ public class ContributorExtension {
     /**
      * Initialize contributor environment
      *
-     * @param event
-     *         the load event.
+     * @param event the load event.
      */
     private void initContributeMode(final ProjectActionEvent event) {
         final ProjectDescriptor project = event.getProject();
         final Map<String, List<String>> attributes = project.getAttributes();
 
-        if (attributes != null && attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
-            final String contributeAttribute = attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0);
+        if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+            return;
+        }
 
-            if (String.valueOf(TRUE).equalsIgnoreCase(contributeAttribute) && isGitRepository(project)) {
-                if (!appContext.getCurrentUser().isUserPermanent()) {
-                    authenticateWithVCSHost();
-                }
+        if (!String.valueOf(TRUE).equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
+            return;
+        }
 
-                // get origin repository's URL from default remote
-                vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
-                    @Override
-                    public void onSuccess(final List<Remote> result) {
-                        for (final Remote remote : result) {
+        if (!isGitRepository(project)) {
+            return;
+        }
 
-                            // save origin repository name & owner in context
-                            if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
-                                final String resultRemoteUrl = remote.getUrl();
-                                final String repositoryName = repositoryHost.getRepositoryNameFromUrl(resultRemoteUrl);
-                                final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(resultRemoteUrl);
+        // Start init of the contribute workflow
+        if (!appContext.getCurrentUser().isUserPermanent()) {
+            authenticateWithVCSHost();
+        }
 
-                                context.setOriginRepositoryOwner(repositoryOwner);
-                                context.setOriginRepositoryName(repositoryName);
+        // get origin repository's URL from default remote
+        vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
+            @Override
+            public void onSuccess(final List<Remote> result) {
+                for (final Remote remote : result) {
 
-                                // set project information
-                                if (appContext.getFactory() != null) {
-                                    Map<String, String> parametersMap = appContext.getFactory().getSource().getProject().getParameters();
-                                    for (String parameter : parametersMap.keySet()) {
-                                        if ("branch".equals(parameter)) {
-                                            String clonedBranch = parametersMap.get(parameter);
-                                            context.setClonedBranchName(clonedBranch);
-                                            contributePartPresenter.setClonedBranch(clonedBranch);
-                                        }
-                                    }
+                    // save origin repository name & owner in context
+                    if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
+                        final String resultRemoteUrl = remote.getUrl();
+                        final String repositoryName = repositoryHost.getRepositoryNameFromUrl(resultRemoteUrl);
+                        final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(resultRemoteUrl);
+
+                        context.setOriginRepositoryOwner(repositoryOwner);
+                        context.setOriginRepositoryName(repositoryName);
+
+                        // set project information
+                        if (appContext.getFactory() != null) {
+                            Map<String, String> parametersMap = appContext.getFactory().getSource().getProject().getParameters();
+                            for (String parameter : parametersMap.keySet()) {
+                                if ("branch".equals(parameter)) {
+                                    String clonedBranch = parametersMap.get(parameter);
+                                    context.setClonedBranchName(clonedBranch);
+                                    contributePartPresenter.setClonedBranch(clonedBranch);
                                 }
-
-                                final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
-                                contributePartPresenter.setRepositoryUrl(remoteUrl);
-
-                                onDefaultRemoteReceived(project);
-                                break;
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(final Throwable exception) {
-                        notificationHelper.showError(ContributorExtension.class, exception);
+                        final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
+                        contributePartPresenter.setRepositoryUrl(remoteUrl);
+
+                        onDefaultRemoteReceived(project);
+                        break;
                     }
-                });
+                }
             }
 
-        }
+            @Override
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(ContributorExtension.class, exception);
+            }
+        });
     }
 
     private void onDefaultRemoteReceived(final ProjectDescriptor project) {
