@@ -109,9 +109,6 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Your Contribution has successfully been issued!")
     String contributePartContributionIssuedLabelText();
 
-    @DefaultMessage("Open in permanent workspace")
-    String contributePartPersistButtonText();
-
     @DefaultMessage("Open on GitHub")
     String contributePartGithubButtonText();
 
