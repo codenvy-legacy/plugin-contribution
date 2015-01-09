@@ -86,6 +86,14 @@ public final class NotificationHelper {
     }
 
     /**
+     * Log the exception, display the error message in the notification.
+     */
+    public void showError(@Nonnull final Class< ? > cls, @Nonnull final String errorMessage, @Nonnull final Throwable exception) {
+        showNotification(new Notification(errorMessage, ERROR));
+        Log.error(cls, exception);
+    }
+
+    /**
      * Finish a notification in progress with an error.
      *
      * @param cls
