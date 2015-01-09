@@ -63,11 +63,6 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setContributeEnabled(boolean enabled);
 
     /**
-     * Hides the contribute button.
-     */
-    void hideContribute();
-
-    /**
      * Sets the branch name input error state.
      *
      * @param showError
@@ -87,6 +82,16 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
      * Shows the status section.
      */
     void showStatusSection();
+
+    /**
+     * Hides the status section.
+     */
+    void hideStatusSection();
+
+    /**
+     * Resets the status section.
+     */
+    void resetStatusSection();
 
     /**
      * Show the status footer.

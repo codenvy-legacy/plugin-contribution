@@ -140,6 +140,9 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onContribute() {
+        view.hideStatusSection();
+        view.resetStatusSection();
+
         if (!appContext.getCurrentUser().isUserPermanent()) {
             notificationHelper.showError(ContributePartPresenter.class, new IllegalStateException("Codenvy account is not permanent"));
 

@@ -34,8 +34,6 @@ import org.vectomatic.dom.svg.ui.SVGImage;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.google.gwt.dom.client.Style.Display.BLOCK;
-import static com.google.gwt.dom.client.Style.Display.NONE;
 import static com.google.gwt.dom.client.Style.Unit.PX;
 
 /**
@@ -124,13 +122,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     public void reset() {
         branchName.setValue(delegate.suggestBranchName());
         contributionComment.setValue("");
-        contributeButton.getElement().getStyle().setDisplay(BLOCK);
 
-        statusSection.setVisible(false);
-        statusSectionFooter.setVisible(false);
-        createForkStatus.clear();
-        pushBranchStatus.clear();
-        issuePullRequestStatus.clear();
+        hideStatusSection();
+        resetStatusSection();
 
         delegate.updateControls();
     }
@@ -167,11 +161,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void hideContribute() {
-        contributeButton.getElement().getStyle().setDisplay(NONE);
-    }
-
-    @Override
     public void showBranchNameError(final boolean showError) {
         if (showError) {
             branchName.addStyleName(resources.contributeCss().inputError());
@@ -192,6 +181,19 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @Override
     public void showStatusSection() {
         statusSection.setVisible(true);
+    }
+
+    @Override
+    public void hideStatusSection() {
+        statusSection.setVisible(false);
+    }
+
+    @Override
+    public void resetStatusSection() {
+        statusSectionFooter.setVisible(false);
+        createForkStatus.clear();
+        pushBranchStatus.clear();
+        issuePullRequestStatus.clear();
     }
 
     @Override
