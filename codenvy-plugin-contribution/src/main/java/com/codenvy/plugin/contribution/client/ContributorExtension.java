@@ -10,12 +10,18 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
+import com.codenvy.api.factory.dto.Factory;
+import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.codenvy.api.project.shared.dto.ProjectUpdate;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.notification.Notification;
+import com.codenvy.ide.dto.DtoFactory;
+import com.codenvy.ide.rest.AsyncRequestCallback;
+import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
@@ -30,6 +36,8 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.inject.Named;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +46,7 @@ import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
 import static com.google.gwt.http.client.URL.encodeQueryString;
 import static java.lang.Boolean.TRUE;
 
@@ -59,6 +68,9 @@ public class ContributorExtension {
     private final NotificationHelper      notificationHelper;
     private final RepositoryHost          repositoryHost;
     private final ContributePartPresenter contributePartPresenter;
+    private final ProjectServiceClient    projectService;
+    private final DtoFactory              dtoFactory;
+    private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
 
     @Inject
     public ContributorExtension(final Context context,
@@ -70,7 +82,10 @@ public class ContributorExtension {
                                 final AppContext appContext,
                                 final NotificationHelper notificationHelper,
                                 final RepositoryHost repositoryHost,
-                                final ContributePartPresenter contributePartPresenter) {
+                                final ContributePartPresenter contributePartPresenter,
+                                final ProjectServiceClient projectService,
+                                final DtoFactory dtoFactory,
+                                final DtoUnmarshallerFactory dtoUnmarshallerFactory) {
         this.context = context;
         this.messages = messages;
         this.vcsService = gitAgent;
@@ -79,6 +94,9 @@ public class ContributorExtension {
         this.notificationHelper = notificationHelper;
         this.repositoryHost = repositoryHost;
         this.contributePartPresenter = contributePartPresenter;
+        this.projectService = projectService;
+        this.dtoFactory = dtoFactory;
+        this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
 
         resources.contributeCss().ensureInjected();
 
@@ -104,17 +122,21 @@ public class ContributorExtension {
         final ProjectDescriptor project = event.getProject();
         final Map<String, List<String>> attributes = project.getAttributes();
 
+        if (appContext.getFactory() != null) {
+            persistContribFactoryAttributesToProject(appContext.getFactory(), project, attributes);
+        }
+
+
         if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
             return;
         }
-
         if (!String.valueOf(TRUE).equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
             return;
         }
-
         if (!isGitRepository(project)) {
             return;
         }
+
 
         // Start init of the contribute workflow
         if (!appContext.getCurrentUser().isUserPermanent()) {
@@ -137,15 +159,10 @@ public class ContributorExtension {
                         context.setOriginRepositoryName(repositoryName);
 
                         // set project information
-                        if (appContext.getFactory() != null) {
-                            Map<String, String> parametersMap = appContext.getFactory().getSource().getProject().getParameters();
-                            for (String parameter : parametersMap.keySet()) {
-                                if ("branch".equals(parameter)) {
-                                    String clonedBranch = parametersMap.get(parameter);
-                                    context.setClonedBranchName(clonedBranch);
-                                    contributePartPresenter.setClonedBranch(clonedBranch);
-                                }
-                            }
+                        if (attributes.containsKey(ATTRIBUTE_CONTRIBUTE_BRANCH) && !attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).isEmpty()) {
+                            String clonedBranch = attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).get(0);
+                            context.setClonedBranchName(clonedBranch);
+                            contributePartPresenter.setClonedBranch(clonedBranch);
                         }
 
                         final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
@@ -163,6 +180,63 @@ public class ContributorExtension {
             }
         });
     }
+
+
+    private void persistContribFactoryAttributesToProject(final Factory factory, final ProjectDescriptor project, final Map<String, List<String>> attributesToUpdate) {
+        if (factory.getProject() != null && factory.getProject().getAttributes() != null) {
+            Map<String, List<String>> attributesFromFactory = factory.getProject().getAttributes();
+            if (attributesFromFactory.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+
+                setTheContributionFlag(attributesToUpdate, attributesFromFactory.get(ATTRIBUTE_CONTRIBUTE_KEY));
+
+                setTheClonedBranch(attributesToUpdate, factory);
+
+                persistToProjectAttributes(project, attributesToUpdate);
+            }
+
+        }
+    }
+
+    private void setTheContributionFlag(final Map<String, List<String>> attributesToUpdate, List<String> contributeFlagFromFactory) {
+        attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_KEY, contributeFlagFromFactory);
+    }
+
+    private void setTheClonedBranch(final Map<String, List<String>> attributesToUpdate, final Factory factory) {
+        Map<String, String> parametersMap = factory.getSource().getProject().getParameters();
+        for (String parameter : parametersMap.keySet()) {
+            if ("branch".equals(parameter)) {
+                List<String> clonedBranchAttribute = Arrays.asList(parametersMap.get(parameter));
+                attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_BRANCH, clonedBranchAttribute);
+                break;
+            }
+        }
+    }
+
+    private void persistToProjectAttributes(final ProjectDescriptor currentProject, final Map<String, List<String>> attributesToUpdate) {
+        ProjectUpdate projectToUpdate = dtoFactory.createDto(ProjectUpdate.class);
+        copyProjectInfo(currentProject, projectToUpdate);
+        projectToUpdate.setAttributes(attributesToUpdate);
+
+        projectService.updateProject(currentProject.getPath(), projectToUpdate, new AsyncRequestCallback<ProjectDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
+            @Override
+            protected void onSuccess(ProjectDescriptor result) {
+            }
+
+            @Override
+            protected void onFailure(Throwable exception) {
+                notificationHelper.showError(getClass(), messages.errorUpdatingContributionAttributesToProject(exception.getMessage()), exception);
+            }
+        });
+    }
+
+    private void copyProjectInfo(ProjectDescriptor projectDescriptor, ProjectUpdate projectUpdate) {
+        projectUpdate.setType(projectDescriptor.getType());
+        projectUpdate.setDescription(projectDescriptor.getDescription());
+        projectUpdate.setAttributes(projectDescriptor.getAttributes());
+        projectUpdate.setRunners(projectDescriptor.getRunners());
+        projectUpdate.setBuilders(projectDescriptor.getBuilders());
+    }
+
 
     private void onDefaultRemoteReceived(final ProjectDescriptor project) {
         context.setProject(project);

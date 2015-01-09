@@ -19,7 +19,12 @@ public final class ContributeConstants {
     }
 
     /**
-     * The factory flag for the contribution workflow.
+     * The factory and project flag for the contribution workflow.
      */
     public static final String ATTRIBUTE_CONTRIBUTE_KEY = "contribute";
+
+    /**
+     * Project attribute key for the branch initially cloned.
+     */
+    public static final String ATTRIBUTE_CONTRIBUTE_BRANCH = "contribute_branch";
 }

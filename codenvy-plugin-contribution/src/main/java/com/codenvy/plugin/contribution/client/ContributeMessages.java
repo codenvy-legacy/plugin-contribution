@@ -177,4 +177,7 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Branch {0} successfully created and checked out")
     String notificationBranchSuccessfullyCreatedAndCheckedOut(String workingBranchName);
 
+    @DefaultMessage("A error occured while updating contribution attributes to the current project: {0}")
+    String errorUpdatingContributionAttributesToProject(String exceptionMessage);
+
 }
