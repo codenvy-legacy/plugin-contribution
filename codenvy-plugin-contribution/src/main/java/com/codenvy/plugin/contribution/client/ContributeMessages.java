@@ -140,7 +140,7 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Failed pushing contribution branch to fork: {0}")
     String failedPushingBranchToFork(String cause);
 
-    @DefaultMessage("You can review this pull request by following this link: {0}")
+    @DefaultMessage("You can build and run this pull request by following this link: {0}")
     String pullRequestlinkComment(String factoryUrl);
 
     @DefaultMessage("Could not post review factory link in pull request comments: {0}")

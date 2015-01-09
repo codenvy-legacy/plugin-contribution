@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
@@ -52,8 +51,8 @@ public class AddReviewFactoryLinkStep implements Step {
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
         if (context.getReviewFactoryUrl() == null) {
-            Log.debug(AddReviewFactoryLinkStep.class, "Not factory Url; continue to next step.");
             proceed(context, config);
+
         } else {
             // post the comment
             sendComment(context, config, context.getReviewFactoryUrl());
