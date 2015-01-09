@@ -133,7 +133,9 @@ public class ContributorExtension {
                                     Map<String, String> parametersMap = appContext.getFactory().getSource().getProject().getParameters();
                                     for (String parameter : parametersMap.keySet()) {
                                         if ("branch".equals(parameter)) {
-                                            contributePartPresenter.setClonedBranch(parametersMap.get(parameter));
+                                            String clonedBranch = parametersMap.get(parameter);
+                                            context.setClonedBranchName(clonedBranch);
+                                            contributePartPresenter.setClonedBranch(clonedBranch);
                                         }
                                     }
                                 }
