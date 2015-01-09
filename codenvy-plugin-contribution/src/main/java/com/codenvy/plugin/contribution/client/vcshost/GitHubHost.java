@@ -22,12 +22,17 @@ import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
+import com.codenvy.plugin.contribution.client.vcshost.dto.HostUser;
+import com.codenvy.plugin.contribution.client.vcshost.dto.IssueComment;
+import com.codenvy.plugin.contribution.client.vcshost.dto.PullRequest;
+import com.codenvy.plugin.contribution.client.vcshost.dto.Repository;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 

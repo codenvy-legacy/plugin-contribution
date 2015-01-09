@@ -15,8 +15,8 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcshost.IssueComment;
 import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcshost.dto.IssueComment;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
