@@ -33,6 +33,11 @@ public interface CommitView extends View<CommitView.ActionDelegate> {
         void onContinue();
 
         /**
+         * Called when the operation must be aborted.
+         */
+        void onCancel();
+
+        /**
          * Called when the commit description is changed.
          */
         void onCommitDescriptionChanged();

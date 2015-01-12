@@ -35,13 +35,13 @@ public class CommitViewImpl extends Window implements CommitView {
     /** The UI binder for this component. */
     private static final CommitViewUiBinder UI_BINDER = GWT.create(CommitViewUiBinder.class);
 
+    private final Button ok;
+
     @UiField(provided = true)
     ContributeMessages messages;
 
     @UiField
     TextArea commitDescription;
-
-    private final Button ok;
 
     private ActionDelegate delegate;
 
@@ -69,8 +69,17 @@ public class CommitViewImpl extends Window implements CommitView {
                                  }
                              });
 
+        final Button cancel = createButton(messages.commitDialogButtonCancelText(), "commit-dialog-cancel",
+                                           new ClickHandler() {
+                                               @Override
+                                               public void onClick(ClickEvent event) {
+                                                   delegate.onCancel();
+                                               }
+                                           });
+
         getFooter().add(ok);
         getFooter().add(continueWithoutCommitting);
+        getFooter().add(cancel);
     }
 
     @Override

@@ -115,6 +115,11 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     }
 
     @Override
+    public void onCancel() {
+        view.close();
+    }
+
+    @Override
     public void onCommitDescriptionChanged() {
         view.setOkButtonEnabled(!view.getCommitDescription().isEmpty());
     }

@@ -55,6 +55,9 @@ public interface ContributeMessages extends Messages {
     @Key("commit.dialog.button.continue.text")
     String commitDialogButtonContinueText();
 
+    @Key("commit.dialog.button.cancel.text")
+    String commitDialogButtonCancelText();
+
     /*
      * Contribute Part
      */
