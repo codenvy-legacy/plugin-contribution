@@ -109,11 +109,11 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void commit(final @Nonnull ProjectDescriptor project, final @Nonnull String commitMessage,
+    public void commit(final @Nonnull ProjectDescriptor project, final boolean includeUntracked, final @Nonnull String commitMessage,
                        final @Nonnull AsyncCallback<Void> callback) {
         try {
 
-            service.add(project, false, null, new RequestCallback<Void>() {
+            service.add(project, !includeUntracked, null, new RequestCallback<Void>() {
                 @Override
                 protected void onSuccess(Void aVoid) {
 

@@ -46,6 +46,9 @@ public interface ContributeMessages extends Messages {
     @Key("commit.dialog.message")
     String commitDialogMessage();
 
+    @Key("commit.dialog.checkbox.include.untracked.text")
+    String commitDialogCheckBoxIncludeUntracked();
+
     @Key("commit.dialog.description.title")
     String commitDialogDescriptionTitle();
 

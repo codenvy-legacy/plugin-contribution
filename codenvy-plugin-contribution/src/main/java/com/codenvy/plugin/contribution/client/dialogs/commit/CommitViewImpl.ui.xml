@@ -21,18 +21,21 @@
             margin: 15px;
         }
 
-        .labelPosition {
+        .margin {
             margin-bottom: 5px;
         }
     </ui:style>
 
-    <g:DockLayoutPanel unit="PX" width="360px" height="190px" addStyleNames="{style.border}">
-        <g:north size="64">
-            <g:Label text="{messages.commitDialogMessage}"/>
+    <g:DockLayoutPanel unit="PX" width="360px" height="210px" addStyleNames="{style.border}">
+        <g:north size="84">
+            <g:FlowPanel>
+                <g:Label text="{messages.commitDialogMessage}" addStyleNames="{style.margin}"/>
+                <g:CheckBox ui:field="includeUntracked" text="{messages.commitDialogCheckBoxIncludeUntracked}" addStyleNames="{style.margin}"/>
+            </g:FlowPanel>
         </g:north>
         <g:center>
             <g:FlowPanel>
-                <g:Label text="{messages.commitDialogDescriptionTitle}" width="100%" addStyleNames="{style.labelPosition}"/>
+                <g:Label text="{messages.commitDialogDescriptionTitle}" width="100%" addStyleNames="{style.margin}"/>
                 <g:TextArea ui:field="commitDescription" width="350px" height="100px"/>
             </g:FlowPanel>
         </g:center>

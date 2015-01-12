@@ -70,12 +70,15 @@ public interface VcsService {
      *
      * @param project
      *         the project descriptor.
+     * @param includeUntracked
+     *         {@code true} to include untracked files, {@code false} otherwise.
      * @param commitMessage
      *         the commit message.
      * @param callback
      *         callback when the operation is done.
      */
-    void commit(@Nonnull ProjectDescriptor project, @Nonnull String commitMessage, @Nonnull AsyncCallback<Void> callback);
+    void commit(@Nonnull ProjectDescriptor project, boolean includeUntracked, @Nonnull String commitMessage,
+                @Nonnull AsyncCallback<Void> callback);
 
     /**
      * Removes a remote to the project VCS metadata.

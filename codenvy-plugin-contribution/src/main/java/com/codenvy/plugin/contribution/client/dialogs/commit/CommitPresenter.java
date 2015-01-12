@@ -87,7 +87,7 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     public void onOk() {
         final CurrentProject project = appContext.getCurrentProject();
         if (project != null) {
-            vcsService.commit(project.getRootProject(), view.getCommitDescription(), new AsyncCallback<Void>() {
+            vcsService.commit(project.getRootProject(), view.isIncludeUntracked(), view.getCommitDescription(), new AsyncCallback<Void>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.showError(CommitPresenter.class, exception);

@@ -20,29 +20,6 @@ import javax.annotation.Nonnull;
  * @author Kevin Pollet
  */
 public interface CommitView extends View<CommitView.ActionDelegate> {
-
-    interface ActionDelegate {
-        /**
-         * Called when project changes must be committed.
-         */
-        void onOk();
-
-        /**
-         * Called when project changes must not be committed.
-         */
-        void onContinue();
-
-        /**
-         * Called when the operation must be aborted.
-         */
-        void onCancel();
-
-        /**
-         * Called when the commit description is changed.
-         */
-        void onCommitDescriptionChanged();
-    }
-
     /**
      * Opens the commit view with the given commit description.
      */
@@ -68,4 +45,36 @@ public interface CommitView extends View<CommitView.ActionDelegate> {
      *         {@code true} to enable the OK button, {@code false} otherwise.
      */
     void setOkButtonEnabled(final boolean enabled);
+
+    /**
+     * Returns if the untracked files must be added.
+     *
+     * @return {@code true} if untracked files must be added, {@code false} otherwise.
+     */
+    boolean isIncludeUntracked();
+
+    /**
+     * The action delegate.
+     */
+    interface ActionDelegate {
+        /**
+         * Called when project changes must be committed.
+         */
+        void onOk();
+
+        /**
+         * Called when project changes must not be committed.
+         */
+        void onContinue();
+
+        /**
+         * Called when the operation must be aborted.
+         */
+        void onCancel();
+
+        /**
+         * Called when the commit description is changed.
+         */
+        void onCommitDescriptionChanged();
+    }
 }
