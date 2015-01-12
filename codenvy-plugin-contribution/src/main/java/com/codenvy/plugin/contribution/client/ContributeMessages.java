@@ -16,9 +16,6 @@ import com.google.gwt.i18n.client.Messages;
  * Internationalizable messages for the contributor plugin.
  */
 public interface ContributeMessages extends Messages {
-    @DefaultMessage("You need to provide the contribution branch name")
-    String warnBranchEmpty();
-
     @DefaultMessage("Incorrect or missing information")
     String warnMissingConfigTitle();
 
@@ -154,10 +151,6 @@ public interface ContributeMessages extends Messages {
 
     @DefaultMessage("Could not create review factory link")
     String warnCreateFactoryFailed();
-
-    @DefaultMessage("Remote with name {0} already exists")
-        // period because that's a log, not a notification
-    String forekRemoteAlreadyPresent(String forkRemoteName);
 
     @DefaultMessage("Failed to set the forked repository remote. Contribution interrupted")
     String errorRemoveRemoteFailed();
