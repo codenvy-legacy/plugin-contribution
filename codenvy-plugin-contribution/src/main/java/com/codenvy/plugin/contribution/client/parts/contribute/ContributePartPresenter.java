@@ -253,7 +253,7 @@ public class ContributePartPresenter extends BasePresenter
                     public void onFailure(final Throwable exception) {
                         final String exceptionMessage = exception.getMessage();
                         if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
-                            notificationHelper.showError(ContributePartPresenter.class, messages.cannotAccessVCSHostServices());
+                            notificationHelper.showError(ContributePartPresenter.class, messages.contributePartErrorCannotAccessVCSHost());
 
                         } else {
                             notificationHelper.showError(ContributePartPresenter.class, exception);

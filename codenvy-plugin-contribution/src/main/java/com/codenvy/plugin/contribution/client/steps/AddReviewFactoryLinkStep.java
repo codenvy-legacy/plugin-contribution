@@ -70,7 +70,7 @@ public class AddReviewFactoryLinkStep implements Step {
      *         the factory URL to include in the comment
      */
     private void sendComment(final Context context, final Configuration config, final String factoryUrl) {
-        final String commentText = messages.pullRequestLinkComment(factoryUrl);
+        final String commentText = messages.stepAddReviewFactoryLinkPullRequestComment(factoryUrl);
         repository.commentPullRequest(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
                                       context.getPullRequestIssueNumber(), commentText, new AsyncCallback<IssueComment>() {
                     @Override
@@ -80,7 +80,7 @@ public class AddReviewFactoryLinkStep implements Step {
 
                     @Override
                     public void onFailure(final Throwable exception) {
-                        notificationHelper.showWarning(messages.warnPostFactoryLinkFailed(factoryUrl));
+                        notificationHelper.showWarning(messages.stepAddReviewFactoryLinkErrorPostingFactoryLink(factoryUrl));
 
                         // continue anyway, this is not a hard failure
                         proceed(context, config);

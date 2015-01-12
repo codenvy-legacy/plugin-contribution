@@ -16,23 +16,65 @@ import com.google.gwt.i18n.client.Messages;
  * Internationalizable messages for the contributor plugin.
  */
 public interface ContributeMessages extends Messages {
-    @DefaultMessage("Incorrect or missing information")
-    String warnMissingConfigTitle();
+    /*
+     * Contribute part
+     */
+    @Key("contribute.part.title")
+    String contributePartTitle();
 
-    @DefaultMessage("Could not list local branches. Contribution interrupted")
-    String errorListBranches();
+    @Key("contribute.part.error.cannot.access.vcs.host")
+    String contributePartErrorCannotAccessVCSHost();
 
-    @DefaultMessage("A branch with this name already exists: {0}")
-    String errorBranchExists(String name);
+    @Key("contribute.part.project.information.section.title")
+    String contributePartProjectInformationSectionTitle();
 
-    @DefaultMessage("Branch rename failed. Contribution interrupted")
-    String errorRenameFailed();
+    @Key("contribute.part.project.information.section.repository.url.label")
+    String contributePartProjectInformationSectionRepositoryUrlLabel();
 
-    @DefaultMessage("Adding fork remote failed. Contribution interrupted")
-    String errorAddRemoteFailed();
+    @Key("contribute.part.project.information.section.repository.cloned.branch.label")
+    String contributePartProjectInformationSectionClonedBranchLabel();
 
-    @DefaultMessage("Contribution branch renamed to {0}")
-    String infoRenamedBranch(String branchName);
+    @Key("contribute.part.configure.contribution.section.title")
+    String contributePartConfigureContributionSectionTitle();
+
+    @Key("contribute.part.configure.contribution.section.branch.name.label")
+    String contributePartConfigureContributionSectionBranchNameLabel();
+
+    @Key("contribute.part.configure.contribution.section.branch.name.placeholder")
+    String contributePartConfigureContributionSectionBranchNamePlaceholder();
+
+    @Key("contribute.part.configure.contribution.section.contribution.title.label")
+    String contributePartConfigureContributionSectionContributionTitleLabel();
+
+    @Key("contribute.part.configure.contribution.section.contribution.title.placeholder")
+    String contributePartConfigureContributionSectionContributionTitlePlaceholder();
+
+    @Key("contribute.part.configure.contribution.section.contribution.comment.label")
+    String contributePartConfigureContributionSectionContributionCommentLabel();
+
+    @Key("contribute.part.configure.contribution.section.contribution.comment.placeholder")
+    String contributePartConfigureContributionSectionContributionCommentPlaceholder();
+
+    @Key("contribute.part.configure.contribution.section.button.contribute.text")
+    String contributePartConfigureContributionSectionButtonContributeText();
+
+    @Key("contribute.part.status.section.title")
+    String contributePartStatusSectionTitle();
+
+    @Key("contribute.part.status.section.fork.created.label")
+    String contributePartStatusSectionForkCreatedLabel();
+
+    @Key("contribute.part.status.section.branch.pushed.label")
+    String contributePartStatusSectionBranchPushedLabel();
+
+    @Key("contribute.part.status.section.pull.request.issued.label")
+    String contributePartStatusSectionPullRequestIssuedLabel();
+
+    @Key("contribute.part.status.section.contribution.issued.label")
+    String contributePartStatusSectionContributionIssuedLabel();
+
+    @Key("contribute.part.status.section.button.open.on.github.text")
+    String contributePartStatusSectionButtonOpenOnGithubText();
 
     /*
      * Commit dialog
@@ -59,124 +101,107 @@ public interface ContributeMessages extends Messages {
     String commitDialogButtonCancelText();
 
     /*
-     * Contribute Part
+     * Notification message prefix.
      */
-    @DefaultMessage("Contribution")
-    String contributePartTitle();
+    @Key("notification.message.prefix")
+    String notificationMessagePrefix(String notificationMessage);
 
-    @DefaultMessage("Configure Contribution")
-    String contributePartConfigureContributionSectionTitle();
+    /*
+     * Rename work branch step
+     */
+    @Key("step.rename.work.branch.local.branch.renamed")
+    String stepRenameWorkBranchLocalBranchRenamed(String branchName);
 
-    @DefaultMessage("Project Information")
-    String contributePartProjectInformationSectionTitle();
+    @Key("step.rename.work.branch.missing.config.title")
+    String stepRenameWorkBranchMissingConfigTitle();
 
-    @DefaultMessage("Repository URL:")
-    String contributePartRepositoryUrlLabelText();
+    @Key("step.rename.work.branch.error.list.local.branches")
+    String stepRenameWorkBranchErrorListLocalBranches();
 
-    @DefaultMessage("Cloned branch:")
-    String contributePartClonedBranchLabelText();
+    @Key("step.rename.work.branch.error.local.branch.exists")
+    String stepRenameWorkBranchErrorLocalBranchExists(String branchName);
 
-    @DefaultMessage("Branch name:")
-    String contributePartBranchNameInputLabelText();
+    @Key("step.rename.work.branch.error.rename.local.branch")
+    String stepRenameWorkBranchErrorRenameLocalBranch();
 
-    @DefaultMessage("Choose a branch name for your contribution...")
-    String contributePartBranchNameInputPlaceHolder();
+    /*
+     * Add fork remote step
+     */
+    @Key("step.add.fork.remote.error.add.fork")
+    String stepAddForkRemoteErrorAddFork();
 
-    @DefaultMessage("Contribution title:")
-    String contributePartContributionTitleLabelText();
+    @Key("step.add.fork.remote.error.set.forked.repository.remote")
+    String stepAddForkRemoteErrorSetForkedRepositoryRemote();
 
-    @DefaultMessage("Choose a title for your contribution...")
-    String contributePartContributionTitlePlaceHolder();
+    @Key("step.add.fork.remote.error.check.remotes")
+    String stepAddForkRemoteErrorCheckRemote();
 
-    @DefaultMessage("Contribution comment:")
-    String contributePartContributionCommentLabelText();
+    /*
+     * Remote fork step
+     */
+    @Key("step.remote.fork.use.existing.fork")
+    String stepRemoteForkUseExistingFork();
 
-    @DefaultMessage("Type a comment for your contribution...")
-    String contributePartContributionCommentPlaceHolder();
+    @Key("step.remote.fork.create.fork")
+    String stepRemoteForkCreateFork(String username, String repository);
 
-    @DefaultMessage("Contribute")
-    String contributePartContributeButtonText();
+    @Key("step.remote.fork.request.fork.creation")
+    String stepRemoteForkRequestedForkCreation(String owner, String repository);
 
-    @DefaultMessage("Status")
-    String contributePartStatusSectionTitle();
+    @Key("step.remote.fork.error.creating.fork")
+    String stepRemoteForkErrorCreatingFork(String owner, String repository, String message);
 
-    @DefaultMessage("Fork created")
-    String contributePartCreateForkLabelText();
+    /*
+     * Push branch fork step
+     */
+    @Key("step.push.branch.pushing.branch")
+    String stepPushBranchPushingBranch();
 
-    @DefaultMessage("Branch pushed on your fork")
-    String contributePartPushBranchLabelText();
+    @Key("step.push.branch.error.pushing.branch")
+    String stepPushBranchErrorPushingBranch(String cause);
 
-    @DefaultMessage("Pull request issued")
-    String contributePartIssuePullRequestLabelText();
+    @Key("step.push.branch.branch.pushed")
+    String stepPushBranchBranchPushed();
 
-    @DefaultMessage("Your contribution has successfully been issued!")
-    String contributePartContributionIssuedLabelText();
+    /*
+     * Add review factory link step
+     */
+    @Key("step.add.review.factory.link.pull.request.comment")
+    String stepAddReviewFactoryLinkPullRequestComment(String factoryUrl);
 
-    @DefaultMessage("Open on GitHub")
-    String contributePartGithubButtonText();
+    @Key("step.add.review.factory.link.error.posting.factory.link")
+    String stepAddReviewFactoryLinkErrorPostingFactoryLink(String factoryUrl);
 
-    /** prefix notification message with "Contribute Pull Request". */
-    @DefaultMessage("Contribute Pull Request: {0}")
-    String prefixNotification(String notificationMessage);
+    /*
+     * Generate review factory step
+     */
+    @Key("step.generate.review.factory.error.create.factory")
+    String stepGenerateReviewFactoryErrorCreateFactory();
 
-    @DefaultMessage("Cannot access to VCS Host services. Check if OAuth popup is not blocked")
-    String cannotAccessVCSHostServices();
+    /*
+     * Issue pull request step
+     */
+    @Key("step.issue.pull.request.pull.request.created")
+    String stepIssuePullRequestPullRequestCreated(String url);
 
-    @DefaultMessage("Using existing user''s fork")
-    String useExistingUserFork();
+    @Key("step.issue.pull.request.issuing.pull.request")
+    String stepIssuePullRequestIssuingPullRequest();
 
-    @DefaultMessage("Creating a fork the repository`{0}/{1}`")
-    String creatingFork(String username, String repository);
+    @Key("step.issue.pull.request.existing.pull.request.updated")
+    String stepIssuePullRequestExistingPullRequestUpdated(String headBranch);
 
-    @DefaultMessage("Requested creation of a fork of the repository `{0}/{1}`")
-    String requestedForkCreation(String repositoryOwner, String repositoryName);
+    @Key("step.issue.pull.request.error.create.pull.request")
+    String stepIssuePullRequestErrorCreatePullRequest();
 
-    @DefaultMessage("Failed creating the fork of the repository`{0}/{1}`. {2}")
-    String failedCreatingUserFork(String repositoryOwner, String repositoryName, String message);
+    /*
+     * Contributor extension
+     */
+    @Key("contributor.extension.creating.work.branch")
+    String contributorExtensionCreatingWorkBranch(String branchName);
 
-    @DefaultMessage("Successfully pushed contribution branch to fork")
-    String successPushingBranchToFork();
+    @Key("contributor.extension.work.branch.created")
+    String contributorExtensionWorkBranchCreated(String branchName);
 
-    @DefaultMessage("Pushing contribution branch to fork")
-    String pushingWorkingBranchToFork();
-
-    @DefaultMessage("Failed pushing contribution branch to fork: {0}")
-    String failedPushingBranchToFork(String cause);
-
-    @DefaultMessage("You can build and run this pull request by following this link: {0}")
-    String pullRequestLinkComment(String factoryUrl);
-
-    @DefaultMessage("Could not post review factory link in pull request comments: {0}")
-    String warnPostFactoryLinkFailed(String factoryUrl);
-
-    @DefaultMessage("Could not create review factory link")
-    String warnCreateFactoryFailed();
-
-    @DefaultMessage("Failed to set the forked repository remote. Contribution interrupted")
-    String errorRemoveRemoteFailed();
-
-    @DefaultMessage("Could not check the remotes")
-    String warnCheckRemote();
-
-    @DefaultMessage("The existing pull request for {0} has been updated")
-    String warnPullRequestUpdated(String headBranch);
-
-    @DefaultMessage("Creation of the pull request failed. Contribution is interrupted")
-    String errorPullRequestFailed();
-
-    @DefaultMessage("Creating the pull request for your contribution")
-    String issuingPullRequest();
-
-    @DefaultMessage("The Pull Request for your contribution has been created. <a href=\"{0}\" target=\"_blank\">{0}</a>")
-    String successIssuingPullRequest(String url);
-
-    @DefaultMessage("Creating a new working branch {0}")
-    String notificationCreatingNewWorkingBranch(String workingBranchName);
-
-    @DefaultMessage("Branch {0} successfully created and checked out")
-    String notificationBranchSuccessfullyCreatedAndCheckedOut(String workingBranchName);
-
-    @DefaultMessage("A error occurred while updating contribution attributes to the current project: {0}")
-    String errorUpdatingContributionAttributesToProject(String exceptionMessage);
-
+    @Key("contributor.extension.error.updating.contribution.attributes")
+    String contributorExtensionErrorUpdatingContributionAttributes(String exceptionMessage);
 }

@@ -32,7 +32,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,23 +204,24 @@ public class GitHubHost implements RepositoryHost {
         final GitHubIssueCommentInput input = GitHubHost.this.dtoFactory.createDto(GitHubIssueCommentInput.class);
         input.withBody(commentText);
         final Unmarshallable<GitHubIssueComment> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubIssueComment.class);
-        gitHubClientService.commentIssue(username, repository, pullRequestId, input, new AsyncRequestCallback<GitHubIssueComment>(unmarshaller) {
+        gitHubClientService
+                .commentIssue(username, repository, pullRequestId, input, new AsyncRequestCallback<GitHubIssueComment>(unmarshaller) {
 
-            @Override
-            protected void onSuccess(GitHubIssueComment result) {
-                if (result != null) {
-                    final IssueComment comment = GitHubHost.this.dtoFactory.createDto(IssueComment.class);
-                    comment.withId(result.getId()).withUrl(result.getUrl()).withBody(result.getBody());
-                } else {
-                    callback.onFailure(new Exception("No pull request comment."));
-                }
-            }
+                    @Override
+                    protected void onSuccess(GitHubIssueComment result) {
+                        if (result != null) {
+                            final IssueComment comment = GitHubHost.this.dtoFactory.createDto(IssueComment.class);
+                            comment.withId(result.getId()).withUrl(result.getUrl()).withBody(result.getBody());
+                        } else {
+                            callback.onFailure(new Exception("No pull request comment."));
+                        }
+                    }
 
-            @Override
-            protected void onFailure(Throwable exception) {
-                callback.onFailure(exception);
-            }
-        });
+                    @Override
+                    protected void onFailure(Throwable exception) {
+                        callback.onFailure(exception);
+                    }
+                });
     }
 
     @Override
@@ -242,7 +242,8 @@ public class GitHubHost implements RepositoryHost {
             protected void onSuccess(final GitHubPullRequest result) {
                 if (result != null) {
                     final PullRequest pr = GitHubHost.this.dtoFactory.createDto(PullRequest.class);
-                    pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl()).withHtmlUrl(result.getHtmlUrl());
+                    pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl())
+                      .withHtmlUrl(result.getHtmlUrl());
                     callback.onSuccess(pr);
                 } else {
                     callback.onFailure(new Exception("No pull request."));

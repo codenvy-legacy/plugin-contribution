@@ -88,7 +88,7 @@ public final class NotificationHelper {
     /**
      * Log the exception, display the error message in the notification.
      */
-    public void showError(@Nonnull final Class< ? > cls, @Nonnull final String errorMessage, @Nonnull final Throwable exception) {
+    public void showError(@Nonnull final Class<?> cls, @Nonnull final String errorMessage, @Nonnull final Throwable exception) {
         showNotification(new Notification(errorMessage, ERROR));
         Log.error(cls, exception);
     }
@@ -149,7 +149,7 @@ public final class NotificationHelper {
      *         the notification to finish.
      */
     public void finishNotification(@Nonnull final String message, @Nonnull final Notification notification) {
-        notification.setMessage(messages.prefixNotification(message));
+        notification.setMessage(messages.notificationMessagePrefix(message));
         notification.setStatus(FINISHED);
     }
 
@@ -160,7 +160,7 @@ public final class NotificationHelper {
      *         notification to display.
      */
     public void showNotification(@Nonnull final Notification notification) {
-        notification.setMessage(messages.prefixNotification(notification.getMessage()));
+        notification.setMessage(messages.notificationMessagePrefix(notification.getMessage()));
         notificationManager.showNotification(notification);
     }
 }

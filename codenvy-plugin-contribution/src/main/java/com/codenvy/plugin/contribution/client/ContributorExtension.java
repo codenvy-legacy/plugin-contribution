@@ -36,7 +36,6 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.inject.Named;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -45,8 +44,8 @@ import java.util.Map;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static com.google.gwt.http.client.URL.encodeQueryString;
 import static java.lang.Boolean.TRUE;
 
@@ -116,7 +115,8 @@ public class ContributorExtension {
     /**
      * Initialize contributor environment
      *
-     * @param event the load event.
+     * @param event
+     *         the load event.
      */
     private void initContributeMode(final ProjectActionEvent event) {
         final ProjectDescriptor project = event.getProject();
@@ -182,7 +182,8 @@ public class ContributorExtension {
     }
 
 
-    private void persistContribFactoryAttributesToProject(final Factory factory, final ProjectDescriptor project, final Map<String, List<String>> attributesToUpdate) {
+    private void persistContribFactoryAttributesToProject(final Factory factory, final ProjectDescriptor project,
+                                                          final Map<String, List<String>> attributesToUpdate) {
         if (factory.getProject() != null && factory.getProject().getAttributes() != null) {
             Map<String, List<String>> attributesFromFactory = factory.getProject().getAttributes();
             if (attributesFromFactory.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
@@ -217,14 +218,16 @@ public class ContributorExtension {
         copyProjectInfo(currentProject, projectToUpdate);
         projectToUpdate.setAttributes(attributesToUpdate);
 
-        projectService.updateProject(currentProject.getPath(), projectToUpdate, new AsyncRequestCallback<ProjectDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
+        projectService.updateProject(currentProject.getPath(), projectToUpdate, new AsyncRequestCallback<ProjectDescriptor>(
+                dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
             @Override
             protected void onSuccess(ProjectDescriptor result) {
             }
 
             @Override
             protected void onFailure(Throwable exception) {
-                notificationHelper.showError(getClass(), messages.errorUpdatingContributionAttributesToProject(exception.getMessage()), exception);
+                notificationHelper.showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
+                        exception.getMessage()), exception);
             }
         });
     }
@@ -245,7 +248,7 @@ public class ContributorExtension {
         context.setWorkBranchName(workingBranchName);
 
         final Notification createWorkingBranchNotification =
-                new Notification(messages.notificationCreatingNewWorkingBranch(workingBranchName), INFO, PROGRESS);
+                new Notification(messages.contributorExtensionCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
         notificationHelper.showNotification(createWorkingBranchNotification);
 
         // the working branch is only created if it doesn't exist
@@ -273,7 +276,7 @@ public class ContributorExtension {
                         contributePartPresenter.open();
                         contributePartPresenter.showContributePart();
                         notificationHelper.finishNotification(
-                                messages.notificationBranchSuccessfullyCreatedAndCheckedOut(workingBranchName),
+                                messages.contributorExtensionWorkBranchCreated(workingBranchName),
                                 createWorkingBranchNotification);
                     }
 

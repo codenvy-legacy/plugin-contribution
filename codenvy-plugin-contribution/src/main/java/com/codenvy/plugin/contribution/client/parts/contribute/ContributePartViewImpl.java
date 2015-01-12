@@ -113,9 +113,12 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         setTitle(messages.contributePartTitle());
 
         this.statusSection.setVisible(false);
-        this.branchName.getElement().setPropertyString("placeholder", messages.contributePartBranchNameInputPlaceHolder());
-        this.contributionTitle.getElement().setPropertyString("placeholder", messages.contributePartContributionTitlePlaceHolder());
-        this.contributionComment.getElement().setPropertyString("placeholder", messages.contributePartContributionCommentPlaceHolder());
+        this.branchName.getElement()
+                       .setPropertyString("placeholder", messages.contributePartConfigureContributionSectionBranchNamePlaceholder());
+        this.contributionTitle.getElement().setPropertyString("placeholder",
+                                                              messages.contributePartConfigureContributionSectionContributionTitlePlaceholder());
+        this.contributionComment.getElement().setPropertyString("placeholder",
+                                                                messages.contributePartConfigureContributionSectionContributionCommentPlaceholder());
     }
 
     @Override

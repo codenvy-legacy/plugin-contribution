@@ -136,53 +136,57 @@
             <g:HTMLPanel addStyleNames="{style.section}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartProjectInformationSectionTitle}"/>
                 <div class="{style.fieldItem} {style.horizontal}">
-                    <g:Label addStyleNames="{style.label} {style.left}" text="{messages.contributePartRepositoryUrlLabelText}"/>
+                    <g:Label addStyleNames="{style.label} {style.left}"
+                             text="{messages.contributePartProjectInformationSectionRepositoryUrlLabel}"/>
                     <g:Anchor ui:field="repositoryUrl" addStyleNames="{style.field} {style.link}" target="_blank"/>
                 </div>
                 <div class="{style.fieldItem} {style.horizontal}">
-                    <g:Label addStyleNames="{style.label} {style.left}" text="{messages.contributePartClonedBranchLabelText}"/>
+                    <g:Label addStyleNames="{style.label} {style.left}"
+                             text="{messages.contributePartProjectInformationSectionClonedBranchLabel}"/>
                     <g:Label ui:field="clonedBranch" addStyleNames="{style.field}"/>
                 </div>
             </g:HTMLPanel>
             <g:HTMLPanel addStyleNames="{style.section} {style.border}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartConfigureContributionSectionTitle}"/>
                 <div class="{style.fieldItem}">
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartBranchNameInputLabelText}"/>
+                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartConfigureContributionSectionBranchNameLabel}"/>
                     <my:PasteAwareTextBox ui:field="branchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
                 </div>
                 <div class="{style.fieldItem}">
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartContributionTitleLabelText}"/>
+                    <g:Label addStyleNames="{style.label}"
+                             text="{messages.contributePartConfigureContributionSectionContributionTitleLabel}"/>
                     <my:PasteAwareTextBox ui:field="contributionTitle" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
                 </div>
                 <div class="{style.fieldItem}">
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartContributionCommentLabelText}"/>
+                    <g:Label addStyleNames="{style.label}"
+                             text="{messages.contributePartConfigureContributionSectionContributionCommentLabel}"/>
                     <g:TextArea height="60px" ui:field="contributionComment"
                                 addStyleNames="{style.field} {resources.contributeCss.inputField} {style.fixed-textarea}"/>
                 </div>
                 <g:Button addStyleNames="{style.contributeButton} {resources.contributeCss.blueButton}" ui:field="contributeButton"
-                          text="{messages.contributePartContributeButtonText}"/>
+                          text="{messages.contributePartConfigureContributionSectionButtonContributeText}"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartStatusSectionTitle}"/>
                 <div class="{style.step}">
                     <g:Label addStyleNames="{style.number}" text="1"/>
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartCreateForkLabelText}"/>
+                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartStatusSectionForkCreatedLabel}"/>
                     <g:SimplePanel addStyleNames="{style.status}" ui:field="createForkStatus"/>
                 </div>
                 <div class="{style.step}">
                     <g:Label addStyleNames="{style.number}" text="2"/>
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartPushBranchLabelText}"/>
+                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartStatusSectionBranchPushedLabel}"/>
                     <g:SimplePanel addStyleNames="{style.status}" ui:field="pushBranchStatus"/>
                 </div>
                 <div class="{style.step}">
                     <g:Label addStyleNames="{style.number}" text="3"/>
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartIssuePullRequestLabelText}"/>
+                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartStatusSectionPullRequestIssuedLabel}"/>
                     <g:SimplePanel addStyleNames="{style.status}" ui:field="issuePullRequestStatus"/>
                 </div>
                 <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
-                    <g:Label addStyleNames="{style.item}" text="{messages.contributePartContributionIssuedLabelText}"/>
+                    <g:Label addStyleNames="{style.item}" text="{messages.contributePartStatusSectionContributionIssuedLabel}"/>
                     <g:Button ui:field="openOnRepositoryHostButton" addStyleNames="{style.item}"
-                              text="{messages.contributePartGithubButtonText}"/>
+                              text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
                 </g:HTMLPanel>
             </g:HTMLPanel>
         </g:HTMLPanel>

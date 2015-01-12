@@ -30,7 +30,8 @@
         <g:north size="84">
             <g:FlowPanel>
                 <g:Label text="{messages.commitDialogMessage}" addStyleNames="{style.margin}"/>
-                <g:CheckBox ui:field="includeUntracked" text="{messages.commitDialogCheckBoxIncludeUntracked}" addStyleNames="{style.margin}"/>
+                <g:CheckBox ui:field="includeUntracked" text="{messages.commitDialogCheckBoxIncludeUntracked}"
+                            addStyleNames="{style.margin}"/>
             </g:FlowPanel>
         </g:north>
         <g:center>

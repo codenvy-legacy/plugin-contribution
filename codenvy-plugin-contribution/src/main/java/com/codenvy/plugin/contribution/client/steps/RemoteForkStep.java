@@ -66,7 +66,7 @@ public class RemoteForkStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
 
                 context.setForkedRepositoryName(fork.getName());
-                notificationHelper.showInfo(messages.useExistingUserFork());
+                notificationHelper.showInfo(messages.stepRemoteForkUseExistingFork());
             }
 
             @Override
@@ -83,7 +83,8 @@ public class RemoteForkStep implements Step {
     }
 
     private void createFork(final Context context, final String repositoryOwner, final String repositoryName) {
-        final Notification notification = new Notification(messages.creatingFork(repositoryOwner, repositoryName), INFO, PROGRESS);
+        final Notification notification =
+                new Notification(messages.stepRemoteForkCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
         repositoryHost.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
@@ -92,14 +93,16 @@ public class RemoteForkStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
 
                 context.setForkedRepositoryName(result.getName());
-                notificationHelper.finishNotification(messages.requestedForkCreation(repositoryOwner, repositoryName), notification);
+                notificationHelper
+                        .finishNotification(messages.stepRemoteForkRequestedForkCreation(repositoryOwner, repositoryName), notification);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
 
-                final String errorMessage = messages.failedCreatingUserFork(repositoryOwner, repositoryName, exception.getMessage());
+                final String errorMessage = messages.stepRemoteForkErrorCreatingFork(repositoryOwner, repositoryName,
+                                                                                     exception.getMessage());
                 notificationHelper.finishNotificationWithError(RemoteForkStep.class, errorMessage, notification);
             }
         });

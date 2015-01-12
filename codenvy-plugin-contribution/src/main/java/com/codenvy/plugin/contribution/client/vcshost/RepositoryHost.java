@@ -17,7 +17,6 @@ import com.codenvy.plugin.contribution.client.vcshost.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
-
 import java.util.List;
 
 /**

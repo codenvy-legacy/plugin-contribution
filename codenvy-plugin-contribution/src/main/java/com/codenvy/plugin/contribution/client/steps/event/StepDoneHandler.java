@@ -14,8 +14,6 @@ import com.google.gwt.event.shared.EventHandler;
 
 import javax.annotation.Nonnull;
 
-import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step;
-
 /**
  * Handler for step event.
  *

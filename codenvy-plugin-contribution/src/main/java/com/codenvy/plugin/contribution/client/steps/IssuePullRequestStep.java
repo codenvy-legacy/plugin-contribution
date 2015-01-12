@@ -73,7 +73,7 @@ public class IssuePullRequestStep implements Step {
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
         final String body = config.getPullRequestComment();
 
-        final Notification notification = new Notification(messages.issuingPullRequest(), INFO, PROGRESS);
+        final Notification notification = new Notification(messages.stepIssuePullRequestIssuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
         repositoryHost.createPullRequest(owner, repository, title, headBranch, baseBranch, body, new AsyncCallback<PullRequest>() {
@@ -82,7 +82,7 @@ public class IssuePullRequestStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
 
                 context.setPullRequestIssueNumber(result.getNumber());
-                notificationHelper.finishNotification(messages.successIssuingPullRequest(result.getHtmlUrl()), notification);
+                notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(result.getHtmlUrl()), notification);
                 onPullRequestCreated(context, config);
             }
 
@@ -92,12 +92,14 @@ public class IssuePullRequestStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, isExistingPullRequest));
 
                 if (isExistingPullRequest) {
-                    notificationHelper.finishNotificationWithWarning(messages.warnPullRequestUpdated(headBranch), notification);
+                    notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch),
+                                                                     notification);
 
                 } else {
                     eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
-                    notificationHelper.finishNotificationWithError(IssuePullRequestStep.class, messages.errorPullRequestFailed(),
-                                                                   notification);
+                    notificationHelper
+                            .finishNotificationWithError(IssuePullRequestStep.class, messages.stepIssuePullRequestErrorCreatePullRequest(),
+                                                         notification);
                 }
             }
         });

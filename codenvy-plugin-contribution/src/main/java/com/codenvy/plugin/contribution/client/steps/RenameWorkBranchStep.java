@@ -97,8 +97,8 @@ public class RenameWorkBranchStep implements Step {
                 for (final Branch branch : result) {
                     if (branch.getDisplayName().equals(branchName)) {
                         // the branch exists
-                        dialogFactory.createMessageDialog(messages.warnMissingConfigTitle(),
-                                                          messages.errorBranchExists(branchName),
+                        dialogFactory.createMessageDialog(messages.stepRenameWorkBranchMissingConfigTitle(),
+                                                          messages.stepRenameWorkBranchErrorLocalBranchExists(branchName),
                                                           new ConfirmCallback() {
                                                               @Override
                                                               public void accepted() {
@@ -114,7 +114,7 @@ public class RenameWorkBranchStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationHelper.showError(RenameWorkBranchStep.class, messages.errorListBranches());
+                notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorListLocalBranches());
             }
         });
     }
@@ -133,14 +133,14 @@ public class RenameWorkBranchStep implements Step {
         vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                notificationHelper.showInfo(messages.infoRenamedBranch(branchName));
+                notificationHelper.showInfo(messages.stepRenameWorkBranchLocalBranchRenamed(branchName));
                 context.setWorkBranchName(branchName);
                 proceed(context, config);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationHelper.showError(RenameWorkBranchStep.class, messages.errorRenameFailed());
+                notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorRenameLocalBranch());
             }
         });
 

@@ -88,7 +88,7 @@ public class AddForkRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                notificationHelper.showWarning(messages.warnCheckRemote());
+                notificationHelper.showWarning(messages.stepAddForkRemoteErrorCheckRemote());
             }
         });
     }
@@ -113,7 +113,7 @@ public class AddForkRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                notificationHelper.showError(AddForkRemoteStep.class, messages.errorAddRemoteFailed());
+                notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorAddFork());
             }
         });
     }
@@ -137,7 +137,7 @@ public class AddForkRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                notificationHelper.showError(AddForkRemoteStep.class, messages.errorRemoveRemoteFailed());
+                notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorSetForkedRepositoryRemote());
             }
         });
     }

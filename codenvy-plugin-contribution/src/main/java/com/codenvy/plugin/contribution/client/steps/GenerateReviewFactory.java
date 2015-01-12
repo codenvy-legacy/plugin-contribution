@@ -40,7 +40,6 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -142,7 +141,7 @@ public class GenerateReviewFactory implements Step {
                     }
                 }
                 if (factoryUrl == null) {
-                    recover(context, config, messages.warnCreateFactoryFailed());
+                    recover(context, config, messages.stepGenerateReviewFactoryErrorCreateFactory());
                 } else {
                     // store the factory url in the context
                     context.setReviewFactoryUrl(factoryUrl);
@@ -154,7 +153,7 @@ public class GenerateReviewFactory implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
-                recover(context, config, messages.warnCreateFactoryFailed());
+                recover(context, config, messages.stepGenerateReviewFactoryErrorCreateFactory());
             }
         });
     }

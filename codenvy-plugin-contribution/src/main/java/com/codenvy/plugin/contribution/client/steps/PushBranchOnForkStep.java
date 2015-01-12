@@ -62,7 +62,7 @@ public class PushBranchOnForkStep implements Step {
 
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        final Notification notification = new Notification(messages.pushingWorkingBranchToFork(), INFO, PROGRESS);
+        final Notification notification = new Notification(messages.stepPushBranchPushingBranch(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
         vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>() {
@@ -70,7 +70,7 @@ public class PushBranchOnForkStep implements Step {
             public void onSuccess(final Void result) {
                 eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, true));
 
-                notificationHelper.finishNotification(messages.successPushingBranchToFork(), notification);
+                notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(), notification);
                 nextStep.execute(context, config);
             }
 
@@ -78,7 +78,7 @@ public class PushBranchOnForkStep implements Step {
             public void onFailure(final Throwable exception) {
                 eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, false));
 
-                final String errorMessage = messages.failedPushingBranchToFork(exception.getMessage());
+                final String errorMessage = messages.stepPushBranchErrorPushingBranch(exception.getMessage());
                 notificationHelper.finishNotificationWithError(PushBranchOnForkStep.class, errorMessage, notification);
             }
         });
