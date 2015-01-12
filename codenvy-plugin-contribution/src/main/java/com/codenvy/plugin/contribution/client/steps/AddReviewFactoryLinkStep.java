@@ -70,7 +70,7 @@ public class AddReviewFactoryLinkStep implements Step {
      *         the factory URL to include in the comment
      */
     private void sendComment(final Context context, final Configuration config, final String factoryUrl) {
-        final String commentText = messages.pullRequestlinkComment(factoryUrl);
+        final String commentText = messages.pullRequestLinkComment(factoryUrl);
         repository.commentPullRequest(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
                                       context.getPullRequestIssueNumber(), commentText, new AsyncCallback<IssueComment>() {
                     @Override

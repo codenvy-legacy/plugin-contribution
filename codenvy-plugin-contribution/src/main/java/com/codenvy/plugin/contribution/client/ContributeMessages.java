@@ -144,7 +144,7 @@ public interface ContributeMessages extends Messages {
     String failedPushingBranchToFork(String cause);
 
     @DefaultMessage("You can build and run this pull request by following this link: {0}")
-    String pullRequestlinkComment(String factoryUrl);
+    String pullRequestLinkComment(String factoryUrl);
 
     @DefaultMessage("Could not post review factory link in pull request comments: {0}")
     String warnPostFactoryLinkFailed(String factoryUrl);
@@ -176,7 +176,7 @@ public interface ContributeMessages extends Messages {
     @DefaultMessage("Branch {0} successfully created and checked out")
     String notificationBranchSuccessfullyCreatedAndCheckedOut(String workingBranchName);
 
-    @DefaultMessage("A error occured while updating contribution attributes to the current project: {0}")
+    @DefaultMessage("A error occurred while updating contribution attributes to the current project: {0}")
     String errorUpdatingContributionAttributesToProject(String exceptionMessage);
 
 }
