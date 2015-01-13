@@ -169,7 +169,7 @@ public class ContributePartPresenter extends BasePresenter
     @Override
     public void onOpenOnRepositoryHost() {
         Window.open(vcsHostingService.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
-                                                      context.getPullRequestIssueNumber()), "", "");
+                                                         context.getPullRequestIssueNumber()), "", "");
     }
 
     @Override
