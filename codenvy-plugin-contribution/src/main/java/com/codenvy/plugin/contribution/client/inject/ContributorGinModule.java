@@ -27,8 +27,8 @@ import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.hosting.GitHubHost;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.GitHubHostingService;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 
@@ -43,7 +43,7 @@ public class ContributorGinModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind(VcsService.class).to(GitVcsService.class);
-        bind(RepositoryHost.class).to(GitHubHost.class);
+        bind(VcsHostingService.class).to(GitHubHostingService.class);
 
         // bind the commit dialog view
         bind(CommitView.class).to(CommitViewImpl.class);

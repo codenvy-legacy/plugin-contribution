@@ -13,7 +13,7 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,7 +31,7 @@ public class WaitForkOnRemoteStep implements Step {
     private static final int POLL_FREQUENCY_MS = 1000;
 
     /** The remote repository host. */
-    private final RepositoryHost repositoryHost;
+    private final VcsHostingService vcsHostingService;
 
     /** The following step. */
     private final Step nextStep;
@@ -43,10 +43,10 @@ public class WaitForkOnRemoteStep implements Step {
     private Timer timer;
 
     @AssistedInject
-    public WaitForkOnRemoteStep(@Nonnull final RepositoryHost host,
+    public WaitForkOnRemoteStep(@Nonnull final VcsHostingService host,
                                 @Nonnull final @Assisted Step nextStep,
                                 @Nonnull final EventBus eventBus) {
-        this.repositoryHost = host;
+        this.vcsHostingService = host;
         this.nextStep = nextStep;
         this.eventBus = eventBus;
     }
@@ -90,7 +90,7 @@ public class WaitForkOnRemoteStep implements Step {
     }
 
     private void checkRepository(final Context context, final AsyncCallback<Void> callback) {
-        repositoryHost.getRepositoriesList(new AsyncCallback<List<Repository>>() {
+        vcsHostingService.getRepositoriesList(new AsyncCallback<List<Repository>>() {
 
             @Override
             public void onSuccess(final List<Repository> result) {

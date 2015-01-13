@@ -30,7 +30,7 @@ import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.http.client.Header;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.Messages;
@@ -77,7 +77,7 @@ public class GenerateReviewFactory implements Step {
     private final AppContext appContext;
 
     /** The remote VCS repository. */
-    private final RepositoryHost repositoryHost;
+    private final VcsHostingService vcsHostingService;
 
     /** The notification manager. */
     private final NotificationHelper notificationHelper;
@@ -91,7 +91,7 @@ public class GenerateReviewFactory implements Step {
                                  @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                  @Nonnull final AsyncRequestFactory asyncRequestFactory,
                                  @Nonnull final AppContext appContext,
-                                 @Nonnull final RepositoryHost repositoryHost,
+                                 @Nonnull final VcsHostingService vcsHostingService,
                                  @Nonnull final NotificationHelper notificationHelper) {
         this.nextStep = nextStep;
         this.failureNextStep = failureNextStep;
@@ -104,7 +104,7 @@ public class GenerateReviewFactory implements Step {
         this.dtoFactory = dtoFactory;
 
         this.appContext = appContext;
-        this.repositoryHost = repositoryHost;
+        this.vcsHostingService = vcsHostingService;
         this.notificationHelper = notificationHelper;
     }
 
@@ -254,7 +254,7 @@ public class GenerateReviewFactory implements Step {
     private Source getSource(final Context context) {
         final ImportSourceDescriptor importSourceDescriptor = dtoFactory.createDto(ImportSourceDescriptor.class);
 
-        final String forkRepoUrl = repositoryHost.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+        final String forkRepoUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
         importSourceDescriptor.setLocation(forkRepoUrl);
 
         final String vcsType = context.getProject().getAttributes().get(VCS_PROVIDER_NAME).get(0);

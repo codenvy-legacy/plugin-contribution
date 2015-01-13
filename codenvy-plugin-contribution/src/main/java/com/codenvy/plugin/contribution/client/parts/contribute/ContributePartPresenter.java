@@ -25,7 +25,7 @@ import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneHandler;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.HostUser;
 import com.codenvy.security.oauth.JsOAuthWindow;
 import com.codenvy.security.oauth.OAuthCallback;
@@ -77,7 +77,7 @@ public class ContributePartPresenter extends BasePresenter
     private final CommitPresenter commitPresenter;
 
     /** The repository host. */
-    private final RepositoryHost repositoryHost;
+    private final VcsHostingService vcsHostingService;
 
     /** The fork creation step. */
     private final ForkCreationStep forkCreationStep;
@@ -95,7 +95,7 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final NotificationHelper notificationHelper,
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final CommitPresenter commitPresenter,
-                                   @Nonnull final RepositoryHost repositoryHost,
+                                   @Nonnull final VcsHostingService vcsHostingService,
                                    @Nonnull final ForkCreationStep forkCreationStep,
                                    @Nonnull @Named("restContext") final String baseUrl,
                                    @Nonnull final EventBus eventBus) {
@@ -104,7 +104,7 @@ public class ContributePartPresenter extends BasePresenter
         this.notificationHelper = notificationHelper;
         this.appContext = appContext;
         this.commitPresenter = commitPresenter;
-        this.repositoryHost = repositoryHost;
+        this.vcsHostingService = vcsHostingService;
         this.forkCreationStep = forkCreationStep;
         this.baseUrl = baseUrl;
         this.configuration = dtoFactory.createDto(Configuration.class);
@@ -168,7 +168,7 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onOpenOnRepositoryHost() {
-        Window.open(repositoryHost.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
+        Window.open(vcsHostingService.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
                                                       context.getPullRequestIssueNumber()), "", "");
     }
 
@@ -248,7 +248,7 @@ public class ContributePartPresenter extends BasePresenter
             @Override
             public void onAuthenticated(final OAuthStatus authStatus) {
                 // maybe it's possible to avoid this request if authStatus contains the vcs host user.
-                repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+                vcsHostingService.getUserInfo(new AsyncCallback<HostUser>() {
                     @Override
                     public void onFailure(final Throwable exception) {
                         final String exceptionMessage = exception.getMessage();
@@ -274,7 +274,7 @@ public class ContributePartPresenter extends BasePresenter
      * Retrieves the VCS host user info. If the user is not authenticated on the VCS host an authentication is performed.
      */
     private void getVCSHostUserInfoWithAuthentication() {
-        repositoryHost.getUserInfo(new AsyncCallback<HostUser>() {
+        vcsHostingService.getUserInfo(new AsyncCallback<HostUser>() {
             @Override
             public void onFailure(final Throwable exception) {
                 final String exceptionMessage = exception.getMessage();

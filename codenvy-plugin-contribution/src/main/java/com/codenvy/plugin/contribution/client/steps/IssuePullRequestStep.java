@@ -17,7 +17,7 @@ import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
@@ -37,7 +37,7 @@ public class IssuePullRequestStep implements Step {
     private static final String EXISTING_PULL_REQUEST_MESSAGE = "A pull request already exists for ";
 
     /** The host repository. */
-    private final RepositoryHost repositoryHost;
+    private final VcsHostingService vcsHostingService;
 
     /** The following step. */
     private final Step nextStep;
@@ -52,12 +52,12 @@ public class IssuePullRequestStep implements Step {
     private final EventBus eventBus;
 
     @Inject
-    public IssuePullRequestStep(@Nonnull final RepositoryHost repositoryHost,
+    public IssuePullRequestStep(@Nonnull final VcsHostingService vcsHostingService,
                                 @Nonnull final GenerateReviewFactory nextStep,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final ContributeMessages messages,
                                 @Nonnull final EventBus eventBus) {
-        this.repositoryHost = repositoryHost;
+        this.vcsHostingService = vcsHostingService;
         this.nextStep = nextStep;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
@@ -76,7 +76,7 @@ public class IssuePullRequestStep implements Step {
         final Notification notification = new Notification(messages.stepIssuePullRequestIssuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        repositoryHost.createPullRequest(owner, repository, title, headBranch, baseBranch, body, new AsyncCallback<PullRequest>() {
+        vcsHostingService.createPullRequest(owner, repository, title, headBranch, baseBranch, body, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest result) {
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));

@@ -17,7 +17,7 @@ import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -41,19 +41,19 @@ public class AddForkRemoteStep implements Step {
     private final ContributeMessages messages;
 
     /** The remote repository host. */
-    private final RepositoryHost repositoryHost;
+    private final VcsHostingService vcsHostingService;
 
     /** Notification helper. */
     private final NotificationHelper notificationHelper;
 
     @Inject
     public AddForkRemoteStep(@Nonnull final VcsService vcsService,
-                             @Nonnull final RepositoryHost repositoryHost,
+                             @Nonnull final VcsHostingService vcsHostingService,
                              @Nonnull final PushBranchOnForkStep nextStep,
                              @Nonnull final ContributeMessages messages,
                              @Nonnull final NotificationHelper notificationHelper) {
         this.vcsService = vcsService;
-        this.repositoryHost = repositoryHost;
+        this.vcsHostingService = vcsHostingService;
         this.nextStep = nextStep;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
@@ -61,7 +61,7 @@ public class AddForkRemoteStep implements Step {
 
     @Override
     public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        final String remoteUrl = repositoryHost.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+        final String remoteUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
 
         checkRemotePresent(context, config, remoteUrl);
     }

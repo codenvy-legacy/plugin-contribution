@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Represents a repository host
  */
-public interface RepositoryHost {
+public interface VcsHostingService {
     /**
      * Add a comment to a pull request.
      *

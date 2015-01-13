@@ -17,7 +17,7 @@ import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
@@ -34,7 +34,7 @@ import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.S
  */
 public class ForkCreationStep implements Step {
     /** The repository host. */
-    private final RepositoryHost repositoryHost;
+    private final VcsHostingService vcsHostingService;
 
     /** I18n messages. */
     private final ContributeMessages messages;
@@ -44,11 +44,11 @@ public class ForkCreationStep implements Step {
     private final EventBus           eventBus;
 
     @Inject
-    public ForkCreationStep(@Nonnull final RepositoryHost repositoryHost,
+    public ForkCreationStep(@Nonnull final VcsHostingService vcsHostingService,
                             @Nonnull final ContributeMessages messages,
                             @Nonnull final NotificationHelper notificationHelper,
                             @Nonnull final EventBus eventBus) {
-        this.repositoryHost = repositoryHost;
+        this.vcsHostingService = vcsHostingService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
         this.eventBus = eventBus;
@@ -60,7 +60,7 @@ public class ForkCreationStep implements Step {
         final String repository = context.getOriginRepositoryName();
 
         // get list of forks existing for origin repository
-        repositoryHost.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
+        vcsHostingService.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository fork) {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
@@ -87,7 +87,7 @@ public class ForkCreationStep implements Step {
                 new Notification(messages.stepForkCreationCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        repositoryHost.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
+        vcsHostingService.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository result) {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));

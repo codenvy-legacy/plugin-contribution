@@ -14,7 +14,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.IssueComment;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -29,7 +29,7 @@ public class AddReviewFactoryLinkStep implements Step {
     private final Step nextStep;
 
     /** The remote VCS repository. */
-    private final RepositoryHost repository;
+    private final VcsHostingService repository;
 
     /** The i18n-able messages. */
     private final ContributeMessages messages;
@@ -39,13 +39,13 @@ public class AddReviewFactoryLinkStep implements Step {
 
     @Inject
     public AddReviewFactoryLinkStep(@Nonnull final ProposePersistStep nextStep,
-                                    @Nonnull final RepositoryHost repositoryHost,
+                                    @Nonnull final VcsHostingService vcsHostingService,
                                     @Nonnull final ContributeMessages messages,
                                     @Nonnull final NotificationHelper notificationHelper) {
         this.messages = messages;
         this.notificationHelper = notificationHelper;
         this.nextStep = nextStep;
-        this.repository = repositoryHost;
+        this.repository = vcsHostingService;
     }
 
     @Override

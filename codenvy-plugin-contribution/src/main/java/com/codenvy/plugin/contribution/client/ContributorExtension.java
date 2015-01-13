@@ -27,7 +27,7 @@ import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -65,7 +65,7 @@ public class ContributorExtension {
     private final String                  baseUrl;
     private final AppContext              appContext;
     private final NotificationHelper      notificationHelper;
-    private final RepositoryHost          repositoryHost;
+    private final VcsHostingService       vcsHostingService;
     private final ContributePartPresenter contributePartPresenter;
     private final ProjectServiceClient    projectService;
     private final DtoFactory              dtoFactory;
@@ -80,7 +80,7 @@ public class ContributorExtension {
                                 final @Named("restContext") String baseUrl,
                                 final AppContext appContext,
                                 final NotificationHelper notificationHelper,
-                                final RepositoryHost repositoryHost,
+                                final VcsHostingService vcsHostingService,
                                 final ContributePartPresenter contributePartPresenter,
                                 final ProjectServiceClient projectService,
                                 final DtoFactory dtoFactory,
@@ -91,7 +91,7 @@ public class ContributorExtension {
         this.baseUrl = baseUrl;
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
-        this.repositoryHost = repositoryHost;
+        this.vcsHostingService = vcsHostingService;
         this.contributePartPresenter = contributePartPresenter;
         this.projectService = projectService;
         this.dtoFactory = dtoFactory;
@@ -152,8 +152,8 @@ public class ContributorExtension {
                     // save origin repository name & owner in context
                     if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
                         final String resultRemoteUrl = remote.getUrl();
-                        final String repositoryName = repositoryHost.getRepositoryNameFromUrl(resultRemoteUrl);
-                        final String repositoryOwner = repositoryHost.getRepositoryOwnerFromUrl(resultRemoteUrl);
+                        final String repositoryName = vcsHostingService.getRepositoryNameFromUrl(resultRemoteUrl);
+                        final String repositoryOwner = vcsHostingService.getRepositoryOwnerFromUrl(resultRemoteUrl);
 
                         context.setOriginRepositoryOwner(repositoryOwner);
                         context.setOriginRepositoryName(repositoryName);
@@ -165,7 +165,7 @@ public class ContributorExtension {
                             contributePartPresenter.setClonedBranch(clonedBranch);
                         }
 
-                        final String remoteUrl = repositoryHost.makeHttpRemoteUrl(repositoryOwner, repositoryName);
+                        final String remoteUrl = vcsHostingService.makeHttpRemoteUrl(repositoryOwner, repositoryName);
                         contributePartPresenter.setRepositoryUrl(remoteUrl);
 
                         onDefaultRemoteReceived(project);

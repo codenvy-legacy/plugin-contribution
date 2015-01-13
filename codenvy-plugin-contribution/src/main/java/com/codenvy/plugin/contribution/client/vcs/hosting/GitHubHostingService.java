@@ -36,9 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link RepositoryHost} implementation for GitHub.
+ * {@link VcsHostingService} implementation for GitHub.
  */
-public class GitHubHost implements RepositoryHost {
+public class GitHubHostingService implements VcsHostingService {
     private static final String SSH_URL_PREFIX                = "git@github.com:";
     private static final String HTTPS_URL_PREFIX              = "https://github.com/";
     private static final RegExp REPOSITORY_NAME_OWNER_PATTERN = RegExp.compile("([^/]+)/([^.]+)");
@@ -53,10 +53,10 @@ public class GitHubHost implements RepositoryHost {
     private final UrlTemplates urlTemplates;
 
     @Inject
-    public GitHubHost(final DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                      final DtoFactory dtoFactory,
-                      final GitHubClientService gitHubClientService,
-                      final UrlTemplates urlTemplates) {
+    public GitHubHostingService(final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                                final DtoFactory dtoFactory,
+                                final GitHubClientService gitHubClientService,
+                                final UrlTemplates urlTemplates) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
@@ -201,7 +201,7 @@ public class GitHubHost implements RepositoryHost {
     public void commentPullRequest(@Nonnull final String username, @Nonnull final String repository,
                                    @Nonnull final String pullRequestId, @Nonnull final String commentText,
                                    @Nonnull final AsyncCallback<IssueComment> callback) {
-        final GitHubIssueCommentInput input = GitHubHost.this.dtoFactory.createDto(GitHubIssueCommentInput.class);
+        final GitHubIssueCommentInput input = GitHubHostingService.this.dtoFactory.createDto(GitHubIssueCommentInput.class);
         input.withBody(commentText);
         final Unmarshallable<GitHubIssueComment> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubIssueComment.class);
         gitHubClientService
@@ -210,7 +210,7 @@ public class GitHubHost implements RepositoryHost {
                     @Override
                     protected void onSuccess(GitHubIssueComment result) {
                         if (result != null) {
-                            final IssueComment comment = GitHubHost.this.dtoFactory.createDto(IssueComment.class);
+                            final IssueComment comment = GitHubHostingService.this.dtoFactory.createDto(IssueComment.class);
                             comment.withId(result.getId()).withUrl(result.getUrl()).withBody(result.getBody());
                         } else {
                             callback.onFailure(new Exception("No pull request comment."));
@@ -233,7 +233,7 @@ public class GitHubHost implements RepositoryHost {
                                   @Nonnull final String body,
                                   @Nonnull final AsyncCallback<PullRequest> callback) {
 
-        final GitHubPullRequestInput input = GitHubHost.this.dtoFactory.createDto(GitHubPullRequestInput.class);
+        final GitHubPullRequestInput input = GitHubHostingService.this.dtoFactory.createDto(GitHubPullRequestInput.class);
         input.withTitle(title).withHead(headBranch).withBase(baseBranch).withBody(body);
         final Unmarshallable<GitHubPullRequest> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubPullRequest.class);
         gitHubClientService.createPullRequest(owner, repository, input, new AsyncRequestCallback<GitHubPullRequest>(unmarshaller) {
@@ -241,7 +241,7 @@ public class GitHubHost implements RepositoryHost {
             @Override
             protected void onSuccess(final GitHubPullRequest result) {
                 if (result != null) {
-                    final PullRequest pr = GitHubHost.this.dtoFactory.createDto(PullRequest.class);
+                    final PullRequest pr = GitHubHostingService.this.dtoFactory.createDto(PullRequest.class);
                     pr.withId(result.getId()).withNumber(result.getNumber()).withState(result.getState()).withUrl(result.getUrl())
                       .withHtmlUrl(result.getHtmlUrl());
                     callback.onSuccess(pr);
