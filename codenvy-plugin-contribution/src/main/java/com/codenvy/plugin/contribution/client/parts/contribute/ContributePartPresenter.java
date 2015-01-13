@@ -329,6 +329,12 @@ public class ContributePartPresenter extends BasePresenter
                 view.setIssuePullRequestStatus(event.isSuccess());
                 if (event.isSuccess()) {
                     view.showStatusSectionFooter();
+
+                    view.setBranchNameEnabled(false);
+                    view.setContributionTitleEnabled(false);
+                    view.setContributionCommentEnabled(false);
+
+                    view.setContributeButtonMessage(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
                 }
             }
             break;

@@ -82,7 +82,6 @@
 
         .contributeButton {
             align-self: flex-end;
-            width: 120px;
         }
 
         .step {

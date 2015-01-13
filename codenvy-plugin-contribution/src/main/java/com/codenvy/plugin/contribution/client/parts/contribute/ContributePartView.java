@@ -55,12 +55,38 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     String getContributionTitle();
 
     /**
+     * Sets the enabled/disabled state of the branch name field.
+     *
+     */
+    void setBranchNameEnabled(boolean enabled);
+
+    /**
+     * Sets the enabled/disabled state of the contribution comment field.
+     *
+     */
+    void setContributionCommentEnabled(boolean enabled);
+
+    /**
+     * Sets the enabled/disabled state of the contribution title field.
+     *
+     */
+    void setContributionTitleEnabled(boolean enabled);
+
+    /**
      * Sets the enabled/disabled state of the "Contribute" button.
      *
      * @param enabled
      *         true to enable, false to disable
      */
     void setContributeEnabled(boolean enabled);
+
+    /**
+     * Sets the message displayed into the "Contribute" button.
+     *
+     * @param message
+     *         the message to display
+     */
+    void setContributeButtonMessage(String message);
 
     /**
      * Sets the branch name input error state.

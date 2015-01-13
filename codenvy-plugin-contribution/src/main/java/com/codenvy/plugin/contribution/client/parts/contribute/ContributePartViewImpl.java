@@ -144,6 +144,11 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
+    public void setContributeButtonMessage(String message) {
+        contributeButton.setText(message);
+    }
+
+    @Override
     public String getBranchName() {
         return branchName.getValue();
     }
@@ -156,6 +161,21 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @Override
     public String getContributionTitle() {
         return contributionTitle.getValue();
+    }
+
+    @Override
+    public void setBranchNameEnabled(final boolean enabled) {
+        branchName.setEnabled(enabled);
+    }
+
+    @Override
+    public void setContributionCommentEnabled(final boolean enabled) {
+        contributionComment.setEnabled(enabled);
+    }
+
+    @Override
+    public void setContributionTitleEnabled(final boolean enabled) {
+        contributionTitle.setEnabled(enabled);
     }
 
     @Override
