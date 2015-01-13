@@ -102,7 +102,7 @@ public class ContributorExtension {
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
             public void onProjectOpened(final ProjectActionEvent event) {
-                initContributeMode(event);
+                preInitContributeMode(event);
             }
 
             @Override
@@ -112,20 +112,85 @@ public class ContributorExtension {
         });
     }
 
-    /**
-     * Initialize contributor environment
-     *
-     * @param event
-     *         the load event.
-     */
-    private void initContributeMode(final ProjectActionEvent event) {
+
+    private void preInitContributeMode(final ProjectActionEvent event) {
         final ProjectDescriptor project = event.getProject();
-        final Map<String, List<String>> attributes = project.getAttributes();
 
         if (appContext.getFactory() != null) {
-            persistContribFactoryAttributesToProject(appContext.getFactory(), project, attributes);
+            initContributeModeWithFactory(appContext.getFactory(), project);
+        } else {
+            initContributeModeWithProjectAttributes(project);
         }
+    }
 
+
+    private void initContributeModeWithFactory(final Factory factory, final ProjectDescriptor project) {
+
+        final Map<String, List<String>> attributes = project.getAttributes();
+
+        if (factory.getProject() != null && factory.getProject().getAttributes() != null) {
+            Map<String, List<String>> attributesFromFactory = factory.getProject().getAttributes();
+            if (attributesFromFactory.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+
+                setTheContributionFlag(attributes, attributesFromFactory.get(ATTRIBUTE_CONTRIBUTE_KEY));
+
+                setTheClonedBranch(attributes, factory);
+
+                persistToProjectAttributes(project, attributes, new AsyncRequestCallback<ProjectDescriptor>(dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
+                    @Override
+                    protected void onSuccess(ProjectDescriptor result) {
+                        initContributeModeWithProjectAttributes(result);
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable exception) {
+                        notificationHelper.showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
+                                                                         exception.getMessage()), exception);
+                    }
+                });
+            }
+
+        }
+    }
+
+    private void setTheContributionFlag(final Map<String, List<String>> attributesToUpdate, List<String> contributeFlagFromFactory) {
+        attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_KEY, contributeFlagFromFactory);
+    }
+
+    private void setTheClonedBranch(final Map<String, List<String>> attributesToUpdate, final Factory factory) {
+        Map<String, String> parametersMap = factory.getSource().getProject().getParameters();
+        for (String parameter : parametersMap.keySet()) {
+            if ("branch".equals(parameter)) {
+                List<String> clonedBranchAttribute = Arrays.asList(parametersMap.get(parameter));
+                attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_BRANCH, clonedBranchAttribute);
+                break;
+            }
+        }
+    }
+
+    private void persistToProjectAttributes(final ProjectDescriptor currentProject, final Map<String, List<String>> attributesToUpdate, AsyncRequestCallback<ProjectDescriptor> updateCallback) {
+        ProjectUpdate projectToUpdate = dtoFactory.createDto(ProjectUpdate.class);
+        copyProjectInfo(currentProject, projectToUpdate);
+        projectToUpdate.setAttributes(attributesToUpdate);
+
+        projectService.updateProject(currentProject.getPath(), projectToUpdate, updateCallback);
+    }
+
+    private void copyProjectInfo(ProjectDescriptor projectDescriptor, ProjectUpdate projectUpdate) {
+        projectUpdate.setType(projectDescriptor.getType());
+        projectUpdate.setDescription(projectDescriptor.getDescription());
+        projectUpdate.setAttributes(projectDescriptor.getAttributes());
+        projectUpdate.setRunners(projectDescriptor.getRunners());
+        projectUpdate.setBuilders(projectDescriptor.getBuilders());
+    }
+
+
+    /**
+     * Initialize contributor environment
+     */
+    private void initContributeModeWithProjectAttributes(final ProjectDescriptor project) {
+
+        final Map<String, List<String>> attributes = project.getAttributes();
 
         if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
             return;
@@ -141,10 +206,11 @@ public class ContributorExtension {
         // Start init of the contribute workflow
         if (!appContext.getCurrentUser().isUserPermanent()) {
             authenticateWithVCSHost();
+            return;
         }
 
         // get origin repository's URL from default remote
-        vcsService.listRemotes(event.getProject(), new AsyncCallback<List<Remote>>() {
+        vcsService.listRemotes(project, new AsyncCallback<List<Remote>>() {
             @Override
             public void onSuccess(final List<Remote> result) {
                 for (final Remote remote : result) {
@@ -176,68 +242,9 @@ public class ContributorExtension {
 
             @Override
             public void onFailure(final Throwable exception) {
-                notificationHelper.showError(ContributorExtension.class, exception);
+                notificationHelper.showError(ContributorExtension.class, messages.contributorExtensionErrorSetupOriginRepository(exception.getMessage()), exception);
             }
         });
-    }
-
-
-    private void persistContribFactoryAttributesToProject(final Factory factory, final ProjectDescriptor project,
-                                                          final Map<String, List<String>> attributesToUpdate) {
-        if (factory.getProject() != null && factory.getProject().getAttributes() != null) {
-            Map<String, List<String>> attributesFromFactory = factory.getProject().getAttributes();
-            if (attributesFromFactory.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
-
-                setTheContributionFlag(attributesToUpdate, attributesFromFactory.get(ATTRIBUTE_CONTRIBUTE_KEY));
-
-                setTheClonedBranch(attributesToUpdate, factory);
-
-                persistToProjectAttributes(project, attributesToUpdate);
-            }
-
-        }
-    }
-
-    private void setTheContributionFlag(final Map<String, List<String>> attributesToUpdate, List<String> contributeFlagFromFactory) {
-        attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_KEY, contributeFlagFromFactory);
-    }
-
-    private void setTheClonedBranch(final Map<String, List<String>> attributesToUpdate, final Factory factory) {
-        Map<String, String> parametersMap = factory.getSource().getProject().getParameters();
-        for (String parameter : parametersMap.keySet()) {
-            if ("branch".equals(parameter)) {
-                List<String> clonedBranchAttribute = Arrays.asList(parametersMap.get(parameter));
-                attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_BRANCH, clonedBranchAttribute);
-                break;
-            }
-        }
-    }
-
-    private void persistToProjectAttributes(final ProjectDescriptor currentProject, final Map<String, List<String>> attributesToUpdate) {
-        ProjectUpdate projectToUpdate = dtoFactory.createDto(ProjectUpdate.class);
-        copyProjectInfo(currentProject, projectToUpdate);
-        projectToUpdate.setAttributes(attributesToUpdate);
-
-        projectService.updateProject(currentProject.getPath(), projectToUpdate, new AsyncRequestCallback<ProjectDescriptor>(
-                dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
-            @Override
-            protected void onSuccess(ProjectDescriptor result) {
-            }
-
-            @Override
-            protected void onFailure(Throwable exception) {
-                notificationHelper.showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
-                        exception.getMessage()), exception);
-            }
-        });
-    }
-
-    private void copyProjectInfo(ProjectDescriptor projectDescriptor, ProjectUpdate projectUpdate) {
-        projectUpdate.setType(projectDescriptor.getType());
-        projectUpdate.setDescription(projectDescriptor.getDescription());
-        projectUpdate.setAttributes(projectDescriptor.getAttributes());
-        projectUpdate.setRunners(projectDescriptor.getRunners());
-        projectUpdate.setBuilders(projectDescriptor.getBuilders());
     }
 
 

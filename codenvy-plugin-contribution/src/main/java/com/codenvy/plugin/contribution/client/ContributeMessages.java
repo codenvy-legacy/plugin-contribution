@@ -207,4 +207,7 @@ public interface ContributeMessages extends Messages {
 
     @Key("contributor.extension.error.updating.contribution.attributes")
     String contributorExtensionErrorUpdatingContributionAttributes(String exceptionMessage);
+
+    @Key("contributor.extension.error.setOriginRepository")
+    String contributorExtensionErrorSetupOriginRepository(String message);
 }
