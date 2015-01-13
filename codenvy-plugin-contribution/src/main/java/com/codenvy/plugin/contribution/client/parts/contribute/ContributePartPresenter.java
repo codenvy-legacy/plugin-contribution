@@ -19,7 +19,7 @@ import com.codenvy.ide.util.Config;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
-import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
+import com.codenvy.plugin.contribution.client.steps.ForkCreationStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneHandler;
@@ -79,8 +79,8 @@ public class ContributePartPresenter extends BasePresenter
     /** The repository host. */
     private final RepositoryHost repositoryHost;
 
-    /** The remote fork step. */
-    private final RemoteForkStep remoteForkStep;
+    /** The fork creation step. */
+    private final ForkCreationStep forkCreationStep;
 
     /** The rest context base url. */
     private final String baseUrl;
@@ -96,7 +96,7 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final CommitPresenter commitPresenter,
                                    @Nonnull final RepositoryHost repositoryHost,
-                                   @Nonnull final RemoteForkStep remoteForkStep,
+                                   @Nonnull final ForkCreationStep forkCreationStep,
                                    @Nonnull @Named("restContext") final String baseUrl,
                                    @Nonnull final EventBus eventBus) {
         this.view = view;
@@ -105,7 +105,7 @@ public class ContributePartPresenter extends BasePresenter
         this.appContext = appContext;
         this.commitPresenter = commitPresenter;
         this.repositoryHost = repositoryHost;
-        this.remoteForkStep = remoteForkStep;
+        this.forkCreationStep = forkCreationStep;
         this.baseUrl = baseUrl;
         this.configuration = dtoFactory.createDto(Configuration.class);
         this.context = context;
@@ -308,7 +308,7 @@ public class ContributePartPresenter extends BasePresenter
                      .withPullRequestComment(view.getContributionComment())
                      .withContributionTitle(view.getContributionTitle());
 
-        remoteForkStep.execute(context, configuration); // parallel with the other steps
+        forkCreationStep.execute(context, configuration); // parallel with the other steps
         renameWorkBranchStep.execute(context, configuration);
     }
 

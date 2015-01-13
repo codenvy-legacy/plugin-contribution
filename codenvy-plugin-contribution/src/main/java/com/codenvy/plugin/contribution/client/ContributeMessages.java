@@ -137,19 +137,19 @@ public interface ContributeMessages extends Messages {
     String stepAddForkRemoteErrorCheckRemote();
 
     /*
-     * Remote fork step
+     * Fork creation step
      */
-    @Key("step.remote.fork.use.existing.fork")
-    String stepRemoteForkUseExistingFork();
+    @Key("step.fork.creation.use.existing.fork")
+    String stepForkCreationUseExistingFork();
 
-    @Key("step.remote.fork.create.fork")
-    String stepRemoteForkCreateFork(String username, String repository);
+    @Key("step.fork.creation.create.fork")
+    String stepForkCreationCreateFork(String username, String repository);
 
-    @Key("step.remote.fork.request.fork.creation")
-    String stepRemoteForkRequestedForkCreation(String owner, String repository);
+    @Key("step.fork.creation.request.fork.creation")
+    String stepForkCreationRequestForkCreation(String owner, String repository);
 
-    @Key("step.remote.fork.error.creating.fork")
-    String stepRemoteForkErrorCreatingFork(String owner, String repository, String message);
+    @Key("step.fork.creation.error.creating.fork")
+    String stepForkCreationErrorCreatingFork(String owner, String repository, String message);
 
     /*
      * Push branch fork step

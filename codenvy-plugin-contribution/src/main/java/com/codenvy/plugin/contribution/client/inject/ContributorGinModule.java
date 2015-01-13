@@ -17,11 +17,11 @@ import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartVie
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartViewImpl;
 import com.codenvy.plugin.contribution.client.steps.AddForkRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.AddReviewFactoryLinkStep;
+import com.codenvy.plugin.contribution.client.steps.ForkCreationStep;
 import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactory;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.ProposePersistStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
-import com.codenvy.plugin.contribution.client.steps.RemoteForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.value.Context;
@@ -62,7 +62,7 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(PushBranchOnForkStep.class);
         bind(RenameWorkBranchStep.class);
         bind(AddForkRemoteStep.class);
-        bind(RemoteForkStep.class);
+        bind(ForkCreationStep.class);
         install(new GinFactoryModuleBuilder().build(WaitForkOnRemoteStepFactory.class));
     }
 }

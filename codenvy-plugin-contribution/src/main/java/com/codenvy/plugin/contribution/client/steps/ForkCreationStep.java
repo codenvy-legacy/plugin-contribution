@@ -32,7 +32,7 @@ import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.S
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
  */
-public class RemoteForkStep implements Step {
+public class ForkCreationStep implements Step {
     /** The repository host. */
     private final RepositoryHost repositoryHost;
 
@@ -44,10 +44,10 @@ public class RemoteForkStep implements Step {
     private final EventBus           eventBus;
 
     @Inject
-    public RemoteForkStep(@Nonnull final RepositoryHost repositoryHost,
-                          @Nonnull final ContributeMessages messages,
-                          @Nonnull final NotificationHelper notificationHelper,
-                          @Nonnull final EventBus eventBus) {
+    public ForkCreationStep(@Nonnull final RepositoryHost repositoryHost,
+                            @Nonnull final ContributeMessages messages,
+                            @Nonnull final NotificationHelper notificationHelper,
+                            @Nonnull final EventBus eventBus) {
         this.repositoryHost = repositoryHost;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
@@ -66,7 +66,7 @@ public class RemoteForkStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
 
                 context.setForkedRepositoryName(fork.getName());
-                notificationHelper.showInfo(messages.stepRemoteForkUseExistingFork());
+                notificationHelper.showInfo(messages.stepForkCreationUseExistingFork());
             }
 
             @Override
@@ -77,14 +77,14 @@ public class RemoteForkStep implements Step {
                 }
 
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
-                notificationHelper.showError(RemoteForkStep.class, exception);
+                notificationHelper.showError(ForkCreationStep.class, exception);
             }
         });
     }
 
     private void createFork(final Context context, final String repositoryOwner, final String repositoryName) {
         final Notification notification =
-                new Notification(messages.stepRemoteForkCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
+                new Notification(messages.stepForkCreationCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
         repositoryHost.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
@@ -94,16 +94,16 @@ public class RemoteForkStep implements Step {
 
                 context.setForkedRepositoryName(result.getName());
                 notificationHelper
-                        .finishNotification(messages.stepRemoteForkRequestedForkCreation(repositoryOwner, repositoryName), notification);
+                        .finishNotification(messages.stepForkCreationRequestForkCreation(repositoryOwner, repositoryName), notification);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
 
-                final String errorMessage = messages.stepRemoteForkErrorCreatingFork(repositoryOwner, repositoryName,
-                                                                                     exception.getMessage());
-                notificationHelper.finishNotificationWithError(RemoteForkStep.class, errorMessage, notification);
+                final String errorMessage = messages.stepForkCreationErrorCreatingFork(repositoryOwner, repositoryName,
+                                                                                       exception.getMessage());
+                notificationHelper.finishNotificationWithError(ForkCreationStep.class, errorMessage, notification);
             }
         });
     }
