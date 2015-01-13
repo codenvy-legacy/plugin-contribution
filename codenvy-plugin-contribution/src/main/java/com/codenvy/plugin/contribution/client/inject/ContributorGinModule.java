@@ -20,7 +20,6 @@ import com.codenvy.plugin.contribution.client.steps.AddReviewFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.ForkCreationStep;
 import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactory;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
-import com.codenvy.plugin.contribution.client.steps.ProposePersistStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
@@ -55,7 +54,6 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(Context.class).in(Singleton.class);
 
         // the steps
-        bind(ProposePersistStep.class);
         bind(AddReviewFactoryLinkStep.class);
         bind(GenerateReviewFactory.class);
         bind(IssuePullRequestStep.class);
