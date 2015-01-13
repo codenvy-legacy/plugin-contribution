@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcshost;
+package com.codenvy.plugin.contribution.client.vcs.hosting;
 
 import com.google.gwt.i18n.client.Messages;
 

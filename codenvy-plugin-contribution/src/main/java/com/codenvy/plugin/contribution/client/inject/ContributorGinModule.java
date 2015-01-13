@@ -27,8 +27,8 @@ import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcshost.GitHubHost;
-import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.GitHubHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 

@@ -8,33 +8,18 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcshost.dto;
+package com.codenvy.plugin.contribution.client.vcs.hosting;
 
-import com.codenvy.dto.shared.DTO;
+/**
+ * exception raised when trying to get a fork of a repository for a user and no fork being found.
+ */
+public class NoUserForkException extends Exception {
 
-@DTO
-public interface HostUser {
-    String getId();
 
-    void setId(String id);
+    private static final long serialVersionUID = 1L;
 
-    HostUser withId(String id);
+    public NoUserForkException(String user) {
+        super("No fork for user: " + user);
+    }
 
-    String getName();
-
-    void setName(String name);
-
-    HostUser withName(String name);
-
-    String getLogin();
-
-    void setLogin(String login);
-
-    HostUser withLogin(String login);
-
-    String getUrl();
-
-    void setUrl(String url);
-
-    HostUser withUrl(String url);
 }

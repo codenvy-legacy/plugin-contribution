@@ -16,9 +16,9 @@ import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcshost.NoUserForkException;
-import com.codenvy.plugin.contribution.client.vcshost.RepositoryHost;
-import com.codenvy.plugin.contribution.client.vcshost.dto.Repository;
+import com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException;
+import com.codenvy.plugin.contribution.client.vcs.hosting.RepositoryHost;
+import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
 

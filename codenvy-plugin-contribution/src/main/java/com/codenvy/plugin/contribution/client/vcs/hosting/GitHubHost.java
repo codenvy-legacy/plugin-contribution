@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcshost;
+package com.codenvy.plugin.contribution.client.vcs.hosting;
 
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
@@ -22,10 +22,10 @@ import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
-import com.codenvy.plugin.contribution.client.vcshost.dto.HostUser;
-import com.codenvy.plugin.contribution.client.vcshost.dto.IssueComment;
-import com.codenvy.plugin.contribution.client.vcshost.dto.PullRequest;
-import com.codenvy.plugin.contribution.client.vcshost.dto.Repository;
+import com.codenvy.plugin.contribution.client.vcs.hosting.dto.HostUser;
+import com.codenvy.plugin.contribution.client.vcs.hosting.dto.IssueComment;
+import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link com.codenvy.plugin.contribution.client.vcshost.RepositoryHost} implementation for GitHub.
+ * {@link RepositoryHost} implementation for GitHub.
  */
 public class GitHubHost implements RepositoryHost {
     private static final String SSH_URL_PREFIX                = "git@github.com:";
