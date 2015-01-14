@@ -10,11 +10,17 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.plugin.contribution.client.value.Configuration;
-import com.codenvy.plugin.contribution.client.value.Context;
-
 import javax.annotation.Nonnull;
 
+/**
+ * Contract for a step in the contribution workflow.
+ */
 public interface Step {
-    void execute(@Nonnull Context context, @Nonnull Configuration config);
+    /**
+     * Execute this step.
+     *
+     * @param workflow
+     *         the contributors workflow.
+     */
+    void execute(@Nonnull final ContributorWorkflow workflow);
 }

@@ -14,7 +14,6 @@ import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -28,19 +27,10 @@ import java.util.List;
  * Renames the current branch with the one provided by the user.
  */
 public class RenameWorkBranchStep implements Step {
-    /** Factory for dialogs. */
-    private final DialogFactory dialogFactory;
-
-    /** The following step. */
-    private final Step nextStep;
-
-    /** The service for VCS operations. */
-    private final VcsService vcsService;
-
-    /** I18n-able messages. */
+    private final DialogFactory      dialogFactory;
+    private final Step               addForkRemoteStep;
+    private final VcsService         vcsService;
     private final ContributeMessages messages;
-
-    /** Helper to work with notification. */
     private final NotificationHelper notificationHelper;
 
     @Inject
@@ -51,33 +41,24 @@ public class RenameWorkBranchStep implements Step {
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final WaitForkOnRemoteStepFactory waitRemoteStepFactory) {
         this.dialogFactory = dialogFactory;
-        this.nextStep = waitRemoteStepFactory.create(addForkRemoteStep);
+        this.addForkRemoteStep = waitRemoteStepFactory.create(addForkRemoteStep);
         this.vcsService = vcsService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
     }
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        final String newBranchName = config.getBranchName();
-        if (newBranchName.equals(context.getWorkBranchName())) {
-            // already done, proceed
-            proceed(context, config);
-        } else {
-            checkExistAndRename(newBranchName, context, config);
-        }
-    }
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        final Context context = workflow.getContext();
+        final String newBranchName = workflow.getConfiguration().getBranchName();
 
-    /**
-     * Continue with the following step.
-     *
-     * @param context
-     *         the contribution context
-     * @param config
-     *         the configuration
-     */
-    private void proceed(final Context context, final Configuration config) {
-        nextStep.execute(context, config);
+        if (newBranchName.equals(context.getWorkBranchName())) {
+            workflow.setStep(addForkRemoteStep);
+            workflow.executeStep();
+
+        } else {
+            checkExistAndRename(workflow, newBranchName, context);
+        }
     }
 
     /**
@@ -87,10 +68,8 @@ public class RenameWorkBranchStep implements Step {
      *         the provided branch name
      * @param context
      *         the contribution context
-     * @param config
-     *         the contribution configuration
      */
-    private void checkExistAndRename(final String branchName, final Context context, final Configuration config) {
+    private void checkExistAndRename(final ContributorWorkflow workflow, final String branchName, final Context context) {
         vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
             @Override
             public void onSuccess(final List<Branch> result) {
@@ -108,7 +87,7 @@ public class RenameWorkBranchStep implements Step {
                                                           });
                     }
                 }
-                doRename(branchName, context, config);
+                doRename(workflow, branchName, context);
 
             }
 
@@ -119,23 +98,15 @@ public class RenameWorkBranchStep implements Step {
         });
     }
 
-    /**
-     * Rename the branch.
-     *
-     * @param branchName
-     *         the provided name
-     * @param context
-     *         the contribution context
-     * @param config
-     *         the contribution configuration
-     */
-    private void doRename(final String branchName, final Context context, final Configuration config) {
+    private void doRename(final ContributorWorkflow workflow, final String branchName, final Context context) {
         vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 notificationHelper.showInfo(messages.stepRenameWorkBranchLocalBranchRenamed(branchName));
                 context.setWorkBranchName(branchName);
-                proceed(context, config);
+
+                workflow.setStep(addForkRemoteStep);
+                workflow.executeStep();
             }
 
             @Override
@@ -143,6 +114,5 @@ public class RenameWorkBranchStep implements Step {
                 notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorRenameLocalBranch());
             }
         });
-
     }
 }

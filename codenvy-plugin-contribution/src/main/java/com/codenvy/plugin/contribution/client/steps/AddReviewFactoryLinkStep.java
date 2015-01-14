@@ -12,7 +12,6 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.IssueComment;
@@ -25,78 +24,53 @@ import javax.inject.Inject;
  * Adds a factory link to the contribution in a comment of the pull request.
  */
 public class AddReviewFactoryLinkStep implements Step {
-    /** The following step. */
-    private final Step nextStep;
-
-    /** The remote VCS repository. */
-    private final VcsHostingService repository;
-
-    /** The i18n-able messages. */
+    private final VcsHostingService  vcsHostingService;
     private final ContributeMessages messages;
-
-    /** Helper to work with notifications. */
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public AddReviewFactoryLinkStep(@Nonnull final ProposePersistStep nextStep,
-                                    @Nonnull final VcsHostingService vcsHostingService,
+    public AddReviewFactoryLinkStep(@Nonnull final VcsHostingService vcsHostingService,
                                     @Nonnull final ContributeMessages messages,
                                     @Nonnull final NotificationHelper notificationHelper) {
         this.messages = messages;
         this.notificationHelper = notificationHelper;
-        this.nextStep = nextStep;
-        this.repository = vcsHostingService;
+        this.vcsHostingService = vcsHostingService;
     }
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        if (context.getReviewFactoryUrl() == null) {
-            proceed(context, config);
-
-        } else {
-            // post the comment
-            sendComment(context, config, context.getReviewFactoryUrl());
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        final String reviewFactoryUrl = workflow.getContext().getReviewFactoryUrl();
+        if (reviewFactoryUrl != null) {
+            sendComment(workflow, reviewFactoryUrl);
         }
     }
 
     /**
      * Post the comment in the pull request.
      *
-     * @param context
-     *         the context of the contribution
-     * @param config
-     *         the configuration of the contribution
+     * @param workflow
+     *         the contributor workflow.
      * @param factoryUrl
      *         the factory URL to include in the comment
      */
-    private void sendComment(final Context context, final Configuration config, final String factoryUrl) {
+    private void sendComment(final ContributorWorkflow workflow, final String factoryUrl) {
+        final Context context = workflow.getContext();
         final String commentText = messages.stepAddReviewFactoryLinkPullRequestComment(factoryUrl);
-        repository.commentPullRequest(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
-                                      context.getPullRequestIssueNumber(), commentText, new AsyncCallback<IssueComment>() {
-                    @Override
-                    public void onSuccess(final IssueComment result) {
-                        proceed(context, config);
-                    }
 
-                    @Override
-                    public void onFailure(final Throwable exception) {
-                        notificationHelper.showWarning(messages.stepAddReviewFactoryLinkErrorPostingFactoryLink(factoryUrl));
+        vcsHostingService.commentPullRequest(context.getOriginRepositoryOwner(),
+                                             context.getOriginRepositoryName(),
+                                             context.getPullRequestIssueNumber(),
+                                             commentText,
+                                             new AsyncCallback<IssueComment>() {
+                                                 @Override
+                                                 public void onSuccess(final IssueComment result) {
+                                                 }
 
-                        // continue anyway, this is not a hard failure
-                        proceed(context, config);
-                    }
-                });
-    }
-
-    /**
-     * Continue to the following step.
-     *
-     * @param context
-     *         the context of the contribution
-     * @param config
-     *         the configuration of the contribution
-     */
-    private void proceed(final Context context, final Configuration config) {
-        nextStep.execute(context, config);
+                                                 @Override
+                                                 public void onFailure(final Throwable exception) {
+                                                     notificationHelper.showWarning(
+                                                             messages.stepAddReviewFactoryLinkErrorPostingFactoryLink(factoryUrl));
+                                                 }
+                                             });
     }
 }

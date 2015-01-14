@@ -13,17 +13,23 @@ package com.codenvy.plugin.contribution.client.inject;
 import com.codenvy.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitView;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitViewImpl;
+import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartView;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartViewImpl;
 import com.codenvy.plugin.contribution.client.steps.AddForkRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.AddReviewFactoryLinkStep;
+import com.codenvy.plugin.contribution.client.steps.AuthenticateUserStep;
+import com.codenvy.plugin.contribution.client.steps.AuthorizeCodenvyOnVCSHostStep;
+import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
+import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
+import com.codenvy.plugin.contribution.client.steps.CreateWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.ForkCreationStep;
-import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactory;
+import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactoryStep;
+import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowStep;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
-import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.GitHubHostingService;
@@ -49,13 +55,17 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // bind the part view
         bind(ContributePartView.class).to(ContributePartViewImpl.class);
-
-        // the contribution context singleton
-        bind(Context.class).in(Singleton.class);
+        bind(ContributePartPresenter.class).in(Singleton.class);
 
         // the steps
+        bind(ContributorWorkflow.class).in(Singleton.class);
+        bind(AuthenticateUserStep.class);
+        bind(InitializeWorkflowStep.class);
+        bind(CreateWorkBranchStep.class);
+        bind(CommitWorkingTreeStep.class);
+        bind(AuthorizeCodenvyOnVCSHostStep.class);
         bind(AddReviewFactoryLinkStep.class);
-        bind(GenerateReviewFactory.class);
+        bind(GenerateReviewFactoryStep.class);
         bind(IssuePullRequestStep.class);
         bind(PushBranchOnForkStep.class);
         bind(RenameWorkBranchStep.class);

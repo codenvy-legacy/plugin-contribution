@@ -13,7 +13,6 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -28,46 +27,39 @@ import java.util.List;
  * Adds the forked remote repository to the remotes of the project.
  */
 public class AddForkRemoteStep implements Step {
-    /** The local name of the forked repository remote. */
     private final static String FORK_REMOTE_NAME = "fork";
 
-    /** The service for VCS operations. */
-    private final VcsService vcsService;
-
-    /** The following step. */
-    private final Step nextStep;
-
-    /** I18n-able messages. */
+    private final VcsService         vcsService;
+    private final Step               pushBranchOnForkStep;
     private final ContributeMessages messages;
-
-    /** The remote repository host. */
-    private final VcsHostingService vcsHostingService;
-
-    /** Notification helper. */
+    private final VcsHostingService  vcsHostingService;
     private final NotificationHelper notificationHelper;
 
     @Inject
     public AddForkRemoteStep(@Nonnull final VcsService vcsService,
                              @Nonnull final VcsHostingService vcsHostingService,
-                             @Nonnull final PushBranchOnForkStep nextStep,
+                             @Nonnull final PushBranchOnForkStep pushBranchOnForkStep,
                              @Nonnull final ContributeMessages messages,
                              @Nonnull final NotificationHelper notificationHelper) {
         this.vcsService = vcsService;
         this.vcsHostingService = vcsHostingService;
-        this.nextStep = nextStep;
+        this.pushBranchOnForkStep = pushBranchOnForkStep;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
     }
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        final Context context = workflow.getContext();
         final String remoteUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
 
-        checkRemotePresent(context, config, remoteUrl);
+        checkRemotePresent(workflow, remoteUrl);
     }
 
-    private void checkRemotePresent(final Context context, final Configuration config, final String remoteUrl) {
-        vcsService.listRemotes(context.getProject(), new AsyncCallback<List<Remote>>() {
+    private void checkRemotePresent(final ContributorWorkflow workflow, final String remoteUrl) {
+        final Context context = workflow.getContext();
+
+        vcsService.listRemotes(workflow.getContext().getProject(), new AsyncCallback<List<Remote>>() {
             @Override
             public void onSuccess(final List<Remote> result) {
                 for (final Remote remote : result) {
@@ -75,15 +67,16 @@ public class AddForkRemoteStep implements Step {
                         context.setForkedRemoteName(FORK_REMOTE_NAME);
                         if (remoteUrl.equals(remote.getUrl())) {
                             // all is correct, continue
-                            proceed(context, config);
+                            proceed(workflow);
+
                         } else {
-                            replaceRemote(context, config, remoteUrl);
+                            replaceRemote(workflow, remoteUrl);
                         }
                         // leave the method, do not go to addRemote(...)
                         return;
                     }
                 }
-                addRemote(context, config, remoteUrl);
+                addRemote(workflow, remoteUrl);
             }
 
             @Override
@@ -96,19 +89,19 @@ public class AddForkRemoteStep implements Step {
     /**
      * Add the remote to the project.
      *
-     * @param context
-     *         the contribution context
-     * @param config
-     *         the contribution configuration
+     * @param workflow
+     *         the {@link com.codenvy.plugin.contribution.client.steps.ContributorWorkflow}.
      * @param remoteUrl
      *         the url of the remote
      */
-    private void addRemote(final Context context, final Configuration config, final String remoteUrl) {
+    private void addRemote(final ContributorWorkflow workflow, final String remoteUrl) {
+        final Context context = workflow.getContext();
+
         vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void notUsed) {
                 context.setForkedRemoteName(FORK_REMOTE_NAME);
-                proceed(context, config);
+                proceed(workflow);
             }
 
             @Override
@@ -121,18 +114,18 @@ public class AddForkRemoteStep implements Step {
     /**
      * Removes the fork remote from the project before adding it with the correct URL.
      *
-     * @param context
-     *         the contribution context
-     * @param config
-     *         the contribution configuration
+     * @param contributorWorkflow
+     *         the {@link com.codenvy.plugin.contribution.client.steps.ContributorWorkflow}.
      * @param remoteUrl
      *         the url of the remote
      */
-    private void replaceRemote(final Context context, final Configuration config, final String remoteUrl) {
+    private void replaceRemote(final ContributorWorkflow contributorWorkflow, final String remoteUrl) {
+        final Context context = contributorWorkflow.getContext();
+
         vcsService.deleteRemote(context.getProject(), FORK_REMOTE_NAME, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                addRemote(context, config, remoteUrl);
+                addRemote(contributorWorkflow, remoteUrl);
             }
 
             @Override
@@ -142,15 +135,8 @@ public class AddForkRemoteStep implements Step {
         });
     }
 
-    /**
-     * Continue to the following step.
-     *
-     * @param context
-     *         the contribution context
-     * @param config
-     *         the contribution configuration
-     */
-    private void proceed(final Context context, final Configuration config) {
-        nextStep.execute(context, config);
+    private void proceed(final ContributorWorkflow workflow) {
+        workflow.setStep(pushBranchOnForkStep);
+        workflow.executeStep();
     }
 }

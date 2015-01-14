@@ -28,7 +28,6 @@ import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
-import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.http.client.Header;
@@ -51,58 +50,33 @@ import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBU
 /**
  * Generates a factory for the contribution reviewer.
  */
-public class GenerateReviewFactory implements Step {
-    /** The following step. */
-    private final Step nextStep;
-
-    /** The following step when failing. */
-    private final Step failureNextStep;
-
-    /** The i18n-able messages. */
-    private final ContributeMessages messages;
-
-    /** Template for building api urls. */
-    private final ApiUrlTemplate apiTemplate;
-
-    /** The DTO factory. */
-    private final DtoFactory dtoFactory;
-
-    /** Factory for async requests. */
-    private final AsyncRequestFactory asyncRequestFactory;
-
-    /** Unmarshaller for DTOs. */
+public class GenerateReviewFactoryStep implements Step {
+    private final Step                   addReviewFactoryLinkStep;
+    private final ContributeMessages     messages;
+    private final ApiUrlTemplate         apiTemplate;
+    private final DtoFactory             dtoFactory;
+    private final AsyncRequestFactory    asyncRequestFactory;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-
-    /** The app context. */
-    private final AppContext appContext;
-
-    /** The remote VCS repository. */
-    private final VcsHostingService vcsHostingService;
-
-    /** The notification manager. */
-    private final NotificationHelper notificationHelper;
+    private final AppContext             appContext;
+    private final VcsHostingService      vcsHostingService;
+    private final NotificationHelper     notificationHelper;
 
     @Inject
-    public GenerateReviewFactory(@Nonnull final AddReviewFactoryLinkStep nextStep,
-                                 @Nonnull final ProposePersistStep failureNextStep,
-                                 @Nonnull final ApiUrlTemplate apiUrlTemplate,
-                                 @Nonnull final ContributeMessages messages,
-                                 @Nonnull final DtoFactory dtoFactory,
-                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                                 @Nonnull final AsyncRequestFactory asyncRequestFactory,
-                                 @Nonnull final AppContext appContext,
-                                 @Nonnull final VcsHostingService vcsHostingService,
-                                 @Nonnull final NotificationHelper notificationHelper) {
-        this.nextStep = nextStep;
-        this.failureNextStep = failureNextStep;
-
+    public GenerateReviewFactoryStep(@Nonnull final AddReviewFactoryLinkStep addReviewFactoryLinkStep,
+                                     @Nonnull final ApiUrlTemplate apiUrlTemplate,
+                                     @Nonnull final ContributeMessages messages,
+                                     @Nonnull final DtoFactory dtoFactory,
+                                     @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                                     @Nonnull final AsyncRequestFactory asyncRequestFactory,
+                                     @Nonnull final AppContext appContext,
+                                     @Nonnull final VcsHostingService vcsHostingService,
+                                     @Nonnull final NotificationHelper notificationHelper) {
+        this.addReviewFactoryLinkStep = addReviewFactoryLinkStep;
         this.apiTemplate = apiUrlTemplate;
         this.messages = messages;
-
         this.asyncRequestFactory = asyncRequestFactory;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
-
         this.appContext = appContext;
         this.vcsHostingService = vcsHostingService;
         this.notificationHelper = notificationHelper;
@@ -127,8 +101,8 @@ public class GenerateReviewFactory implements Step {
     }-*/;
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        createFactory(context, new AsyncCallback<Factory>() {
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        createFactory(workflow.getContext(), new AsyncCallback<Factory>() {
             @Override
             public void onSuccess(final Factory factory) {
                 // find factory URL inside factory
@@ -140,48 +114,18 @@ public class GenerateReviewFactory implements Step {
                         break;
                     }
                 }
-                if (factoryUrl == null) {
-                    recover(context, config, messages.stepGenerateReviewFactoryErrorCreateFactory());
-                } else {
-                    // store the factory url in the context
-                    context.setReviewFactoryUrl(factoryUrl);
-
-                    // continue workflow
-                    proceed(context, config);
+                if (factoryUrl != null) {
+                    workflow.getContext().setReviewFactoryUrl(factoryUrl);
+                    workflow.setStep(addReviewFactoryLinkStep);
+                    workflow.executeStep();
                 }
             }
 
             @Override
             public void onFailure(final Throwable caught) {
-                recover(context, config, messages.stepGenerateReviewFactoryErrorCreateFactory());
+                notificationHelper.showWarning(messages.stepGenerateReviewFactoryErrorCreateFactory());
             }
         });
-    }
-
-    /**
-     * Continue to the following step.
-     *
-     * @param context
-     *         the context of the contribution
-     * @param config
-     *         the configuration of the contribution
-     */
-    private void proceed(final Context context, final Configuration config) {
-        nextStep.execute(context, config);
-    }
-
-    /**
-     * Continue to the step that is next when this one failed.
-     *
-     * @param context
-     *         the context of the contribution
-     * @param config
-     *         the configuration of the contribution
-     */
-    private void recover(final Context context, final Configuration config, final String cause) {
-        notificationHelper.showWarning(cause);
-        // continue anyway, this is not a hard failure
-        failureNextStep.execute(context, config);
     }
 
     private void createFactory(final Context context, final AsyncCallback<Factory> callback) {

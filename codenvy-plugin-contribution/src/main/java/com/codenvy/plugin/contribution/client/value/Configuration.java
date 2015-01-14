@@ -13,7 +13,7 @@ package com.codenvy.plugin.contribution.client.value;
 import com.codenvy.dto.shared.DTO;
 
 /**
- * Contribution configuration, which contains the values choosen by the user.
+ * Contribution configuration, which contains the values chosen by the user.
  */
 @DTO
 public interface Configuration {
@@ -24,11 +24,11 @@ public interface Configuration {
 
     Configuration withBranchName(String name);
 
-    String getPullRequestComment();
+    String getContributionComment();
 
-    void setPullRequestComment(String comment);
+    void setContributionComment(String comment);
 
-    Configuration withPullRequestComment(String comment);
+    Configuration withContributionComment(String comment);
 
     String getContributionTitle();
 

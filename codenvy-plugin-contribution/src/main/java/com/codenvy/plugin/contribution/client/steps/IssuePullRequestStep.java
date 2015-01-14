@@ -38,42 +38,35 @@ public class IssuePullRequestStep implements Step {
     private static final String DEFAULT_BASE_BRANCH           = "master";
     private static final String EXISTING_PULL_REQUEST_MESSAGE = "A pull request already exists for ";
 
-    /** The host repository. */
-    private final VcsHostingService vcsHostingService;
-
-    /** The following step. */
-    private final Step nextStep;
-
-    /** The notification helper. */
+    private final VcsHostingService  vcsHostingService;
+    private final Step               generateReviewFactoryStep;
     private final NotificationHelper notificationHelper;
-
-    /** The internationalizable messages. */
     private final ContributeMessages messages;
-
-    /** The event bus. */
-    private final EventBus eventBus;
+    private final EventBus           eventBus;
 
     @Inject
     public IssuePullRequestStep(@Nonnull final VcsHostingService vcsHostingService,
-                                @Nonnull final GenerateReviewFactory nextStep,
+                                @Nonnull final GenerateReviewFactoryStep generateReviewFactoryStepStep,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final ContributeMessages messages,
                                 @Nonnull final EventBus eventBus) {
         this.vcsHostingService = vcsHostingService;
-        this.nextStep = nextStep;
+        this.generateReviewFactoryStep = generateReviewFactoryStepStep;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
         this.eventBus = eventBus;
     }
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        final Context context = workflow.getContext();
+        final Configuration configuration = workflow.getConfiguration();
         final String owner = context.getOriginRepositoryOwner();
         final String repository = context.getOriginRepositoryName();
-        final String title = config.getContributionTitle();
+        final String title = configuration.getContributionTitle();
         final String baseBranch = context.getClonedBranchName() != null ? context.getClonedBranchName() : DEFAULT_BASE_BRANCH;
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
-        final String body = config.getPullRequestComment();
+        final String body = configuration.getContributionComment();
 
         final Notification notification = new Notification(messages.stepIssuePullRequestIssuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
@@ -86,7 +79,9 @@ public class IssuePullRequestStep implements Step {
 
                 context.setPullRequestIssueNumber(result.getNumber());
                 notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(result.getHtmlUrl()), notification);
-                onPullRequestCreated(context, config);
+
+                workflow.setStep(generateReviewFactoryStep);
+                workflow.executeStep();
             }
 
             @Override
@@ -98,18 +93,16 @@ public class IssuePullRequestStep implements Step {
                     notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch),
                                                                      notification);
 
+                    workflow.setStep(generateReviewFactoryStep);
+                    workflow.executeStep();
+
                 } else {
-                    eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
-                    notificationHelper
-                            .finishNotificationWithError(IssuePullRequestStep.class, messages.stepIssuePullRequestErrorCreatePullRequest(),
-                                                         notification);
+                    notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
+                                                                   messages.stepIssuePullRequestErrorCreatePullRequest(),
+                                                                   notification);
                 }
             }
         });
 
-    }
-
-    protected void onPullRequestCreated(final Context context, final Configuration config) {
-        nextStep.execute(context, config);
     }
 }

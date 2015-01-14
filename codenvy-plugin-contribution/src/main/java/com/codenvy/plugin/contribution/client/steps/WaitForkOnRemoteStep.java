@@ -11,7 +11,6 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
-import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
@@ -27,20 +26,12 @@ import java.util.List;
 import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.CREATE_FORK;
 
 public class WaitForkOnRemoteStep implements Step {
-    /** The frequency of the checks on the remote. */
     private static final int POLL_FREQUENCY_MS = 1000;
 
-    /** The remote repository host. */
     private final VcsHostingService vcsHostingService;
-
-    /** The following step. */
-    private final Step nextStep;
-
-    /** The event bus. */
-    private final EventBus eventBus;
-
-    /** The timer used for waiting. */
-    private Timer timer;
+    private final Step              nextStep;
+    private final EventBus          eventBus;
+    private       Timer             timer;
 
     @AssistedInject
     public WaitForkOnRemoteStep(@Nonnull final VcsHostingService host,
@@ -52,27 +43,27 @@ public class WaitForkOnRemoteStep implements Step {
     }
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
-        check(context, config);
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        check(workflow);
     }
 
-    private void wait(final Context context, final Configuration config) {
+    private void wait(final ContributorWorkflow workflow) {
         if (timer == null) {
             timer = new Timer() {
                 @Override
                 public void run() {
-                    checkRepository(context, new AsyncCallback<Void>() {
+                    checkRepository(workflow.getContext(), new AsyncCallback<Void>() {
                         @Override
                         public void onFailure(final Throwable caught) {
-                            check(context, config);
+                            check(workflow);
                         }
 
                         @Override
                         public void onSuccess(final Void result) {
                             eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
 
-                            context.setForkReady(true);
-                            check(context, config);
+                            workflow.getContext().setForkReady(true);
+                            check(workflow);
                         }
                     });
                 }
@@ -81,11 +72,12 @@ public class WaitForkOnRemoteStep implements Step {
         timer.schedule(POLL_FREQUENCY_MS);
     }
 
-    private void check(final Context context, final Configuration config) {
-        if (context.getForkReady()) {
-            nextStep.execute(context, config);
+    private void check(final ContributorWorkflow workflow) {
+        if (workflow.getContext().getForkReady()) {
+            workflow.setStep(nextStep);
+            workflow.executeStep();
         } else {
-            wait(context, config);
+            wait(workflow);
         }
     }
 

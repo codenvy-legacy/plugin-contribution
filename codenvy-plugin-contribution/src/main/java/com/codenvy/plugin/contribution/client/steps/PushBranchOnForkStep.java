@@ -14,7 +14,6 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
-import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -32,28 +31,19 @@ import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.S
  * Push the local contribution branch on the user fork.
  */
 public class PushBranchOnForkStep implements Step {
-    /** The next step. */
-    private final Step nextStep;
-
-    /** The vcs service. */
-    private final VcsService vcsService;
-
-    /** The notification helper. */
+    private final Step               issuePullRequestStep;
+    private final VcsService         vcsService;
     private final NotificationHelper notificationHelper;
-
-    /** The i18-n messages. */
     private final ContributeMessages messages;
-
-    /** The event bus. */
-    private final EventBus eventBus;
+    private final EventBus           eventBus;
 
     @Inject
-    public PushBranchOnForkStep(@Nonnull final IssuePullRequestStep nextStep,
+    public PushBranchOnForkStep(@Nonnull final IssuePullRequestStep issuePullRequestStep,
                                 @Nonnull final VcsService vcsService,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @NotNull final ContributeMessages messages,
                                 @NotNull final EventBus eventBus) {
-        this.nextStep = nextStep;
+        this.issuePullRequestStep = issuePullRequestStep;
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
@@ -61,7 +51,9 @@ public class PushBranchOnForkStep implements Step {
     }
 
     @Override
-    public void execute(@Nonnull final Context context, @Nonnull final Configuration config) {
+    public void execute(@Nonnull final ContributorWorkflow workflow) {
+        final Context context = workflow.getContext();
+
         final Notification notification = new Notification(messages.stepPushBranchPushingBranch(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
@@ -69,9 +61,10 @@ public class PushBranchOnForkStep implements Step {
             @Override
             public void onSuccess(final Void result) {
                 eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, true));
-
                 notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(), notification);
-                nextStep.execute(context, config);
+
+                workflow.setStep(issuePullRequestStep);
+                workflow.executeStep();
             }
 
             @Override
