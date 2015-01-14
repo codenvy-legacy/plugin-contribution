@@ -169,8 +169,18 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
+    public void setBranchNameFocus(final boolean focused) {
+        branchName.setFocus(focused);
+    }
+
+    @Override
     public void setContributionCommentEnabled(final boolean enabled) {
         contributionComment.setEnabled(enabled);
+        if (!enabled) {
+            contributionComment.getElement().getStyle().setBackgroundColor("#5a5c5c");
+        } else {
+            contributionComment.getElement().getStyle().clearBackgroundColor();
+        }
     }
 
     @Override

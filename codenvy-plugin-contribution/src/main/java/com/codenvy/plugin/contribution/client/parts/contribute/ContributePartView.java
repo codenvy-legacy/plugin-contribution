@@ -55,6 +55,12 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     String getContributionTitle();
 
     /**
+     * Sets the focused/unfocused state of the branch name field.
+     *
+     */
+    void setBranchNameFocus(boolean focused);
+
+    /**
      * Sets the enabled/disabled state of the branch name field.
      *
      */

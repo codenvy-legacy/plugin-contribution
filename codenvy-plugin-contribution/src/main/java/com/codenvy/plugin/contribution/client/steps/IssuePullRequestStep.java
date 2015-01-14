@@ -15,6 +15,7 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
+import com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.ISSUE_PULL_REQUEST;
+import static com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent.State.START_UPDATE_MODE;
 
 /**
  * Create the pull request on the remote VCS repository.
@@ -80,6 +82,7 @@ public class IssuePullRequestStep implements Step {
             @Override
             public void onSuccess(final PullRequest result) {
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
+                eventBus.fireEvent(new UpdateModeEvent(START_UPDATE_MODE));
 
                 context.setPullRequestIssueNumber(result.getNumber());
                 notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(result.getHtmlUrl()), notification);

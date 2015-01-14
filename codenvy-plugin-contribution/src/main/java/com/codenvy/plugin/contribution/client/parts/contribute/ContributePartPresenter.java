@@ -23,6 +23,8 @@ import com.codenvy.plugin.contribution.client.steps.ForkCreationStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.steps.event.StepDoneHandler;
+import com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent;
+import com.codenvy.plugin.contribution.client.steps.event.UpdateModeHandler;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -48,7 +50,7 @@ import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
  * Part for the contribution configuration.
  */
 public class ContributePartPresenter extends BasePresenter
-        implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler, StepDoneHandler {
+        implements ContributePartView.ActionDelegate, CommitPresenter.CommitActionHandler, StepDoneHandler, UpdateModeHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -115,6 +117,7 @@ public class ContributePartPresenter extends BasePresenter
         this.view.setDelegate(this);
         this.commitPresenter.setCommitActionHandler(this);
         eventBus.addHandler(StepDoneEvent.TYPE, this);
+        eventBus.addHandler(UpdateModeEvent.TYPE, this);
     }
 
     public void open() {
@@ -329,16 +332,30 @@ public class ContributePartPresenter extends BasePresenter
                 view.setIssuePullRequestStatus(event.isSuccess());
                 if (event.isSuccess()) {
                     view.showStatusSectionFooter();
-
-                    view.setBranchNameEnabled(false);
-                    view.setContributionTitleEnabled(false);
-                    view.setContributionCommentEnabled(false);
-
-                    view.setContributeButtonMessage(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
                 }
             }
             break;
+        }
+    }
 
+    @Override
+    public void onUpdateModeChange(UpdateModeEvent event) {
+        switch (event.getState()) {
+            case START_UPDATE_MODE: {
+                view.setBranchNameEnabled(false);
+                view.setContributionTitleEnabled(false);
+                view.setContributionCommentEnabled(false);
+                view.setContributeButtonMessage(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
+            }
+            break;
+            case STOP_UPDATE_MODE: {
+                view.setBranchNameEnabled(true);
+                view.setBranchNameFocus(true);
+                view.setContributionTitleEnabled(true);
+                view.setContributionCommentEnabled(true);
+                view.setContributeButtonMessage(messages.contributePartConfigureContributionSectionButtonContributeText());
+            }
+            break;
         }
     }
 }
