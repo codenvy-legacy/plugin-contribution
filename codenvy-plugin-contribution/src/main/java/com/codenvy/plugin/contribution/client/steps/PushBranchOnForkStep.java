@@ -13,7 +13,7 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
+import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.PUSH_BRANCH;
+import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.PUSH_BRANCH;
 
 /**
  * Push the local contribution branch on the user fork.

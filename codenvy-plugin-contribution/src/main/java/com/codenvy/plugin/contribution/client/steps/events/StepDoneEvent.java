@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.steps.event;
+package com.codenvy.plugin.contribution.client.steps.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 

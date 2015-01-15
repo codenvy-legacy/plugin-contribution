@@ -14,8 +14,8 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
-import com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent;
+import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
+import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -28,8 +28,8 @@ import javax.inject.Inject;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.ISSUE_PULL_REQUEST;
-import static com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent.State.START_UPDATE_MODE;
+import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.ISSUE_PULL_REQUEST;
+import static com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent.State.START_UPDATE_MODE;
 
 /**
  * Create the pull request on the remote VCS repository.

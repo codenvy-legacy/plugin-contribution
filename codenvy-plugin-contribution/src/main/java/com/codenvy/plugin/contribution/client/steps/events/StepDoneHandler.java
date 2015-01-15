@@ -8,21 +8,23 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.steps.event;
+package com.codenvy.plugin.contribution.client.steps.events;
 
 import com.google.gwt.event.shared.EventHandler;
 
 import javax.annotation.Nonnull;
 
 /**
- * Handler for update mode event.
+ * Handler for step event.
+ *
+ * @author Kevin Pollet
  */
-public interface UpdateModeHandler extends EventHandler {
+public interface StepDoneHandler extends EventHandler {
     /**
-     * Called when the contributor workflow switch between the contribute and update mode.
+     * Called when a step is done.
      *
      * @param event
-     *         the {@link com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent}.
+     *         the event.
      */
-    void onUpdateModeChange(@Nonnull UpdateModeEvent event);
+    void onStepDone(@Nonnull StepDoneEvent event);
 }

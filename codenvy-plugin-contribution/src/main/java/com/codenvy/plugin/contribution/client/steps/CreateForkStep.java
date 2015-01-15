@@ -13,7 +13,7 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent;
+import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.Step.CREATE_FORK;
+import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.CREATE_FORK;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
