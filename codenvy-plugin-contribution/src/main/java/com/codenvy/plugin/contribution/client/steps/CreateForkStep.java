@@ -31,7 +31,7 @@ import static com.codenvy.plugin.contribution.client.steps.event.StepDoneEvent.S
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
  */
-public class ForkCreationStep implements Step {
+public class CreateForkStep implements Step {
     private final VcsHostingService  vcsHostingService;
     private final ContributeMessages messages;
     private final NotificationHelper notificationHelper;
@@ -39,11 +39,11 @@ public class ForkCreationStep implements Step {
     private final Step               renameWorkBranchStep;
 
     @Inject
-    public ForkCreationStep(@Nonnull final VcsHostingService vcsHostingService,
-                            @Nonnull final ContributeMessages messages,
-                            @Nonnull final NotificationHelper notificationHelper,
-                            @Nonnull final EventBus eventBus,
-                            @Nonnull final RenameWorkBranchStep renameWorkBranchStep) {
+    public CreateForkStep(@Nonnull final VcsHostingService vcsHostingService,
+                          @Nonnull final ContributeMessages messages,
+                          @Nonnull final NotificationHelper notificationHelper,
+                          @Nonnull final EventBus eventBus,
+                          @Nonnull final RenameWorkBranchStep renameWorkBranchStep) {
         this.vcsHostingService = vcsHostingService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
@@ -63,7 +63,7 @@ public class ForkCreationStep implements Step {
             public void onSuccess(final Repository fork) {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
                 context.setForkedRepositoryName(fork.getName());
-                notificationHelper.showInfo(messages.stepForkCreationUseExistingFork());
+                notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
 
                 workflow.setStep(renameWorkBranchStep);
                 workflow.executeStep();
@@ -77,14 +77,14 @@ public class ForkCreationStep implements Step {
                 }
 
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
-                notificationHelper.showError(ForkCreationStep.class, exception);
+                notificationHelper.showError(CreateForkStep.class, exception);
             }
         });
     }
 
     private void createFork(final ContributorWorkflow workflow, final String repositoryOwner, final String repositoryName) {
         final Notification notification =
-                new Notification(messages.stepForkCreationCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
+                new Notification(messages.stepCreateForkCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
         vcsHostingService.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
@@ -94,7 +94,7 @@ public class ForkCreationStep implements Step {
 
                 workflow.getContext().setForkedRepositoryName(result.getName());
                 notificationHelper
-                        .finishNotification(messages.stepForkCreationRequestForkCreation(repositoryOwner, repositoryName), notification);
+                        .finishNotification(messages.stepCreateForkRequestForkCreation(repositoryOwner, repositoryName), notification);
 
                 workflow.setStep(renameWorkBranchStep);
                 workflow.executeStep();
@@ -105,8 +105,8 @@ public class ForkCreationStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
 
                 final String errorMessage =
-                        messages.stepForkCreationErrorCreatingFork(repositoryOwner, repositoryName, exception.getMessage());
-                notificationHelper.finishNotificationWithError(ForkCreationStep.class, errorMessage, notification);
+                        messages.stepCreateForkErrorCreatingFork(repositoryOwner, repositoryName, exception.getMessage());
+                notificationHelper.finishNotificationWithError(CreateForkStep.class, errorMessage, notification);
             }
         });
     }

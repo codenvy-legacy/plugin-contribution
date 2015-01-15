@@ -46,14 +46,14 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
 
     @Inject
     public AuthorizeCodenvyOnVCSHostStep(@Nonnull @Named("restContext") final String baseUrl,
-                                         @Nonnull final ForkCreationStep forkCreationStep,
+                                         @Nonnull final CreateForkStep createForkStep,
                                          @Nonnull final NotificationHelper notificationHelper,
                                          @Nonnull final VcsHostingService vcsHostingService,
                                          @Nonnull final AppContext appContext,
                                          @Nonnull final ContributeMessages messages,
                                          @Nonnull final ContributePartPresenter contributePartPresenter) {
         this.baseUrl = baseUrl;
-        this.forkCreationStep = forkCreationStep;
+        this.forkCreationStep = createForkStep;
         this.notificationHelper = notificationHelper;
         this.vcsHostingService = vcsHostingService;
         this.appContext = appContext;
