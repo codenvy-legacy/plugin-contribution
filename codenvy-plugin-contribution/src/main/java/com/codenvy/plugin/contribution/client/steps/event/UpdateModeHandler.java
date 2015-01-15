@@ -14,7 +14,15 @@ import com.google.gwt.event.shared.EventHandler;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Handler for update mode event.
+ */
 public interface UpdateModeHandler extends EventHandler {
-
+    /**
+     * Called when the contributor workflow switch between the contribute and update mode.
+     *
+     * @param event
+     *         the {@link com.codenvy.plugin.contribution.client.steps.event.UpdateModeEvent}.
+     */
     void onUpdateModeChange(@Nonnull UpdateModeEvent event);
 }

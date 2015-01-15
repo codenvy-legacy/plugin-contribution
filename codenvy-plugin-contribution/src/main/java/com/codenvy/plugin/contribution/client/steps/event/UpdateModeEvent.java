@@ -12,6 +12,9 @@ package com.codenvy.plugin.contribution.client.steps.event;
 
 import com.google.gwt.event.shared.GwtEvent;
 
+/**
+ * Event sent when the workflow switch between the contribute and update mode.
+ */
 public class UpdateModeEvent extends GwtEvent<UpdateModeHandler> {
     /** Type class used to register this event. */
     public static Type<UpdateModeHandler> TYPE = new Type<>();
