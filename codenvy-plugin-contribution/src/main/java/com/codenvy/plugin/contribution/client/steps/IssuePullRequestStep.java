@@ -90,8 +90,8 @@ public class IssuePullRequestStep implements Step {
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, isExistingPullRequest));
 
                 if (isExistingPullRequest) {
-                    notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch),
-                                                                     notification);
+                    notificationHelper
+                            .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
 
                     workflow.setStep(generateReviewFactoryStep);
                     workflow.executeStep();
