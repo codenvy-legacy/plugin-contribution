@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps.event;
 
-import javax.annotation.Nonnull;
-
 import com.google.gwt.event.shared.EventHandler;
+
+import javax.annotation.Nonnull;
 
 public interface UpdateModeHandler extends EventHandler {
 
