@@ -22,9 +22,6 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.title")
     String contributePartTitle();
 
-    @Key("contribute.part.error.cannot.access.vcs.host")
-    String contributePartErrorCannotAccessVCSHost();
-
     @Key("contribute.part.project.information.section.title")
     String contributePartProjectInformationSectionTitle();
 
@@ -195,6 +192,12 @@ public interface ContributeMessages extends Messages {
 
     @Key("step.issue.pull.request.error.create.pull.request")
     String stepIssuePullRequestErrorCreatePullRequest();
+
+    /*
+     * Authorize Codenvy on VCS Host step
+     */
+    @Key("step.authorize.codenvy.on.vcs.host.error.cannot.access.vcs.host")
+    String stepAutorizeCodenvyOnVCSHostErrorCannotAccessVCSHost();
 
     /*
      * Contributor extension
