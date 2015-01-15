@@ -78,7 +78,7 @@ public class IssuePullRequestStep implements Step {
                 eventBus.fireEvent(new UpdateModeEvent(START_UPDATE_MODE));
 
                 context.setPullRequestIssueNumber(result.getNumber());
-                notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(result.getHtmlUrl()), notification);
+                notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
 
                 workflow.setStep(generateReviewFactoryStep);
                 workflow.executeStep();

@@ -185,7 +185,7 @@ public interface ContributeMessages extends Messages {
      * Issue pull request step
      */
     @Key("step.issue.pull.request.pull.request.created")
-    String stepIssuePullRequestPullRequestCreated(String url);
+    String stepIssuePullRequestPullRequestCreated();
 
     @Key("step.issue.pull.request.issuing.pull.request")
     String stepIssuePullRequestIssuingPullRequest();
