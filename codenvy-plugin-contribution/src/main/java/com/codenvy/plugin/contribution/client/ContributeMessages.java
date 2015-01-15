@@ -58,7 +58,7 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.configure.contribution.section.button.contribute.text")
     String contributePartConfigureContributionSectionButtonContributeText();
 
-    @Key("contribute.part.configure.contribution.section.button.contribute.updatetext")
+    @Key("contribute.part.configure.contribution.section.button.contribute.update.text")
     String contributePartConfigureContributionSectionButtonContributeUpdateText();
 
     @Key("contribute.part.status.section.title")
