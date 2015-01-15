@@ -197,7 +197,7 @@ public interface ContributeMessages extends Messages {
      * Authorize Codenvy on VCS Host step
      */
     @Key("step.authorize.codenvy.on.vcs.host.error.cannot.access.vcs.host")
-    String stepAutorizeCodenvyOnVCSHostErrorCannotAccessVCSHost();
+    String stepAuthorizeCodenvyOnVCSHostErrorCannotAccessVCSHost();
 
     /*
      * Contributor extension

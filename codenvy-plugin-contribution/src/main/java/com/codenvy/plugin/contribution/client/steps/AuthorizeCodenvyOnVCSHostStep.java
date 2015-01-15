@@ -76,7 +76,7 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
                             if (exceptionMessage != null && exceptionMessage.contains(BAD_CREDENTIALS_EXCEPTION_MESSAGE)) {
                                 notificationHelper
                                         .showError(AuthorizeCodenvyOnVCSHostStep.class,
-                                                   messages.stepAutorizeCodenvyOnVCSHostErrorCannotAccessVCSHost());
+                                                   messages.stepAuthorizeCodenvyOnVCSHostErrorCannotAccessVCSHost());
 
                             } else {
                                 notificationHelper.showError(AuthorizeCodenvyOnVCSHostStep.class, exception);
