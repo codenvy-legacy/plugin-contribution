@@ -93,9 +93,6 @@ public class IssuePullRequestStep implements Step {
                     notificationHelper
                             .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
 
-                    workflow.setStep(generateReviewFactoryStep);
-                    workflow.executeStep();
-
                 } else {
                     notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
                                                                    messages.stepIssuePullRequestErrorCreatePullRequest(),
