@@ -89,7 +89,6 @@ public class CreateWorkBranchStep implements Step {
                     @Override
                     public void onSuccess(final String result) {
                         contributePartPresenter.open();
-                        contributePartPresenter.showContributePart();
                         notificationHelper.finishNotification(messages.contributorExtensionWorkBranchCreated(workingBranchName),
                                                               createWorkingBranchNotification);
 

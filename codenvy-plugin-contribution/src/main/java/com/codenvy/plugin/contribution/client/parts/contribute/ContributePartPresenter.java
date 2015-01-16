@@ -80,16 +80,12 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     public void open() {
+        view.reset();
         workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, FIRST);
     }
 
     public void remove() {
         workspaceAgent.removePart(ContributePartPresenter.this);
-    }
-
-    public void showContributePart() {
-        view.reset();
-        workspaceAgent.setActivePart(this);
     }
 
     public void showStatusSection() {
