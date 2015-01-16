@@ -24,6 +24,35 @@ import java.util.List;
  */
 public interface VcsHostingService {
     /**
+     * Get a all pull requests for given owner:repository
+     *
+     * @param username
+     *         the username of the owner.
+     * @param repository
+     *         the repository name.
+     * @param headBranch
+     *         qualified name of pull request
+     * @param callback
+     *         callback called when operation is done.
+     */
+    void getPullRequests(String owner, String repository, AsyncCallback<List<PullRequest>> asyncCallback);
+
+    /**
+     * Get a pull request by qualified name.
+     *
+     * @param username
+     *         the username of the owner.
+     * @param repository
+     *         the repository name.
+     * @param headBranch
+     *         qualified name of pull request
+     * @param callback
+     *         callback called when operation is done.
+     */
+    void getPullRequest(@Nonnull String owner, @Nonnull String repository, @Nonnull String headBranch,
+                            @Nonnull AsyncCallback<PullRequest> callback);
+
+    /**
      * Add a comment to a pull request.
      *
      * @param username

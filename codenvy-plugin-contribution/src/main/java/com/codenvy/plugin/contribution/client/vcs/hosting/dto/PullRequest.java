@@ -68,4 +68,15 @@ public interface PullRequest {
     void setState(String state);
 
     PullRequest withState(String state);
+
+    /**
+     * Get pull request head.
+     *
+     * @return {@link PullRequestHead} head
+     */
+    PullRequestHead getHead();
+
+    void setHead(PullRequestHead head);
+
+    PullRequest withHead(PullRequestHead head);
 }

@@ -76,6 +76,12 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.status.section.button.open.on.github.text")
     String contributePartStatusSectionButtonOpenOnGithubText();
 
+    @Key("contribute.part.configure.contribution.dialog.update.title")
+    String contributePartConfigureContributionDialogUpdateTitle();
+
+    @Key("contribute.part.configure.contribution.dialog.update.text")
+    String contributePartConfigureContributionDialogUpdateText(String branchName);
+
     /*
      * Commit dialog
      */
@@ -162,6 +168,9 @@ public interface ContributeMessages extends Messages {
 
     @Key("step.push.branch.branch.pushed")
     String stepPushBranchBranchPushed();
+
+    @Key("step.push.branch.canceling")
+    String stepPushBranchCanceling();
 
     /*
      * Add review factory link step
