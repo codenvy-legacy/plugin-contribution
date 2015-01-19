@@ -10,14 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import static com.codenvy.ide.api.constraints.Constraints.FIRST;
-import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
@@ -33,6 +25,14 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import static com.codenvy.ide.api.constraints.Constraints.LAST;
+import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
 
 /**
  * Part for the contribution configuration.
@@ -81,7 +81,7 @@ public class ContributePartPresenter extends BasePresenter
 
     public void open() {
         view.reset();
-        workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, FIRST);
+        workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
     }
 
     public void remove() {
