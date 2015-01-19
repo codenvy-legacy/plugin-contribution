@@ -23,7 +23,7 @@ public interface CommitView extends View<CommitView.ActionDelegate> {
     /**
      * Opens the commit view with the given commit description.
      */
-    void show();
+    void show(String commitDescription);
 
     /**
      * Close the commit view.

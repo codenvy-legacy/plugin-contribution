@@ -87,11 +87,12 @@ public class CommitViewImpl extends Window implements CommitView {
     }
 
     @Override
-    public void show() {
+    public void show(@Nonnull String commitDescription) {
+        this.commitDescription.setText(commitDescription);
         new Timer() {
             @Override
             public void run() {
-                commitDescription.setFocus(true);
+                CommitViewImpl.this.commitDescription.setFocus(true);
             }
         }.schedule(300);
         super.show();

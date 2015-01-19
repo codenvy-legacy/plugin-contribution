@@ -17,6 +17,8 @@ import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
+import javax.annotation.Nonnull;
+
 import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CONTINUE;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.OK;
@@ -35,24 +37,26 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     private       CommitActionHandler handler;
 
     @Inject
-    public CommitPresenter(final CommitView view,
-                           final AppContext appContext,
-                           final VcsService vcsService,
-                           final NotificationHelper notificationHelper) {
+    public CommitPresenter(@Nonnull final CommitView view,
+                           @Nonnull final AppContext appContext,
+                           @Nonnull final VcsService vcsService,
+                           @Nonnull final NotificationHelper notificationHelper) {
         this.view = view;
         this.appContext = appContext;
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
 
         this.view.setDelegate(this);
-        this.view.setOkButtonEnabled(false);
     }
 
     /**
      * Opens the {@link com.codenvy.plugin.contribution.client.dialogs.commit.CommitView}.
+     *
+     * @param commitDescription
+     *         the default commit description.
      */
-    public void showView() {
-        view.show();
+    public void showView(@Nonnull String commitDescription) {
+        view.show(commitDescription);
     }
 
     /**

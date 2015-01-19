@@ -10,8 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter;
+import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -24,29 +26,32 @@ import javax.inject.Inject;
  */
 public class CommitWorkingTreeStep implements Step {
     private final CommitPresenter               commitPresenter;
+    private final ContributeMessages            messages;
     private final NotificationHelper            notificationHelper;
     private final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep;
 
     @Inject
     public CommitWorkingTreeStep(@Nonnull final CommitPresenter commitPresenter,
+                                 @Nonnull final ContributeMessages messages,
                                  @Nonnull final NotificationHelper notificationHelper,
                                  @Nonnull final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep) {
         this.commitPresenter = commitPresenter;
+        this.messages = messages;
         this.notificationHelper = notificationHelper;
         this.authorizeCodenvyOnVCSHostStep = authorizeCodenvyOnVCSHostStep;
     }
 
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
-        workflow.setStep(authorizeCodenvyOnVCSHostStep);
+        final Configuration configuration = workflow.getConfiguration();
 
+        workflow.setStep(authorizeCodenvyOnVCSHostStep);
         commitPresenter.setCommitActionHandler(new CommitPresenter.CommitActionHandler() {
             @Override
             public void onCommitAction(CommitAction action) {
                 workflow.executeStep();
             }
         });
-
         commitPresenter.hasUncommittedChanges(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(final Throwable exception) {
@@ -56,7 +61,8 @@ public class CommitWorkingTreeStep implements Step {
             @Override
             public void onSuccess(final Boolean hasUncommittedChanges) {
                 if (hasUncommittedChanges) {
-                    commitPresenter.showView();
+                    commitPresenter.showView(messages.contributorExtensionDefaultCommitDescription(configuration.getBranchName(),
+                                                                                                   configuration.getContributionTitle()));
 
                 } else {
                     workflow.executeStep();

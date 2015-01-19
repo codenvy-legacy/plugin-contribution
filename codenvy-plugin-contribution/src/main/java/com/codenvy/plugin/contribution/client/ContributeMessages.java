@@ -222,4 +222,7 @@ public interface ContributeMessages extends Messages {
 
     @Key("contributor.extension.error.setOriginRepository")
     String contributorExtensionErrorSetupOriginRepository(String message);
+
+    @Key("contributor.extension.default.commit.description")
+    String contributorExtensionDefaultCommitDescription(String branchName, String contributionTitle);
 }
