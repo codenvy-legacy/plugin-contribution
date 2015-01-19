@@ -22,14 +22,14 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.title")
     String contributePartTitle();
 
-    @Key("contribute.part.project.information.section.title")
-    String contributePartProjectInformationSectionTitle();
+    @Key("contribute.part.repository.section.title")
+    String contributePartRepositorySectionTitle();
 
-    @Key("contribute.part.project.information.section.repository.url.label")
-    String contributePartProjectInformationSectionRepositoryUrlLabel();
+    @Key("contribute.part.repository.section.url.label")
+    String contributePartRepositorySectionUrlLabel();
 
-    @Key("contribute.part.project.information.section.repository.cloned.branch.label")
-    String contributePartProjectInformationSectionClonedBranchLabel();
+    @Key("contribute.part.repository.section.cloned.branch.label")
+    String contributePartRepositorySectionClonedBranchLabel();
 
     @Key("contribute.part.configure.contribution.section.title")
     String contributePartConfigureContributionSectionTitle();

@@ -132,15 +132,15 @@
     <g:ScrollPanel>
         <g:HTMLPanel addStyleNames="{style.panel}">
             <g:HTMLPanel addStyleNames="{style.section}">
-                <g:Label addStyleNames="{style.title}" text="{messages.contributePartProjectInformationSectionTitle}"/>
+                <g:Label addStyleNames="{style.title}" text="{messages.contributePartRepositorySectionTitle}"/>
                 <div class="{style.fieldItem} {style.horizontal}">
                     <g:Label addStyleNames="{style.label} {style.left}"
-                             text="{messages.contributePartProjectInformationSectionRepositoryUrlLabel}"/>
+                             text="{messages.contributePartRepositorySectionUrlLabel}"/>
                     <g:Anchor ui:field="repositoryUrl" addStyleNames="{style.field} {style.link}" target="_blank"/>
                 </div>
                 <div class="{style.fieldItem} {style.horizontal}">
                     <g:Label addStyleNames="{style.label} {style.left}"
-                             text="{messages.contributePartProjectInformationSectionClonedBranchLabel}"/>
+                             text="{messages.contributePartRepositorySectionClonedBranchLabel}"/>
                     <g:Label ui:field="clonedBranch" addStyleNames="{style.field}"/>
                 </div>
             </g:HTMLPanel>
