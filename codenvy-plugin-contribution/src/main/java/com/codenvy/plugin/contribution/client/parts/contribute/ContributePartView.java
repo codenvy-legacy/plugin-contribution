@@ -127,6 +127,16 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void showStatusSectionFooter();
 
     /**
+     * Show the new contribution section.
+     */
+    void showNewContributionSection();
+
+    /**
+     * Hide the new contribution section.
+     */
+    void hideNewContributionSection();
+
+    /**
      * Sets the create fork step status.
      *
      * @param success
@@ -154,11 +164,14 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
      * Action delegate interface for the contribution configuration dialog.
      */
     interface ActionDelegate extends BaseActionDelegate {
-        /** Performs any actions appropriate in response to the user having pressed the Contribute button */
+        /** Performs any actions appropriate in response to the user having pressed the Contribute button. */
         void onContribute();
 
-        /** Performs any action appropriate in response to the user having pressed the open on repository host button */
+        /** Performs any action appropriate in response to the user having pressed the open on repository host button. */
         void onOpenOnRepositoryHost();
+
+        /** Performs any action appropriate in response to the user having pressed the start new contribution button. */
+        void onNewContribution();
 
         /** Performs any action when view state is modified. */
         void updateControls();

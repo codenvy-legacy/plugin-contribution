@@ -10,6 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
+import com.codenvy.api.core.rest.shared.dto.Link;
+import com.codenvy.api.factory.dto.Factory;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
@@ -51,7 +54,7 @@ public class ContributePartPresenter extends BasePresenter
     private final ContributeMessages messages;
 
     /** The contributor workflow controller. */
-    private final Provider<ContributorWorkflow> workflowProvider;
+    private final Provider<ContributorWorkflow> workflow;
 
     /** The VCS hosting service. */
     private final VcsHostingService vcsHostingService;
@@ -59,20 +62,25 @@ public class ContributePartPresenter extends BasePresenter
     /** The step to authorize Codenvy on GitHub. */
     private final Provider<CommitWorkingTreeStep> commitWorkingTreeStep;
 
+    /** The application context. */
+    private final AppContext appContext;
+
     @Inject
     public ContributePartPresenter(@Nonnull final ContributePartView view,
                                    @Nonnull final ContributeMessages messages,
                                    @Nonnull final WorkspaceAgent workspaceAgent,
                                    @Nonnull final EventBus eventBus,
-                                   @Nonnull final Provider<ContributorWorkflow> workflowProvider,
+                                   @Nonnull final Provider<ContributorWorkflow> workflow,
                                    @Nonnull final VcsHostingService vcsHostingService,
-                                   @Nonnull final Provider<CommitWorkingTreeStep> commitWorkingTreeStep) {
+                                   @Nonnull final Provider<CommitWorkingTreeStep> commitWorkingTreeStep,
+                                   @Nonnull final AppContext appContext) {
         this.view = view;
         this.workspaceAgent = workspaceAgent;
-        this.workflowProvider = workflowProvider;
+        this.workflow = workflow;
         this.vcsHostingService = vcsHostingService;
         this.messages = messages;
         this.commitWorkingTreeStep = commitWorkingTreeStep;
+        this.appContext = appContext;
 
         this.view.setDelegate(this);
         eventBus.addHandler(StepDoneEvent.TYPE, this);
@@ -105,8 +113,8 @@ public class ContributePartPresenter extends BasePresenter
         view.hideStatusSection();
         view.resetStatusSection();
 
-        // resume the contribution workflowProvider and execute the current step
-        final ContributorWorkflow workflow = workflowProvider.get();
+        // resume the contribution workflow and execute the current step
+        final ContributorWorkflow workflow = this.workflow.get();
         workflow.getConfiguration().setBranchName(view.getBranchName());
         workflow.getConfiguration().setContributionComment(view.getContributionComment());
         workflow.getConfiguration().setContributionTitle(view.getContributionTitle());
@@ -117,15 +125,38 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onOpenOnRepositoryHost() {
-        final Context context = workflowProvider.get().getContext();
+        final Context context = workflow.get().getContext();
 
         Window.open(vcsHostingService.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
                                                          context.getPullRequestIssueNumber()), "", "");
     }
 
     @Override
+    public void onNewContribution() {
+        view.hideStatusSection();
+        view.resetStatusSection();
+        view.hideNewContributionSection();
+
+        final Factory factory = appContext.getFactory();
+        if (factory != null) {
+            String factoryUrl = null;
+            final String createProject = "create-project";
+            for (final Link link : factory.getLinks()) {
+                if (createProject.equals(link.getRel())) {
+                    factoryUrl = link.getHref();
+                    break;
+                }
+            }
+
+            if (factoryUrl != null) {
+                Window.open(factoryUrl, "", "");
+            }
+        }
+    }
+
+    @Override
     public String suggestBranchName() {
-        return workflowProvider.get().getContext().getWorkBranchName();
+        return workflow.get().getContext().getWorkBranchName();
     }
 
     @Override
@@ -195,6 +226,7 @@ public class ContributePartPresenter extends BasePresenter
                 view.setIssuePullRequestStatus(event.isSuccess());
                 if (event.isSuccess()) {
                     view.showStatusSectionFooter();
+                    view.showNewContributionSection();
                 }
             }
             break;

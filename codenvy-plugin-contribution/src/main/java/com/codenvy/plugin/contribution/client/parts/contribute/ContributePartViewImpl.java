@@ -100,6 +100,14 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiField
     Button openOnRepositoryHostButton;
 
+    /** The start new contribution section. */
+    @UiField
+    HTMLPanel newContributionSection;
+
+    /** The new contribution button. */
+    @UiField
+    Button newContributionButton;
+
     @Inject
     public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
                                   @Nonnull final ContributeMessages messages,
@@ -113,6 +121,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         setTitle(messages.contributePartTitle());
 
         this.statusSection.setVisible(false);
+        this.newContributionSection.setVisible(false);
         this.branchName.getElement()
                        .setPropertyString("placeholder", messages.contributePartConfigureContributionSectionBranchNamePlaceholder());
         this.contributionTitle.getElement().setPropertyString("placeholder",
@@ -128,6 +137,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
         hideStatusSection();
         resetStatusSection();
+
+        hideNewContributionSection();
 
         delegate.updateControls();
     }
@@ -250,8 +261,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     private SVGImage getStatusImage(final boolean success) {
         final SVGImage image = new SVGImage(success ? resources.ok() : resources.error());
-        image.getElement().getStyle().setWidth(20, PX);
-        image.getElement().getStyle().setProperty("fill", success ? "#72BE5A" : "#CF3C3E");
+        image.getElement().getStyle().setWidth(15, PX);
+        image.getElement().getStyle().setProperty("fill", success ? "#FFFFFF" : "#CF3C3E");
 
         return image;
     }
@@ -259,6 +270,16 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @Override
     public void showStatusSectionFooter() {
         statusSectionFooter.setVisible(true);
+    }
+
+    @Override
+    public void showNewContributionSection() {
+        newContributionSection.setVisible(true);
+    }
+
+    @Override
+    public void hideNewContributionSection() {
+        newContributionSection.setVisible(false);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -295,6 +316,12 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiHandler("openOnRepositoryHostButton")
     public void openOnRepositoryHostClick(final ClickEvent event) {
         delegate.onOpenOnRepositoryHost();
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("newContributionButton")
+    public void newContributionClick(final ClickEvent event) {
+        delegate.onNewContribution();
     }
 
     @SuppressWarnings("UnusedParameters")

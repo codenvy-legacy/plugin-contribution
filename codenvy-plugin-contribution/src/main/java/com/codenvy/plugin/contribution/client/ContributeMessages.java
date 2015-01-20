@@ -28,8 +28,8 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.repository.section.url.label")
     String contributePartRepositorySectionUrlLabel();
 
-    @Key("contribute.part.repository.section.cloned.branch.label")
-    String contributePartRepositorySectionClonedBranchLabel();
+    @Key("contribute.part.repository.section.branch.cloned.label")
+    String contributePartRepositorySectionBranchClonedLabel();
 
     @Key("contribute.part.configure.contribution.section.title")
     String contributePartConfigureContributionSectionTitle();
@@ -70,11 +70,14 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.status.section.pull.request.issued.label")
     String contributePartStatusSectionPullRequestIssuedLabel();
 
-    @Key("contribute.part.status.section.contribution.issued.label")
-    String contributePartStatusSectionContributionIssuedLabel();
+    @Key("contribute.part.status.section.contribution.created.label")
+    String contributePartStatusSectionContributionCreatedLabel();
 
     @Key("contribute.part.status.section.button.open.on.github.text")
     String contributePartStatusSectionButtonOpenOnGithubText();
+
+    @Key("contribute.part.new.contribution.section.button.new.text")
+    String contributePartNewContributionSectionButtonNewText();
 
     @Key("contribute.part.configure.contribution.dialog.update.title")
     String contributePartConfigureContributionDialogUpdateTitle();

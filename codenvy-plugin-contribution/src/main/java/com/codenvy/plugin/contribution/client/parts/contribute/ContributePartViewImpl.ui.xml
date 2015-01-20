@@ -31,10 +31,11 @@
         .section {
             display: flex;
             flex-direction: column;
-            padding: 0.5em 1.5em;
+            padding: 0.5em 1em 0.5em 1.5em;
         }
 
         .section .title {
+            font-weight: bold;
             font-size: 12px;
             margin-bottom: 1em;
             text-shadow: 0 1px 0 rgba(0, 0, 0, 1);
@@ -83,6 +84,15 @@
 
         .contributeButton {
             align-self: flex-end;
+            width: 100px;
+            height: 25px;
+        }
+
+        .newContributionButton {
+            margin-top: 1em;
+            align-self: center;
+            width: 200px;
+            height: 25px;
         }
 
         .step {
@@ -132,10 +142,18 @@
             width: auto;
             line-height: 20px;
         }
+
+        .section.repository {
+            background: #343434;
+        }
+
+        .repository .fieldItem .field {
+            font-weight: bold;
+        }
     </ui:style>
     <g:ScrollPanel>
         <g:HTMLPanel addStyleNames="{style.panel}">
-            <g:HTMLPanel addStyleNames="{style.section}">
+            <g:HTMLPanel addStyleNames="{style.section} {style.repository}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartRepositorySectionTitle}"/>
                 <div class="{style.fieldItem} {style.horizontal}">
                     <g:Label addStyleNames="{style.label} {style.left}"
@@ -144,7 +162,7 @@
                 </div>
                 <div class="{style.fieldItem} {style.horizontal}">
                     <g:Label addStyleNames="{style.label} {style.left}"
-                             text="{messages.contributePartRepositorySectionClonedBranchLabel}"/>
+                             text="{messages.contributePartRepositorySectionBranchClonedLabel}"/>
                     <g:Label ui:field="clonedBranch" addStyleNames="{style.field}"/>
                 </div>
             </g:HTMLPanel>
@@ -186,10 +204,15 @@
                     <g:SimplePanel addStyleNames="{style.status}" ui:field="issuePullRequestStatus"/>
                 </div>
                 <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
-                    <g:Label addStyleNames="{style.item}" text="{messages.contributePartStatusSectionContributionIssuedLabel}"/>
+                    <g:Label addStyleNames="{style.item}" text="{messages.contributePartStatusSectionContributionCreatedLabel}"/>
                     <g:Button ui:field="openOnRepositoryHostButton" addStyleNames="{style.item}"
                               text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
                 </g:HTMLPanel>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.border}">
+                <g:Button ui:field="newContributionButton"
+                          addStyleNames="{style.newContributionButton} {resources.contributeCss.blueButton}"
+                          text="{messages.contributePartNewContributionSectionButtonNewText}"/>
             </g:HTMLPanel>
         </g:HTMLPanel>
     </g:ScrollPanel>
