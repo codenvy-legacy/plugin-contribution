@@ -44,6 +44,11 @@
             top: 0;
         }
 
+        .section button {
+            height: 25px;
+            padding: 0 20px;
+        }
+
         .fieldItem {
             display: flex;
             flex-direction: column;
@@ -84,15 +89,6 @@
 
         .contributeButton {
             align-self: flex-end;
-            width: 100px;
-            height: 25px;
-        }
-
-        .newContributionButton {
-            margin-top: 1em;
-            align-self: center;
-            width: 200px;
-            height: 25px;
         }
 
         .step {
@@ -150,6 +146,11 @@
         .repository .fieldItem .field {
             font-weight: bold;
         }
+
+        .section.newContribution button {
+            align-self: center;
+            margin-top: 1em;
+        }
     </ui:style>
     <g:ScrollPanel>
         <g:HTMLPanel addStyleNames="{style.panel}">
@@ -205,13 +206,11 @@
                 </div>
                 <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
                     <g:Label addStyleNames="{style.item}" text="{messages.contributePartStatusSectionContributionCreatedLabel}"/>
-                    <g:Button ui:field="openOnRepositoryHostButton" addStyleNames="{style.item}"
-                              text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
                 </g:HTMLPanel>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.border}">
-                <g:Button ui:field="newContributionButton"
-                          addStyleNames="{style.newContributionButton} {resources.contributeCss.blueButton}"
+            <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.newContribution} {style.border}">
+                <g:Button ui:field="openOnRepositoryHostButton" text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
+                <g:Button ui:field="newContributionButton" addStyleNames="{resources.contributeCss.blueButton}"
                           text="{messages.contributePartNewContributionSectionButtonNewText}"/>
             </g:HTMLPanel>
         </g:HTMLPanel>
