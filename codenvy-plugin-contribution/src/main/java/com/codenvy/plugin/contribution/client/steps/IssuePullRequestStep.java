@@ -74,11 +74,12 @@ public class IssuePullRequestStep implements Step {
 
         vcsHostingService.createPullRequest(owner, repository, title, headBranch, baseBranch, body, new AsyncCallback<PullRequest>() {
             @Override
-            public void onSuccess(final PullRequest result) {
+            public void onSuccess(final PullRequest pullRequest) {
+                context.setPullRequestIssueNumber(pullRequest.getNumber());
+
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
                 eventBus.fireEvent(new UpdateModeEvent(START_UPDATE_MODE));
 
-                context.setPullRequestIssueNumber(result.getNumber());
                 notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
 
                 workflow.setStep(generateReviewFactoryStep);
@@ -87,18 +88,33 @@ public class IssuePullRequestStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                final boolean isExistingPullRequest = exception instanceof PullRequestAlreadyExistsException;
-                eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, isExistingPullRequest));
+                if (exception instanceof PullRequestAlreadyExistsException) {
+                    vcsHostingService.getPullRequest(owner, repository, headBranch, new AsyncCallback<PullRequest>() {
+                        @Override
+                        public void onSuccess(final PullRequest pullRequest) {
+                            context.setPullRequestIssueNumber(pullRequest.getNumber());
 
-                if (isExistingPullRequest) {
-                    notificationHelper
-                            .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
+                            eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
+
+                            notificationHelper
+                                    .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
+
+                        }
+
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
+                            notificationHelper.showError(IssuePullRequestStep.class, exception);
+                        }
+                    });
 
                 } else if (exception instanceof NoCommitsInPullRequestException) {
+                    eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
                     notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits(),
                                                                      notification);
 
                 } else {
+                    eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
                     notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
                                                                    messages.stepIssuePullRequestErrorCreatePullRequest(),
                                                                    notification);
