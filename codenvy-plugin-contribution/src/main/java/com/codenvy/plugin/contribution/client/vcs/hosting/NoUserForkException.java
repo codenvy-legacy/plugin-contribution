@@ -10,16 +10,19 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs.hosting;
 
+import javax.annotation.Nonnull;
+
 /**
- * exception raised when trying to get a fork of a repository for a user and no fork being found.
+ * Exception raised when trying to get a fork of a repository for a user and no fork being found.
  */
 public class NoUserForkException extends Exception {
-
-
-    private static final long serialVersionUID = 1L;
-
-    public NoUserForkException(String user) {
+    /**
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException}.
+     *
+     * @param user
+     *         the user.
+     */
+    public NoUserForkException(@Nonnull final String user) {
         super("No fork for user: " + user);
     }
-
 }

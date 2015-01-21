@@ -205,6 +205,9 @@ public interface ContributeMessages extends Messages {
     @Key("step.issue.pull.request.error.create.pull.request")
     String stepIssuePullRequestErrorCreatePullRequest();
 
+    @Key("step.issue.pull.request.error.create.pull.request.without.commits")
+    String stepIssuePullRequestErrorCreatePullRequestWithoutCommits();
+
     /*
      * Authorize Codenvy on VCS Host step
      */

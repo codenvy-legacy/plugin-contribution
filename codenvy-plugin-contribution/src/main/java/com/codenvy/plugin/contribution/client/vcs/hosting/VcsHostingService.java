@@ -24,24 +24,22 @@ import java.util.List;
  */
 public interface VcsHostingService {
     /**
-     * Get a all pull requests for given owner:repository
+     * Get all pull requests for given owner:repository
      *
-     * @param username
+     * @param owner
      *         the username of the owner.
      * @param repository
      *         the repository name.
-     * @param headBranch
-     *         qualified name of pull request
      * @param callback
      *         callback called when operation is done.
      */
-    void getPullRequests(String owner, String repository, AsyncCallback<List<PullRequest>> asyncCallback);
+    void getPullRequests(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<List<PullRequest>> callback);
 
     /**
      * Get a pull request by qualified name.
      *
-     * @param username
-     *         the username of the owner.
+     * @param owner
+     *         the owner.
      * @param repository
      *         the repository name.
      * @param headBranch
@@ -50,7 +48,7 @@ public interface VcsHostingService {
      *         callback called when operation is done.
      */
     void getPullRequest(@Nonnull String owner, @Nonnull String repository, @Nonnull String headBranch,
-                            @Nonnull AsyncCallback<PullRequest> callback);
+                        @Nonnull AsyncCallback<PullRequest> callback);
 
     /**
      * Add a comment to a pull request.

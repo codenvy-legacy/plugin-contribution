@@ -10,11 +10,16 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.vcs.hosting;
 
+import javax.annotation.Nonnull;
+
 public class NoPullRequestException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
-    public NoPullRequestException(String headBranch) {
-        super("No Pull Request for branch " + headBranch);
+    /**
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.client.vcs.hosting.NoPullRequestException}.
+     *
+     * @param branchName
+     *         the branch name.
+     */
+    public NoPullRequestException(@Nonnull final String branchName) {
+        super("No Pull Request for branch " + branchName);
     }
 }

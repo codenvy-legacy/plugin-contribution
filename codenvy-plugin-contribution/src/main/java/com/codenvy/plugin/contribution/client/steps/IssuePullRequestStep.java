@@ -18,6 +18,8 @@ import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcs.hosting.NoCommitsInPullRequestException;
+import com.codenvy.plugin.contribution.client.vcs.hosting.PullRequestAlreadyExistsException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -35,8 +37,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.UpdateModeEven
  * Create the pull request on the remote VCS repository.
  */
 public class IssuePullRequestStep implements Step {
-    private static final String DEFAULT_BASE_BRANCH           = "master";
-    private static final String EXISTING_PULL_REQUEST_MESSAGE = "A pull request already exists for ";
+    private static final String DEFAULT_BASE_BRANCH = "master";
 
     private final VcsHostingService  vcsHostingService;
     private final Step               generateReviewFactoryStep;
@@ -86,12 +87,16 @@ public class IssuePullRequestStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                final boolean isExistingPullRequest = exception.getMessage().contains(EXISTING_PULL_REQUEST_MESSAGE + headBranch);
+                final boolean isExistingPullRequest = exception instanceof PullRequestAlreadyExistsException;
                 eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, isExistingPullRequest));
 
                 if (isExistingPullRequest) {
                     notificationHelper
                             .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
+
+                } else if (exception instanceof NoCommitsInPullRequestException) {
+                    notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits(),
+                                                                     notification);
 
                 } else {
                     notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
@@ -100,6 +105,5 @@ public class IssuePullRequestStep implements Step {
                 }
             }
         });
-
     }
 }
