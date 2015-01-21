@@ -99,7 +99,8 @@ public class PushBranchOnForkStep implements Step {
                     }
                 };
                 ConfirmDialog confirm = dialogFactory.createConfirmDialog(messages.contributePartConfigureContributionDialogUpdateTitle(),
-                                                                          messages.contributePartConfigureContributionDialogUpdateText(result.getHead().getLabel()),
+                                                                          messages.contributePartConfigureContributionDialogUpdateText(
+                                                                                  result.getHead().getLabel()),
                                                                           okCallback, cancelCallback);
                 confirm.show();
             }
