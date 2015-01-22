@@ -113,8 +113,8 @@ public class ContributorExtension {
                 persistToProjectAttributes(project, attributes, new AsyncRequestCallback<ProjectDescriptor>(
                         dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
                     @Override
-                    protected void onSuccess(final ProjectDescriptor result) {
-                        startContributionWorkflow();
+                    protected void onSuccess(final ProjectDescriptor project) {
+                        initContributeModeWithProjectAttributes(project);
                     }
 
                     @Override
