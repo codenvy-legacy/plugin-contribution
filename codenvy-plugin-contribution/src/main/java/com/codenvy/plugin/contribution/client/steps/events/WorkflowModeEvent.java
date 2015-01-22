@@ -15,32 +15,32 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * Event sent when the workflow switch between the contribute and update mode.
  */
-public class UpdateModeEvent extends GwtEvent<UpdateModeHandler> {
+public class WorkflowModeEvent extends GwtEvent<WorkflowModeHandler> {
     /** Type class used to register this event. */
-    public static Type<UpdateModeHandler> TYPE = new Type<>();
+    public static Type<WorkflowModeHandler> TYPE = new Type<>();
 
-    private final State state;
+    private final Mode mode;
 
-    public UpdateModeEvent(final State state) {
-        this.state = state;
+    public WorkflowModeEvent(final Mode mode) {
+        this.mode = mode;
     }
 
     @Override
-    public Type<UpdateModeHandler> getAssociatedType() {
+    public Type<WorkflowModeHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(final UpdateModeHandler handler) {
-        handler.onUpdateModeChange(this);
+    protected void dispatch(final WorkflowModeHandler handler) {
+        handler.onWorkflowModeChange(this);
     }
 
-    public State getState() {
-        return state;
+    public Mode getMode() {
+        return mode;
     }
 
-    public enum State {
-        START_UPDATE_MODE,
-        STOP_UPDATE_MODE
+    public enum Mode {
+        UPDATE,
+        CONTRIBUTE
     }
 }

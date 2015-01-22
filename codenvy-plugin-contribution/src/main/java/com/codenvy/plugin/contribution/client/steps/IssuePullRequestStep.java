@@ -14,7 +14,6 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoCommitsInPullRequestException;
@@ -22,7 +21,6 @@ import com.codenvy.plugin.contribution.client.vcs.hosting.PullRequestAlreadyExis
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -30,7 +28,7 @@ import javax.inject.Inject;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ISSUE_PULL_REQUEST;
-import static com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent.State.START_UPDATE_MODE;
+import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent.Mode.UPDATE;
 
 /**
  * Create the pull request on the remote VCS repository.
@@ -42,19 +40,16 @@ public class IssuePullRequestStep implements Step {
     private final Step               generateReviewFactoryStep;
     private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
-    private final EventBus           eventBus;
 
     @Inject
     public IssuePullRequestStep(@Nonnull final VcsHostingService vcsHostingService,
                                 @Nonnull final GenerateReviewFactoryStep generateReviewFactoryStepStep,
                                 @Nonnull final NotificationHelper notificationHelper,
-                                @Nonnull final ContributeMessages messages,
-                                @Nonnull final EventBus eventBus) {
+                                @Nonnull final ContributeMessages messages) {
         this.vcsHostingService = vcsHostingService;
         this.generateReviewFactoryStep = generateReviewFactoryStepStep;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
-        this.eventBus = eventBus;
     }
 
     @Override
@@ -77,7 +72,7 @@ public class IssuePullRequestStep implements Step {
                 context.setPullRequestIssueNumber(pullRequest.getNumber());
 
                 workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                eventBus.fireEvent(new UpdateModeEvent(START_UPDATE_MODE));
+                workflow.fireWorkflowModeChangeEvent(UPDATE);
                 notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
 
                 workflow.setStep(generateReviewFactoryStep);
@@ -93,6 +88,7 @@ public class IssuePullRequestStep implements Step {
                             context.setPullRequestIssueNumber(pullRequest.getNumber());
 
                             workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
+                            workflow.fireWorkflowModeChangeEvent(UPDATE);
                             notificationHelper
                                     .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
 

@@ -20,8 +20,8 @@ import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
-import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
-import com.codenvy.plugin.contribution.client.steps.events.UpdateModeHandler;
+import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent;
+import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeHandler;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.resources.client.ImageResource;
@@ -36,6 +36,7 @@ import javax.inject.Provider;
 
 import static com.codenvy.ide.api.constraints.Constraints.LAST;
 import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
+import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent.Mode.UPDATE;
 
 /**
  * Part for the contribution configuration.
@@ -43,7 +44,7 @@ import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
  * @author Kevin Pollet
  */
 public class ContributePartPresenter extends BasePresenter
-        implements ContributePartView.ActionDelegate, StepHandler, UpdateModeHandler {
+        implements ContributePartView.ActionDelegate, StepHandler, WorkflowModeHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -84,7 +85,7 @@ public class ContributePartPresenter extends BasePresenter
 
         this.view.setDelegate(this);
         eventBus.addHandler(StepEvent.TYPE, this);
-        eventBus.addHandler(UpdateModeEvent.TYPE, this);
+        eventBus.addHandler(WorkflowModeEvent.TYPE, this);
     }
 
     public void open() {
@@ -260,27 +261,12 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     @Override
-    public void onUpdateModeChange(@Nonnull final UpdateModeEvent event) {
-        switch (event.getState()) {
-            case START_UPDATE_MODE: {
-                view.setBranchNameEnabled(false);
-                view.setContributionTitleEnabled(false);
-                view.setContributionCommentEnabled(false);
-                view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
-            }
-            break;
-
-            case STOP_UPDATE_MODE: {
-                view.setBranchNameEnabled(true);
-                view.setBranchNameFocus(true);
-                view.setContributionTitleEnabled(true);
-                view.setContributionCommentEnabled(true);
-                view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
-            }
-            break;
-
-            default:
-                break;
-        }
+    public void onWorkflowModeChange(@Nonnull final WorkflowModeEvent event) {
+        view.setBranchNameEnabled(event.getMode() != UPDATE);
+        view.setContributionTitleEnabled(event.getMode() != UPDATE);
+        view.setContributionCommentEnabled(event.getMode() != UPDATE);
+        view.setContributeButtonText(
+                event.getMode() == UPDATE ? messages.contributePartConfigureContributionSectionButtonContributeUpdateText()
+                                          : messages.contributePartConfigureContributionSectionButtonContributeText());
     }
 }

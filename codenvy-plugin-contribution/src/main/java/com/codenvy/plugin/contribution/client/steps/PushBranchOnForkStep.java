@@ -16,14 +16,12 @@ import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoPullRequestException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -32,7 +30,6 @@ import javax.validation.constraints.NotNull;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.PUSH_BRANCH_ON_FORK;
-import static com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent.State.STOP_UPDATE_MODE;
 
 /**
  * Push the local contribution branch on the user fork.
@@ -44,7 +41,6 @@ public class PushBranchOnForkStep implements Step {
     private final VcsHostingService  vcsHostingService;
     private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
-    private final EventBus           eventBus;
 
     /** The dialog factory. */
     private final DialogFactory dialogFactory;
@@ -55,14 +51,12 @@ public class PushBranchOnForkStep implements Step {
                                 @Nonnull final VcsHostingService vcsHostingService,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @NotNull final ContributeMessages messages,
-                                @NotNull final EventBus eventBus,
                                 @NotNull final DialogFactory dialogFactory) {
         this.issuePullRequestStep = issuePullRequestStep;
         this.vcsService = vcsService;
         this.vcsHostingService = vcsHostingService;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
-        this.eventBus = eventBus;
         this.dialogFactory = dialogFactory;
     }
 
@@ -79,7 +73,7 @@ public class PushBranchOnForkStep implements Step {
 
         vcsHostingService.getPullRequest(owner, repository, headBranch, new AsyncCallback<PullRequest>() {
             @Override
-            public void onSuccess(final PullRequest result) {
+            public void onSuccess(final PullRequest pullRequest) {
                 final ConfirmCallback okCallback = new ConfirmCallback() {
                     @Override
                     public void accepted() {
@@ -90,25 +84,25 @@ public class PushBranchOnForkStep implements Step {
                     @Override
                     public void cancelled() {
                         workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
-                        eventBus.fireEvent(new UpdateModeEvent(STOP_UPDATE_MODE));
                         notificationHelper.finishNotificationWithWarning(messages.stepPushBranchCanceling(), notification);
                     }
                 };
 
                 dialogFactory.createConfirmDialog(messages.contributePartConfigureContributionDialogUpdateTitle(),
-                                                  messages.contributePartConfigureContributionDialogUpdateText(result.getHead().getLabel()),
+                                                  messages.contributePartConfigureContributionDialogUpdateText(
+                                                          pullRequest.getHead().getLabel()),
                                                   okCallback,
                                                   cancelCallback).show();
             }
 
             @Override
-            public void onFailure(Throwable exception) {
+            public void onFailure(final Throwable exception) {
                 if (exception instanceof NoPullRequestException) {
                     pushBranch(workflow, context, notification);
                     return;
                 }
 
-                workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
+                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
                 notificationHelper.showError(PushBranchOnForkStep.class, exception);
             }
         });
