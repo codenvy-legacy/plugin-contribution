@@ -127,22 +127,6 @@ public class ContributorExtension {
         }
     }
 
-    private void initContributeModeWithProjectAttributes(final ProjectDescriptor project) {
-        final Map<String, List<String>> attributes = project.getAttributes();
-
-        if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
-            return;
-        }
-        if (!String.valueOf(TRUE).equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
-            return;
-        }
-        if (!isGitRepository(project)) {
-            return;
-        }
-
-        startContributionWorkflow();
-    }
-
     private void setTheContributionFlag(final Map<String, List<String>> attributesToUpdate, final List<String> contributeFlagFromFactory) {
         attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_KEY, contributeFlagFromFactory);
     }
@@ -175,6 +159,22 @@ public class ContributorExtension {
         projectUpdate.setAttributes(projectDescriptor.getAttributes());
         projectUpdate.setRunners(projectDescriptor.getRunners());
         projectUpdate.setBuilders(projectDescriptor.getBuilders());
+    }
+
+    private void initContributeModeWithProjectAttributes(final ProjectDescriptor project) {
+        final Map<String, List<String>> attributes = project.getAttributes();
+
+        if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+            return;
+        }
+        if (!String.valueOf(TRUE).equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
+            return;
+        }
+        if (!isGitRepository(project)) {
+            return;
+        }
+
+        startContributionWorkflow();
     }
 
     private void startContributionWorkflow() {
