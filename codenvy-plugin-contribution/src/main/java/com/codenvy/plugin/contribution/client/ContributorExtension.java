@@ -30,8 +30,10 @@ import com.google.web.bindery.event.shared.EventBus;
 import java.util.List;
 import java.util.Map;
 
+import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
+import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 
 /**
@@ -92,10 +94,9 @@ public class ContributorExtension {
         if (appContext.getFactory() != null) {
             initContributeModeWithFactory(appContext.getFactory(), project);
         } else {
-            startContributionWorkflow();
+            initContributeModeWithProjectAttributes(project);
         }
     }
-
 
     private void initContributeModeWithFactory(final Factory factory, final ProjectDescriptor project) {
         final Map<String, List<String>> attributes = project.getAttributes();
@@ -124,6 +125,22 @@ public class ContributorExtension {
                 });
             }
         }
+    }
+
+    private void initContributeModeWithProjectAttributes(final ProjectDescriptor project) {
+        final Map<String, List<String>> attributes = project.getAttributes();
+
+        if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+            return;
+        }
+        if (!String.valueOf(TRUE).equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
+            return;
+        }
+        if (!isGitRepository(project)) {
+            return;
+        }
+
+        startContributionWorkflow();
     }
 
     private void setTheContributionFlag(final Map<String, List<String>> attributesToUpdate, final List<String> contributeFlagFromFactory) {

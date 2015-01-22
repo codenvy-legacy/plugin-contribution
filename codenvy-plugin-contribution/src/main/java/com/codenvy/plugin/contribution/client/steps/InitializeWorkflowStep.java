@@ -26,10 +26,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
-import static java.lang.Boolean.TRUE;
 
 /**
  * This step initialize the contribution workflow.
@@ -72,16 +69,6 @@ public class InitializeWorkflowStep implements Step {
             final ProjectDescriptor project = appContext.getCurrentProject().getRootProject();
             final Map<String, List<String>> attributes = project.getAttributes();
 
-            if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
-                return;
-            }
-            if (!String.valueOf(TRUE).equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
-                return;
-            }
-            if (!isGitRepository(project)) {
-                return;
-            }
-
             context.setProject(project);
 
             // get origin repository's URL from default remote
@@ -102,7 +89,9 @@ public class InitializeWorkflowStep implements Step {
                             // set project information
                             if (attributes.containsKey(ATTRIBUTE_CONTRIBUTE_BRANCH) &&
                                 !attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).isEmpty()) {
-                                String clonedBranch = attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).get(0);
+
+                                final String clonedBranch = attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).get(0);
+
                                 context.setClonedBranchName(clonedBranch);
                                 contributePartPresenter.setClonedBranch(clonedBranch);
                             }
