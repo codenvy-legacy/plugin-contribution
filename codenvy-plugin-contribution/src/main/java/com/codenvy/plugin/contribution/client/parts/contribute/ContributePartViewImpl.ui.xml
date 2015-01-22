@@ -184,7 +184,8 @@
                     <g:TextArea height="60px" ui:field="contributionComment"
                                 addStyleNames="{style.field} {resources.contributeCss.inputField} {style.fixed-textarea}"/>
                 </div>
-                <g:Button addStyleNames="{style.contributeButton} {resources.contributeCss.blueButton}" ui:field="contributeButton"
+                <g:Button width="104px" addStyleNames="{style.contributeButton} {resources.contributeCss.blueButton}"
+                          ui:field="contributeButton"
                           text="{messages.contributePartConfigureContributionSectionButtonContributeText}"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
