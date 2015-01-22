@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
+import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
@@ -23,7 +23,7 @@ import com.google.web.bindery.event.shared.EventBus;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.CREATE_FORK;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CREATE_FORK;
 
 public class WaitForkOnRemoteStep implements Step {
     private static final int POLL_FREQUENCY_MS = 1000;
@@ -60,7 +60,7 @@ public class WaitForkOnRemoteStep implements Step {
 
                         @Override
                         public void onSuccess(final Void result) {
-                            eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
+                            eventBus.fireEvent(new StepEvent(CREATE_FORK, true));
 
                             workflow.getContext().setForkReady(true);
                             check(workflow);

@@ -19,12 +19,20 @@ import javax.annotation.Nonnull;
  *
  * @author Kevin Pollet
  */
-public interface StepDoneHandler extends EventHandler {
+public interface StepHandler extends EventHandler {
     /**
-     * Called when a step is done.
+     * Called when a step is successfully done.
      *
      * @param event
-     *         the event.
+     *         the step event.
      */
-    void onStepDone(@Nonnull StepDoneEvent event);
+    void onStepDone(@Nonnull StepEvent event);
+
+    /**
+     * Called when a step is in error.
+     *
+     * @param event
+     *         the step event.
+     */
+    void onStepError(@Nonnull StepEvent event);
 }

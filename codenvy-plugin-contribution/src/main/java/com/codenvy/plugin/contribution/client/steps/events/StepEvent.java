@@ -13,13 +13,13 @@ package com.codenvy.plugin.contribution.client.steps.events;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * Event sent when a step is successfully done.
+ * Event sent when a step is done or in error.
  *
  * @author Kevin Pollet
  */
-public class StepDoneEvent extends GwtEvent<StepDoneHandler> {
+public class StepEvent extends GwtEvent<StepHandler> {
     /** Type class used to register this event. */
-    public static Type<StepDoneHandler> TYPE = new Type<>();
+    public static Type<StepHandler> TYPE = new Type<>();
 
     /** The step. */
     private final Step step;
@@ -27,23 +27,24 @@ public class StepDoneEvent extends GwtEvent<StepDoneHandler> {
     /** The done step status. */
     private final boolean success;
 
-    public StepDoneEvent(final Step step, final boolean success) {
+    public StepEvent(final Step step, final boolean success) {
         this.step = step;
         this.success = success;
     }
 
     @Override
-    public Type<StepDoneHandler> getAssociatedType() {
+    public Type<StepHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(final StepDoneHandler handler) {
-        handler.onStepDone(this);
-    }
+    protected void dispatch(final StepHandler handler) {
+        if (success) {
+            handler.onStepDone(this);
 
-    public boolean isSuccess() {
-        return success;
+        } else {
+            handler.onStepError(this);
+        }
     }
 
     public Step getStep() {
@@ -51,8 +52,14 @@ public class StepDoneEvent extends GwtEvent<StepDoneHandler> {
     }
 
     public enum Step {
+        COMMIT_WORKING_TREE,
+        AUTHORIZE_CODENVY_ON_VCS_HOST,
         CREATE_FORK,
-        PUSH_BRANCH,
-        ISSUE_PULL_REQUEST
+        RENAME_WORK_BRANCH,
+        ADD_FORK_REMOTE,
+        PUSH_BRANCH_ON_FORK,
+        ISSUE_PULL_REQUEST,
+        GENERATE_REVIEW_FACTORY,
+        ADD_REVIEW_FACTORY_LINK
     }
 }

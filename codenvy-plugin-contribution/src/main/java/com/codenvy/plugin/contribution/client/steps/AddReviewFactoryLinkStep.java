@@ -20,6 +20,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ADD_REVIEW_FACTORY_LINK;
+
 /**
  * Adds a factory link to the contribution in a comment of the pull request.
  */
@@ -57,20 +59,22 @@ public class AddReviewFactoryLinkStep implements Step {
         final Context context = workflow.getContext();
         final String commentText = messages.stepAddReviewFactoryLinkPullRequestComment(factoryUrl);
 
-        vcsHostingService.commentPullRequest(context.getOriginRepositoryOwner(),
-                                             context.getOriginRepositoryName(),
-                                             context.getPullRequestIssueNumber(),
-                                             commentText,
-                                             new AsyncCallback<IssueComment>() {
-                                                 @Override
-                                                 public void onSuccess(final IssueComment result) {
-                                                 }
+        vcsHostingService.commentPullRequest(
+                context.getOriginRepositoryOwner(),
+                context.getOriginRepositoryName(),
+                context.getPullRequestIssueNumber(),
+                commentText,
+                new AsyncCallback<IssueComment>() {
+                    @Override
+                    public void onSuccess(final IssueComment result) {
+                        workflow.fireStepDoneEvent(ADD_REVIEW_FACTORY_LINK);
+                    }
 
-                                                 @Override
-                                                 public void onFailure(final Throwable exception) {
-                                                     notificationHelper.showWarning(
-                                                             messages.stepAddReviewFactoryLinkErrorPostingFactoryLink(factoryUrl));
-                                                 }
-                                             });
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        workflow.fireStepErrorEvent(ADD_REVIEW_FACTORY_LINK);
+                        notificationHelper.showWarning(messages.stepAddReviewFactoryLinkErrorPostingFactoryLink(factoryUrl));
+                    }
+                });
     }
 }

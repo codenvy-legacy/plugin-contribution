@@ -11,8 +11,10 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.ide.dto.DtoFactory;
+import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -24,14 +26,17 @@ import javax.inject.Inject;
  */
 public class ContributorWorkflow {
     private final Context       context;
+    private final EventBus      eventBus;
     private final Configuration configuration;
     private       Step          step;
 
     @Inject
     public ContributorWorkflow(@Nonnull final Context context,
                                @Nonnull final DtoFactory dtoFactory,
+                               @Nonnull final EventBus eventBus,
                                @Nonnull final AuthenticateUserStep authenticateUserStep) {
         this.context = context;
+        this.eventBus = eventBus;
         this.configuration = dtoFactory.createDto(Configuration.class);
         this.step = authenticateUserStep; //initial state
     }
@@ -71,5 +76,25 @@ public class ContributorWorkflow {
     @Nonnull
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Fires a {@link com.codenvy.plugin.contribution.client.steps.events.StepEvent} indicating that the given step is successfully done.
+     *
+     * @param step
+     *         the successfully done step.
+     */
+    void fireStepDoneEvent(StepEvent.Step step) {
+        eventBus.fireEvent(new StepEvent(step, true));
+    }
+
+    /**
+     * Fires a {@link com.codenvy.plugin.contribution.client.steps.events.StepEvent} indicating that the given step is in error.
+     *
+     * @param step
+     *         the step in error.
+     */
+    void fireStepErrorEvent(StepEvent.Step step) {
+        eventBus.fireEvent(new StepEvent(step, false));
     }
 }

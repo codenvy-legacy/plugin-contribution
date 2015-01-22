@@ -126,6 +126,7 @@ public class CommitViewImpl extends Window implements CommitView {
 
     @Override
     protected void onClose() {
+        delegate.onCancel();
     }
 
     @SuppressWarnings("UnusedParameters")

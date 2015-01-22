@@ -15,7 +15,6 @@ import com.codenvy.ide.api.app.CurrentUser;
 import com.codenvy.ide.util.Config;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.HostUser;
 import com.codenvy.security.oauth.JsOAuthWindow;
@@ -28,6 +27,8 @@ import com.google.inject.name.Named;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.AUTHORIZE_CODENVY_ON_VCS_HOST;
+
 /**
  * This step authorizes Codenvy on the VCS Host.
  *
@@ -36,13 +37,12 @@ import javax.inject.Inject;
 public class AuthorizeCodenvyOnVCSHostStep implements Step {
     private static final String BAD_CREDENTIALS_EXCEPTION_MESSAGE = "Bad credentials";
 
-    private final String                  baseUrl;
-    private final Step                    forkCreationStep;
-    private final NotificationHelper      notificationHelper;
-    private final VcsHostingService       vcsHostingService;
-    private final AppContext              appContext;
-    private final ContributeMessages      messages;
-    private final ContributePartPresenter contributePartPresenter;
+    private final String             baseUrl;
+    private final Step               forkCreationStep;
+    private final NotificationHelper notificationHelper;
+    private final VcsHostingService  vcsHostingService;
+    private final AppContext         appContext;
+    private final ContributeMessages messages;
 
     @Inject
     public AuthorizeCodenvyOnVCSHostStep(@Nonnull @Named("restContext") final String baseUrl,
@@ -50,15 +50,13 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
                                          @Nonnull final NotificationHelper notificationHelper,
                                          @Nonnull final VcsHostingService vcsHostingService,
                                          @Nonnull final AppContext appContext,
-                                         @Nonnull final ContributeMessages messages,
-                                         @Nonnull final ContributePartPresenter contributePartPresenter) {
+                                         @Nonnull final ContributeMessages messages) {
         this.baseUrl = baseUrl;
         this.forkCreationStep = createForkStep;
         this.notificationHelper = notificationHelper;
         this.vcsHostingService = vcsHostingService;
         this.appContext = appContext;
         this.messages = messages;
-        this.contributePartPresenter = contributePartPresenter;
     }
 
     @Override
@@ -72,6 +70,8 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
                     authenticateOnVCSHost(new AsyncCallback<HostUser>() {
                         @Override
                         public void onFailure(final Throwable exception) {
+                            workflow.fireStepErrorEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
+
                             final String exceptionMessage = exception.getMessage();
                             if (exceptionMessage != null && exceptionMessage.contains(BAD_CREDENTIALS_EXCEPTION_MESSAGE)) {
                                 notificationHelper
@@ -89,6 +89,7 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
                         }
                     });
                 } else {
+                    workflow.fireStepErrorEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
                     notificationHelper.showError(AuthorizeCodenvyOnVCSHostStep.class, exception);
                 }
             }
@@ -101,10 +102,9 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
     }
 
     private void onVCSHostUserAuthenticated(final ContributorWorkflow workflow, final HostUser user) {
-        contributePartPresenter.showStatusSection();
-
-        workflow.setStep(forkCreationStep);
         workflow.getContext().setHostUserLogin(user.getLogin());
+        workflow.fireStepDoneEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
+        workflow.setStep(forkCreationStep);
         workflow.executeStep();
     }
 

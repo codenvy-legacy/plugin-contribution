@@ -14,7 +14,6 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Configuration;
 import com.codenvy.plugin.contribution.client.value.Context;
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.ISSUE_PULL_REQUEST;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ISSUE_PULL_REQUEST;
 import static com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent.State.START_UPDATE_MODE;
 
 /**
@@ -77,9 +76,8 @@ public class IssuePullRequestStep implements Step {
             public void onSuccess(final PullRequest pullRequest) {
                 context.setPullRequestIssueNumber(pullRequest.getNumber());
 
-                eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
+                workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
                 eventBus.fireEvent(new UpdateModeEvent(START_UPDATE_MODE));
-
                 notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
 
                 workflow.setStep(generateReviewFactoryStep);
@@ -94,8 +92,7 @@ public class IssuePullRequestStep implements Step {
                         public void onSuccess(final PullRequest pullRequest) {
                             context.setPullRequestIssueNumber(pullRequest.getNumber());
 
-                            eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, true));
-
+                            workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
                             notificationHelper
                                     .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
 
@@ -103,18 +100,18 @@ public class IssuePullRequestStep implements Step {
 
                         @Override
                         public void onFailure(final Throwable exception) {
-                            eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
+                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
                             notificationHelper.showError(IssuePullRequestStep.class, exception);
                         }
                     });
 
                 } else if (exception instanceof NoCommitsInPullRequestException) {
-                    eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
+                    workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
                     notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits(),
                                                                      notification);
 
                 } else {
-                    eventBus.fireEvent(new StepDoneEvent(ISSUE_PULL_REQUEST, false));
+                    workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
                     notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
                                                                    messages.stepIssuePullRequestErrorCreatePullRequest(),
                                                                    notification);

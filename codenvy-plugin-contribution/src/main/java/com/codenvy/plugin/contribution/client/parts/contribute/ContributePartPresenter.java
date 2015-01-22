@@ -18,8 +18,8 @@ import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
-import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
-import com.codenvy.plugin.contribution.client.steps.events.StepDoneHandler;
+import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
+import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
 import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.steps.events.UpdateModeHandler;
 import com.codenvy.plugin.contribution.client.value.Context;
@@ -43,7 +43,7 @@ import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
  * @author Kevin Pollet
  */
 public class ContributePartPresenter extends BasePresenter
-        implements ContributePartView.ActionDelegate, StepDoneHandler, UpdateModeHandler {
+        implements ContributePartView.ActionDelegate, StepHandler, UpdateModeHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -83,7 +83,7 @@ public class ContributePartPresenter extends BasePresenter
         this.appContext = appContext;
 
         this.view.setDelegate(this);
-        eventBus.addHandler(StepDoneEvent.TYPE, this);
+        eventBus.addHandler(StepEvent.TYPE, this);
         eventBus.addHandler(UpdateModeEvent.TYPE, this);
     }
 
@@ -94,10 +94,6 @@ public class ContributePartPresenter extends BasePresenter
 
     public void remove() {
         workspaceAgent.removePart(ContributePartPresenter.this);
-    }
-
-    public void showStatusSection() {
-        view.showStatusSection();
     }
 
     public void setRepositoryUrl(String url) {
@@ -112,6 +108,8 @@ public class ContributePartPresenter extends BasePresenter
     public void onContribute() {
         view.hideStatusSection();
         view.resetStatusSection();
+        view.setContributeEnabled(false);
+        view.setContributionProgressState(true);
 
         // resume the contribution workflow and execute the current step
         final ContributorWorkflow workflow = this.workflow.get();
@@ -210,30 +208,55 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     @Override
-    public void onStepDone(@Nonnull final StepDoneEvent event) {
+    public void onStepDone(@Nonnull final StepEvent event) {
         switch (event.getStep()) {
-            case CREATE_FORK: {
-                view.setCreateForkStatus(event.isSuccess());
+            case AUTHORIZE_CODENVY_ON_VCS_HOST: {
+                view.showStatusSection();
             }
             break;
 
-            case PUSH_BRANCH: {
-                view.setPushBranchStatus(event.isSuccess());
+            case CREATE_FORK: {
+                view.setCreateForkStatus(true);
+            }
+            break;
+
+            case PUSH_BRANCH_ON_FORK: {
+                view.setPushBranchStatus(true);
             }
             break;
 
             case ISSUE_PULL_REQUEST: {
-                view.setIssuePullRequestStatus(event.isSuccess());
-                if (event.isSuccess()) {
-                    view.showStatusSectionFooter();
-                    view.showNewContributionSection();
-                }
+                view.setIssuePullRequestStatus(true);
+                view.setContributeEnabled(true);
+                view.setContributionProgressState(false);
+                view.showStatusSectionFooter();
+                view.showNewContributionSection();
+            }
+            break;
+        }
+    }
+
+    @Override
+    public void onStepError(@Nonnull final StepEvent event) {
+        switch (event.getStep()) {
+            case CREATE_FORK: {
+                view.setCreateForkStatus(false);
             }
             break;
 
-            default:
-                break;
+            case PUSH_BRANCH_ON_FORK: {
+                view.setPushBranchStatus(false);
+            }
+            break;
+
+            case ISSUE_PULL_REQUEST: {
+                view.setIssuePullRequestStatus(false);
+            }
+            break;
         }
+
+        view.setContributeEnabled(true);
+        view.setContributionProgressState(false);
     }
 
     @Override
@@ -243,7 +266,7 @@ public class ContributePartPresenter extends BasePresenter
                 view.setBranchNameEnabled(false);
                 view.setContributionTitleEnabled(false);
                 view.setContributionCommentEnabled(false);
-                view.setContributeButtonMessage(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
+                view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
             }
             break;
 
@@ -252,7 +275,7 @@ public class ContributePartPresenter extends BasePresenter
                 view.setBranchNameFocus(true);
                 view.setContributionTitleEnabled(true);
                 view.setContributionCommentEnabled(true);
-                view.setContributeButtonMessage(messages.contributePartConfigureContributionSectionButtonContributeText());
+                view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
             }
             break;
 

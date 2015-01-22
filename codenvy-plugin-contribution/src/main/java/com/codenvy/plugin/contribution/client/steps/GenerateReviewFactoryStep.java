@@ -46,6 +46,7 @@ import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
 import static com.codenvy.ide.MimeType.APPLICATION_JSON;
 import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
 /**
  * Generates a factory for the contribution reviewer.
@@ -116,6 +117,7 @@ public class GenerateReviewFactoryStep implements Step {
                 }
                 if (factoryUrl != null) {
                     workflow.getContext().setReviewFactoryUrl(factoryUrl);
+                    workflow.fireStepDoneEvent(GENERATE_REVIEW_FACTORY);
                     workflow.setStep(addReviewFactoryLinkStep);
                     workflow.executeStep();
                 }
@@ -123,6 +125,7 @@ public class GenerateReviewFactoryStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
+                workflow.fireStepErrorEvent(GENERATE_REVIEW_FACTORY);
                 notificationHelper.showWarning(messages.stepGenerateReviewFactoryErrorCreateFactory());
             }
         });

@@ -13,20 +13,18 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.CREATE_FORK;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CREATE_FORK;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
@@ -35,19 +33,16 @@ public class CreateForkStep implements Step {
     private final VcsHostingService  vcsHostingService;
     private final ContributeMessages messages;
     private final NotificationHelper notificationHelper;
-    private final EventBus           eventBus;
     private final Step               renameWorkBranchStep;
 
     @Inject
     public CreateForkStep(@Nonnull final VcsHostingService vcsHostingService,
                           @Nonnull final ContributeMessages messages,
                           @Nonnull final NotificationHelper notificationHelper,
-                          @Nonnull final EventBus eventBus,
                           @Nonnull final RenameWorkBranchStep renameWorkBranchStep) {
         this.vcsHostingService = vcsHostingService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
-        this.eventBus = eventBus;
         this.renameWorkBranchStep = renameWorkBranchStep;
     }
 
@@ -61,8 +56,9 @@ public class CreateForkStep implements Step {
         vcsHostingService.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository fork) {
-                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
                 context.setForkedRepositoryName(fork.getName());
+
+                workflow.fireStepDoneEvent(CREATE_FORK);
                 notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
 
                 workflow.setStep(renameWorkBranchStep);
@@ -76,7 +72,7 @@ public class CreateForkStep implements Step {
                     return;
                 }
 
-                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
+                workflow.fireStepErrorEvent(CREATE_FORK);
                 notificationHelper.showError(CreateForkStep.class, exception);
             }
         });
@@ -90,9 +86,9 @@ public class CreateForkStep implements Step {
         vcsHostingService.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository result) {
-                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, true));
-
                 workflow.getContext().setForkedRepositoryName(result.getName());
+
+                workflow.fireStepDoneEvent(CREATE_FORK);
                 notificationHelper
                         .finishNotification(messages.stepCreateForkRequestForkCreation(repositoryOwner, repositoryName), notification);
 
@@ -102,7 +98,7 @@ public class CreateForkStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                eventBus.fireEvent(new StepDoneEvent(CREATE_FORK, false));
+                workflow.fireStepErrorEvent(CREATE_FORK);
 
                 final String errorMessage =
                         messages.stepCreateForkErrorCreatingFork(repositoryOwner, repositoryName, exception.getMessage());

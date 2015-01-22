@@ -14,10 +14,8 @@ import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.ui.dialogs.CancelCallback;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
-import com.codenvy.ide.ui.dialogs.confirm.ConfirmDialog;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent;
 import com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -33,7 +31,7 @@ import javax.validation.constraints.NotNull;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.steps.events.StepDoneEvent.Step.PUSH_BRANCH;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.PUSH_BRANCH_ON_FORK;
 import static com.codenvy.plugin.contribution.client.steps.events.UpdateModeEvent.State.STOP_UPDATE_MODE;
 
 /**
@@ -82,27 +80,25 @@ public class PushBranchOnForkStep implements Step {
         vcsHostingService.getPullRequest(owner, repository, headBranch, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest result) {
-                ConfirmCallback okCallback = new ConfirmCallback() {
-
+                final ConfirmCallback okCallback = new ConfirmCallback() {
                     @Override
                     public void accepted() {
                         pushBranch(workflow, context, notification);
                     }
                 };
-                CancelCallback cancelCallback = new CancelCallback() {
-
+                final CancelCallback cancelCallback = new CancelCallback() {
                     @Override
                     public void cancelled() {
-                        eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, false));
+                        workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
                         eventBus.fireEvent(new UpdateModeEvent(STOP_UPDATE_MODE));
                         notificationHelper.finishNotificationWithWarning(messages.stepPushBranchCanceling(), notification);
                     }
                 };
-                ConfirmDialog confirm = dialogFactory.createConfirmDialog(messages.contributePartConfigureContributionDialogUpdateTitle(),
-                                                                          messages.contributePartConfigureContributionDialogUpdateText(
-                                                                                  result.getHead().getLabel()),
-                                                                          okCallback, cancelCallback);
-                confirm.show();
+
+                dialogFactory.createConfirmDialog(messages.contributePartConfigureContributionDialogUpdateTitle(),
+                                                  messages.contributePartConfigureContributionDialogUpdateText(result.getHead().getLabel()),
+                                                  okCallback,
+                                                  cancelCallback).show();
             }
 
             @Override
@@ -112,7 +108,7 @@ public class PushBranchOnForkStep implements Step {
                     return;
                 }
 
-                eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, false));
+                workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
                 notificationHelper.showError(PushBranchOnForkStep.class, exception);
             }
         });
@@ -122,7 +118,7 @@ public class PushBranchOnForkStep implements Step {
         vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, true));
+                workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
                 notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(), notification);
 
                 workflow.setStep(issuePullRequestStep);
@@ -131,7 +127,7 @@ public class PushBranchOnForkStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
-                eventBus.fireEvent(new StepDoneEvent(PUSH_BRANCH, false));
+                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
 
                 final String errorMessage = messages.stepPushBranchErrorPushingBranch(exception.getMessage());
                 notificationHelper.finishNotificationWithError(PushBranchOnForkStep.class, errorMessage, notification);

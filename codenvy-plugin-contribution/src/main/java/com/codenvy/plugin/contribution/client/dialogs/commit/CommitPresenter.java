@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import javax.annotation.Nonnull;
 
 import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
+import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CANCEL;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CONTINUE;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.OK;
 
@@ -121,6 +122,10 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     @Override
     public void onCancel() {
         view.close();
+
+        if (handler != null) {
+            handler.onCommitAction(CANCEL);
+        }
     }
 
     @Override
@@ -139,7 +144,8 @@ public class CommitPresenter implements CommitView.ActionDelegate {
 
         enum CommitAction {
             OK,
-            CONTINUE
+            CONTINUE,
+            CANCEL
         }
     }
 }

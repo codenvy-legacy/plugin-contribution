@@ -12,6 +12,7 @@ package com.codenvy.plugin.contribution.client.parts.contribute;
 
 import com.codenvy.ide.api.parts.PartStackUIResources;
 import com.codenvy.ide.api.parts.base.BaseView;
+import com.codenvy.ide.ui.buttonLoader.ButtonLoaderResources;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
@@ -43,6 +44,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     /** The uUI binder for this component. */
     private static final ContributePartViewUiBinder UI_BINDER = GWT.create(ContributePartViewUiBinder.class);
+
+    /** The button loader resources. */
+    private final ButtonLoaderResources buttonLoaderResources;
 
     /** The contribute button. */
     @UiField
@@ -108,17 +112,26 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiField
     Button newContributionButton;
 
+    /** The contribute button text. */
+    private String contributeButtonText;
+
     @Inject
     public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
                                   @Nonnull final ContributeMessages messages,
-                                  @Nonnull final ContributeResources resources) {
+                                  @Nonnull final ContributeResources resources,
+                                  @Nonnull final ButtonLoaderResources buttonLoaderResources) {
         super(partStackUIResources);
 
         this.messages = messages;
         this.resources = resources;
+        this.buttonLoaderResources = buttonLoaderResources;
 
         this.container.add(UI_BINDER.createAndBindUi(this));
+
         setTitle(messages.contributePartTitle());
+
+        this.contributeButtonText = contributeButton.getText();
+        this.contributeButton.addStyleName(buttonLoaderResources.Css().buttonLoader());
 
         this.statusSection.setVisible(false);
         this.newContributionSection.setVisible(false);
@@ -144,19 +157,20 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void setRepositoryUrl(String url) {
+    public void setRepositoryUrl(final String url) {
         repositoryUrl.setHref(url);
         repositoryUrl.setText(url);
     }
 
     @Override
-    public void setClonedBranch(String branch) {
+    public void setClonedBranch(final String branch) {
         clonedBranch.setText(branch);
     }
 
     @Override
-    public void setContributeButtonMessage(String message) {
-        contributeButton.setText(message);
+    public void setContributeButtonText(final String text) {
+        contributeButton.setText(text);
+        contributeButtonText = contributeButton.getText();
     }
 
     @Override
@@ -214,7 +228,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void showContributionTitleError(boolean showError) {
+    public void showContributionTitleError(final boolean showError) {
         if (showError) {
             contributionTitle.addStyleName(resources.contributeCss().inputError());
         } else {
@@ -257,6 +271,15 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     public void setIssuePullRequestStatus(final boolean success) {
         issuePullRequestStatus.clear();
         issuePullRequestStatus.add(getStatusImage(success));
+    }
+
+    @Override
+    public void setContributionProgressState(final boolean progress) {
+        if (progress) {
+            contributeButton.setHTML("<i></i>");
+        } else {
+            contributeButton.setText(contributeButtonText);
+        }
     }
 
     private SVGImage getStatusImage(final boolean success) {

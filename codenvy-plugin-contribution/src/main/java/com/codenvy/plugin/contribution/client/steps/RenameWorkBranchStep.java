@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.List;
 
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.RENAME_WORK_BRANCH;
+
 /**
  * Renames the current branch with the one provided by the user.
  */
@@ -53,6 +55,7 @@ public class RenameWorkBranchStep implements Step {
         final String newBranchName = workflow.getConfiguration().getBranchName();
 
         if (newBranchName.equals(context.getWorkBranchName())) {
+            workflow.fireStepDoneEvent(RENAME_WORK_BRANCH);
             workflow.setStep(addForkRemoteStep);
             workflow.executeStep();
 
@@ -87,12 +90,13 @@ public class RenameWorkBranchStep implements Step {
                                                           });
                     }
                 }
-                doRename(workflow, branchName, context);
 
+                doRename(workflow, branchName, context);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
+                workflow.fireStepErrorEvent(RENAME_WORK_BRANCH);
                 notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorListLocalBranches());
             }
         });
@@ -102,8 +106,10 @@ public class RenameWorkBranchStep implements Step {
         vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                notificationHelper.showInfo(messages.stepRenameWorkBranchLocalBranchRenamed(branchName));
                 context.setWorkBranchName(branchName);
+
+                workflow.fireStepDoneEvent(RENAME_WORK_BRANCH);
+                notificationHelper.showInfo(messages.stepRenameWorkBranchLocalBranchRenamed(branchName));
 
                 workflow.setStep(addForkRemoteStep);
                 workflow.executeStep();
@@ -111,6 +117,7 @@ public class RenameWorkBranchStep implements Step {
 
             @Override
             public void onFailure(final Throwable caught) {
+                workflow.fireStepErrorEvent(RENAME_WORK_BRANCH);
                 notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorRenameLocalBranch());
             }
         });

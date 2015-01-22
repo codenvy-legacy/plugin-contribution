@@ -19,6 +19,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CANCEL;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.COMMIT_WORKING_TREE;
+
 /**
  * This step allow the user to commit the current working tree if the git repository status is not clean.
  *
@@ -45,16 +48,21 @@ public class CommitWorkingTreeStep implements Step {
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Configuration configuration = workflow.getConfiguration();
 
-        workflow.setStep(authorizeCodenvyOnVCSHostStep);
         commitPresenter.setCommitActionHandler(new CommitPresenter.CommitActionHandler() {
             @Override
-            public void onCommitAction(CommitAction action) {
-                workflow.executeStep();
+            public void onCommitAction(final CommitAction action) {
+                if (action == CANCEL) {
+                    workflow.fireStepErrorEvent(COMMIT_WORKING_TREE);
+
+                } else {
+                    proceed(workflow);
+                }
             }
         });
         commitPresenter.hasUncommittedChanges(new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(final Throwable exception) {
+                workflow.fireStepErrorEvent(COMMIT_WORKING_TREE);
                 notificationHelper.showError(CommitWorkingTreeStep.class, exception);
             }
 
@@ -63,11 +71,16 @@ public class CommitWorkingTreeStep implements Step {
                 if (hasUncommittedChanges) {
                     commitPresenter.showView(messages.contributorExtensionDefaultCommitDescription(configuration.getBranchName(),
                                                                                                    configuration.getContributionTitle()));
-
                 } else {
-                    workflow.executeStep();
+                    proceed(workflow);
                 }
             }
         });
+    }
+
+    private void proceed(final ContributorWorkflow workflow) {
+        workflow.fireStepDoneEvent(COMMIT_WORKING_TREE);
+        workflow.setStep(authorizeCodenvyOnVCSHostStep);
+        workflow.executeStep();
     }
 }

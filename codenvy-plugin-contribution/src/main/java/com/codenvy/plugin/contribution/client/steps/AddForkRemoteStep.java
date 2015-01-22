@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.List;
 
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ADD_FORK_REMOTE;
+
 /**
  * Adds the forked remote repository to the remotes of the project.
  */
@@ -81,6 +83,7 @@ public class AddForkRemoteStep implements Step {
 
             @Override
             public void onFailure(final Throwable exception) {
+                workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
                 notificationHelper.showWarning(messages.stepAddForkRemoteErrorCheckRemote());
             }
         });
@@ -101,11 +104,13 @@ public class AddForkRemoteStep implements Step {
             @Override
             public void onSuccess(final Void notUsed) {
                 context.setForkedRemoteName(FORK_REMOTE_NAME);
+
                 proceed(workflow);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
+                workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
                 notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorAddFork());
             }
         });
@@ -114,28 +119,30 @@ public class AddForkRemoteStep implements Step {
     /**
      * Removes the fork remote from the project before adding it with the correct URL.
      *
-     * @param contributorWorkflow
+     * @param workflow
      *         the {@link com.codenvy.plugin.contribution.client.steps.ContributorWorkflow}.
      * @param remoteUrl
      *         the url of the remote
      */
-    private void replaceRemote(final ContributorWorkflow contributorWorkflow, final String remoteUrl) {
-        final Context context = contributorWorkflow.getContext();
+    private void replaceRemote(final ContributorWorkflow workflow, final String remoteUrl) {
+        final Context context = workflow.getContext();
 
         vcsService.deleteRemote(context.getProject(), FORK_REMOTE_NAME, new AsyncCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
-                addRemote(contributorWorkflow, remoteUrl);
+                addRemote(workflow, remoteUrl);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
+                workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
                 notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorSetForkedRepositoryRemote());
             }
         });
     }
 
     private void proceed(final ContributorWorkflow workflow) {
+        workflow.fireStepDoneEvent(ADD_FORK_REMOTE);
         workflow.setStep(pushBranchOnForkStep);
         workflow.executeStep();
     }

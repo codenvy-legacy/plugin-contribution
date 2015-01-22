@@ -17,9 +17,8 @@ import com.codenvy.ide.api.parts.base.BaseActionDelegate;
  * Interface for the contribution configuration shown when the user decides to send their contribution.
  */
 public interface ContributePartView extends View<ContributePartView.ActionDelegate> {
-
     /**
-     * Resets the part fields to their initial value.
+     * Resets the part to its initial state.
      */
     void reset();
 
@@ -83,12 +82,12 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setContributeEnabled(boolean enabled);
 
     /**
-     * Sets the message displayed into the "Contribute" button.
+     * Sets the text displayed into the "Contribute" button.
      *
-     * @param message
-     *         the message to display
+     * @param text
+     *         the text to display
      */
-    void setContributeButtonMessage(String message);
+    void setContributeButtonText(String text);
 
     /**
      * Sets the branch name input error state.
@@ -159,6 +158,14 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
      *         {@code true} if success, {@code false} if error.
      */
     void setIssuePullRequestStatus(boolean success);
+
+    /**
+     * Defines if the contribution is in progress.
+     *
+     * @param progress
+     *         {@code true} if the contribution is in progress, {@code false} otherwise.
+     */
+    void setContributionProgressState(boolean progress);
 
     /**
      * Action delegate interface for the contribution configuration dialog.
