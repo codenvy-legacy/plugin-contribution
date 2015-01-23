@@ -19,9 +19,14 @@ public final class ContributeConstants {
     }
 
     /**
-     * The factory and project flag for the contribution workflow.
+     * The factory and project attribute for the contribution workflow.
      */
     public static final String ATTRIBUTE_CONTRIBUTE_KEY = "contribute";
+
+    /**
+     * github flow contribute value for the contribute attribute.
+     */
+    public static final String GITHUB_CONTRIBUTE_FLAG      = "github";
 
     /**
      * Project attribute key for the branch initially cloned.

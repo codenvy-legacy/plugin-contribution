@@ -166,7 +166,7 @@ public class ContributorExtension {
         if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
             return;
         }
-        if (!Boolean.valueOf(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
+        if (!ContributeConstants.GITHUB_CONTRIBUTE_FLAG.equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
             return;
         }
         if (!isGitRepository(project)) {
