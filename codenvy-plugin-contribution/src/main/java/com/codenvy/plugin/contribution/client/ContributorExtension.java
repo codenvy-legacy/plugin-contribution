@@ -25,15 +25,19 @@ import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPre
 import com.codenvy.plugin.contribution.client.steps.AuthenticateUserStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.steps.Step;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import com.codenvy.plugin.contribution.client.vcs.Remote;
+import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
+import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 
-import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static java.util.Arrays.asList;
@@ -54,6 +58,8 @@ public class ContributorExtension {
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
     private final ContributorWorkflow     workflow;
     private final Step                    authenticateUserStep;
+    private final VcsHostingService       vcsHostingService;
+    private final VcsServiceProvider      vcsServiceProvider;
 
     @Inject
     public ContributorExtension(@Nonnull final EventBus eventBus,
@@ -66,6 +72,8 @@ public class ContributorExtension {
                                 @Nonnull final DtoFactory dtoFactory,
                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final ContributorWorkflow workflow,
+                                @Nonnull final VcsHostingService vcsHostingService,
+                                @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final AuthenticateUserStep authenticateUserStep) {
         this.messages = messages;
         this.workflow = workflow;
@@ -75,6 +83,8 @@ public class ContributorExtension {
         this.projectService = projectService;
         this.dtoFactory = dtoFactory;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
+        this.vcsHostingService = vcsHostingService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.authenticateUserStep = authenticateUserStep;
 
         resources.contributeCss().ensureInjected();
@@ -82,7 +92,7 @@ public class ContributorExtension {
         eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
             @Override
             public void onProjectOpened(final ProjectActionEvent event) {
-                preInitContributeMode(event);
+                initializeContributorExtension(event);
             }
 
             @Override
@@ -92,18 +102,53 @@ public class ContributorExtension {
         });
     }
 
-
-    private void preInitContributeMode(final ProjectActionEvent event) {
+    private void initializeContributorExtension(final ProjectActionEvent event) {
         final ProjectDescriptor project = event.getProject();
 
-        if (appContext.getFactory() != null) {
-            initContributeModeWithFactory(appContext.getFactory(), project);
-        } else {
-            initContributeModeWithProjectAttributes(project);
+        // vcs supported and initialized in current project
+        final VcsService vcsService = vcsServiceProvider.getVcsService();
+        if (vcsService != null) {
+            vcsService.listRemotes(project, new AsyncCallback<List<Remote>>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    notificationHelper.showError(ContributorExtension.class, exception);
+                }
+
+                @Override
+                public void onSuccess(final List<Remote> remotes) {
+                    for (final Remote oneRemote : remotes) {
+                        final String remoteUrl = oneRemote.getUrl();
+                        if (remoteUrl != null && vcsHostingService.isVcsHostRemoteUrl(remoteUrl)) {
+
+                            if (appContext.getFactory() != null) {
+                                initializeProjectAttributesFromFactory(appContext.getFactory(), project, new AsyncCallback<Void>() {
+                                    @Override
+                                    public void onFailure(final Throwable exception) {
+                                        notificationHelper
+                                                .showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
+                                                        exception.getMessage()), exception);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(final Void result) {
+                                        startContributionWorkflow();
+                                    }
+                                });
+                            }
+
+                            startContributionWorkflow();
+
+                            break;
+                        }
+                    }
+                }
+            });
         }
     }
 
-    private void initContributeModeWithFactory(final Factory factory, final ProjectDescriptor project) {
+    private void initializeProjectAttributesFromFactory(final Factory factory,
+                                                        final ProjectDescriptor project,
+                                                        final AsyncCallback<Void> callback) {
         final Map<String, List<String>> attributes = project.getAttributes();
 
         if (factory.getProject() != null && factory.getProject().getAttributes() != null) {
@@ -119,13 +164,12 @@ public class ContributorExtension {
                         dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
                     @Override
                     protected void onSuccess(final ProjectDescriptor project) {
-                        initContributeModeWithProjectAttributes(project);
+                        callback.onSuccess(null);
                     }
 
                     @Override
                     protected void onFailure(final Throwable exception) {
-                        notificationHelper.showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
-                                exception.getMessage()), exception);
+                        callback.onFailure(exception);
                     }
                 });
             }
@@ -164,22 +208,6 @@ public class ContributorExtension {
         projectUpdate.setAttributes(projectDescriptor.getAttributes());
         projectUpdate.setRunners(projectDescriptor.getRunners());
         projectUpdate.setBuilders(projectDescriptor.getBuilders());
-    }
-
-    private void initContributeModeWithProjectAttributes(final ProjectDescriptor project) {
-        final Map<String, List<String>> attributes = project.getAttributes();
-
-        if (attributes == null || !attributes.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
-            return;
-        }
-        if (!ContributeConstants.GITHUB_CONTRIBUTE_FLAG.equalsIgnoreCase(attributes.get(ATTRIBUTE_CONTRIBUTE_KEY).get(0))) {
-            return;
-        }
-        if (!isGitRepository(project)) {
-            return;
-        }
-
-        startContributionWorkflow();
     }
 
     private void startContributionWorkflow() {

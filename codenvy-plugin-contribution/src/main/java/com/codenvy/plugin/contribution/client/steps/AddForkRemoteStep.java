@@ -15,7 +15,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -31,19 +31,19 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
 public class AddForkRemoteStep implements Step {
     private final static String FORK_REMOTE_NAME = "fork";
 
-    private final VcsService         vcsService;
+    private final VcsServiceProvider vcsServiceProvider;
     private final Step               pushBranchOnForkStep;
     private final ContributeMessages messages;
     private final VcsHostingService  vcsHostingService;
     private final NotificationHelper notificationHelper;
 
     @Inject
-    public AddForkRemoteStep(@Nonnull final VcsService vcsService,
+    public AddForkRemoteStep(@Nonnull final VcsServiceProvider vcsServiceProvider,
                              @Nonnull final VcsHostingService vcsHostingService,
                              @Nonnull final PushBranchOnForkStep pushBranchOnForkStep,
                              @Nonnull final ContributeMessages messages,
                              @Nonnull final NotificationHelper notificationHelper) {
-        this.vcsService = vcsService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
         this.pushBranchOnForkStep = pushBranchOnForkStep;
         this.messages = messages;
@@ -61,32 +61,33 @@ public class AddForkRemoteStep implements Step {
     private void checkRemotePresent(final ContributorWorkflow workflow, final String remoteUrl) {
         final Context context = workflow.getContext();
 
-        vcsService.listRemotes(workflow.getContext().getProject(), new AsyncCallback<List<Remote>>() {
-            @Override
-            public void onSuccess(final List<Remote> result) {
-                for (final Remote remote : result) {
-                    if (FORK_REMOTE_NAME.equals(remote.getName())) {
-                        context.setForkedRemoteName(FORK_REMOTE_NAME);
-                        if (remoteUrl.equals(remote.getUrl())) {
-                            // all is correct, continue
-                            proceed(workflow);
+        vcsServiceProvider.getVcsService()
+                          .listRemotes(workflow.getContext().getProject(), new AsyncCallback<List<Remote>>() {
+                              @Override
+                              public void onSuccess(final List<Remote> result) {
+                                  for (final Remote remote : result) {
+                                      if (FORK_REMOTE_NAME.equals(remote.getName())) {
+                                          context.setForkedRemoteName(FORK_REMOTE_NAME);
+                                          if (remoteUrl.equals(remote.getUrl())) {
+                                              // all is correct, continue
+                                              proceed(workflow);
 
-                        } else {
-                            replaceRemote(workflow, remoteUrl);
-                        }
-                        // leave the method, do not go to addRemote(...)
-                        return;
-                    }
-                }
-                addRemote(workflow, remoteUrl);
-            }
+                                          } else {
+                                              replaceRemote(workflow, remoteUrl);
+                                          }
+                                          // leave the method, do not go to addRemote(...)
+                                          return;
+                                      }
+                                  }
+                                  addRemote(workflow, remoteUrl);
+                              }
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
-                notificationHelper.showWarning(messages.stepAddForkRemoteErrorCheckRemote());
-            }
-        });
+                              @Override
+                              public void onFailure(final Throwable exception) {
+                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
+                                  notificationHelper.showWarning(messages.stepAddForkRemoteErrorCheckRemote());
+                              }
+                          });
     }
 
     /**
@@ -100,20 +101,21 @@ public class AddForkRemoteStep implements Step {
     private void addRemote(final ContributorWorkflow workflow, final String remoteUrl) {
         final Context context = workflow.getContext();
 
-        vcsService.addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(final Void notUsed) {
-                context.setForkedRemoteName(FORK_REMOTE_NAME);
+        vcsServiceProvider.getVcsService()
+                          .addRemote(context.getProject(), FORK_REMOTE_NAME, remoteUrl, new AsyncCallback<Void>() {
+                              @Override
+                              public void onSuccess(final Void notUsed) {
+                                  context.setForkedRemoteName(FORK_REMOTE_NAME);
 
-                proceed(workflow);
-            }
+                                  proceed(workflow);
+                              }
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
-                notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorAddFork());
-            }
-        });
+                              @Override
+                              public void onFailure(final Throwable exception) {
+                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
+                                  notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorAddFork());
+                              }
+                          });
     }
 
     /**
@@ -127,18 +129,20 @@ public class AddForkRemoteStep implements Step {
     private void replaceRemote(final ContributorWorkflow workflow, final String remoteUrl) {
         final Context context = workflow.getContext();
 
-        vcsService.deleteRemote(context.getProject(), FORK_REMOTE_NAME, new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                addRemote(workflow, remoteUrl);
-            }
+        vcsServiceProvider.getVcsService()
+                          .deleteRemote(context.getProject(), FORK_REMOTE_NAME, new AsyncCallback<Void>() {
+                              @Override
+                              public void onSuccess(final Void result) {
+                                  addRemote(workflow, remoteUrl);
+                              }
 
-            @Override
-            public void onFailure(final Throwable caught) {
-                workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
-                notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorSetForkedRepositoryRemote());
-            }
-        });
+                              @Override
+                              public void onFailure(final Throwable caught) {
+                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
+                                  notificationHelper
+                                          .showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorSetForkedRepositoryRemote());
+                              }
+                          });
     }
 
     private void proceed(final ContributorWorkflow workflow) {

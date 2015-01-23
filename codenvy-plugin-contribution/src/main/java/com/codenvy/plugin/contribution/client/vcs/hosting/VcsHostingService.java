@@ -24,6 +24,15 @@ import java.util.List;
  */
 public interface VcsHostingService {
     /**
+     * Checks if the given remote URL is hosted by this hosting service.
+     *
+     * @param remoteUrl
+     *         the remote url to check.
+     * @return {@code true} if the given remote url is hosted by this service, {@code false} otherwise.
+     */
+    boolean isVcsHostRemoteUrl(@Nonnull String remoteUrl);
+
+    /**
      * Get all pull requests for given owner:repository
      *
      * @param owner

@@ -33,10 +33,10 @@ public class AuthenticateUserStep implements Step {
     @Inject
     public AuthenticateUserStep(@Nonnull @Named("restContext") final String baseUrl,
                                 @Nonnull final AppContext appContext,
-                                @Nonnull final InitializeWorkflowStep initializeWorkflowStep) {
+                                @Nonnull final InitializeWorkflowContextStep initializeWorkflowContextStep) {
         this.baseUrl = baseUrl;
         this.appContext = appContext;
-        this.initializeWorkflowStep = initializeWorkflowStep;
+        this.initializeWorkflowStep = initializeWorkflowContextStep;
     }
 
     @Override

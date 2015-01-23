@@ -25,13 +25,14 @@ import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.steps.CreateForkStep;
 import com.codenvy.plugin.contribution.client.steps.CreateWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactoryStep;
-import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowStep;
+import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowContextStep;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.GitHubHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.inject.client.AbstractGinModule;
@@ -47,6 +48,7 @@ public class ContributorGinModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+        bind(VcsServiceProvider.class);
         bind(VcsService.class).to(GitVcsService.class);
         bind(VcsHostingService.class).to(GitHubHostingService.class);
 
@@ -60,7 +62,7 @@ public class ContributorGinModule extends AbstractGinModule {
         // the steps
         bind(ContributorWorkflow.class).in(Singleton.class);
         bind(AuthenticateUserStep.class);
-        bind(InitializeWorkflowStep.class);
+        bind(InitializeWorkflowContextStep.class);
         bind(CreateWorkBranchStep.class);
         bind(CommitWorkingTreeStep.class);
         bind(AuthorizeCodenvyOnVCSHostStep.class);

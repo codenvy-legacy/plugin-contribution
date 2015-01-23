@@ -16,7 +16,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -31,20 +31,20 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
 public class RenameWorkBranchStep implements Step {
     private final DialogFactory      dialogFactory;
     private final Step               addForkRemoteStep;
-    private final VcsService         vcsService;
+    private final VcsServiceProvider vcsServiceProvider;
     private final ContributeMessages messages;
     private final NotificationHelper notificationHelper;
 
     @Inject
     public RenameWorkBranchStep(@Nonnull final AddForkRemoteStep addForkRemoteStep,
-                                @Nonnull final VcsService vcsService,
+                                @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final DialogFactory dialogFactory,
                                 @Nonnull final ContributeMessages messages,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final WaitForkOnRemoteStepFactory waitRemoteStepFactory) {
         this.dialogFactory = dialogFactory;
         this.addForkRemoteStep = waitRemoteStepFactory.create(addForkRemoteStep);
-        this.vcsService = vcsService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
     }
@@ -73,53 +73,57 @@ public class RenameWorkBranchStep implements Step {
      *         the contribution context
      */
     private void checkExistAndRename(final ContributorWorkflow workflow, final String branchName, final Context context) {
-        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
-            @Override
-            public void onSuccess(final List<Branch> result) {
-                for (final Branch branch : result) {
-                    if (branch.getDisplayName().equals(branchName)) {
-                        // the branch exists
-                        dialogFactory.createMessageDialog(messages.stepRenameWorkBranchMissingConfigTitle(),
-                                                          messages.stepRenameWorkBranchErrorLocalBranchExists(branchName),
-                                                          new ConfirmCallback() {
-                                                              @Override
-                                                              public void accepted() {
-                                                                  //TODO open the contribute part with branch name in error
-                                                                  //TODO maybe it's better to check if the branch exist before contribute click
-                                                              }
-                                                          });
-                    }
-                }
+        vcsServiceProvider.getVcsService()
+                          .listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+                              @Override
+                              public void onSuccess(final List<Branch> result) {
+                                  for (final Branch branch : result) {
+                                      if (branch.getDisplayName().equals(branchName)) {
+                                          // the branch exists
+                                          dialogFactory.createMessageDialog(messages.stepRenameWorkBranchMissingConfigTitle(),
+                                                                            messages.stepRenameWorkBranchErrorLocalBranchExists(branchName),
+                                                                            new ConfirmCallback() {
+                                                                                @Override
+                                                                                public void accepted() {
+                                                                                    //TODO open the contribute part with branch name in error
+                                                                                    //TODO maybe it's better to check if the branch exist before contribute click
+                                                                                }
+                                                                            });
+                                      }
+                                  }
 
-                doRename(workflow, branchName, context);
-            }
+                                  doRename(workflow, branchName, context);
+                              }
 
-            @Override
-            public void onFailure(final Throwable caught) {
-                workflow.fireStepErrorEvent(RENAME_WORK_BRANCH);
-                notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorListLocalBranches());
-            }
-        });
+                              @Override
+                              public void onFailure(final Throwable caught) {
+                                  workflow.fireStepErrorEvent(RENAME_WORK_BRANCH);
+                                  notificationHelper
+                                          .showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorListLocalBranches());
+                              }
+                          });
     }
 
     private void doRename(final ContributorWorkflow workflow, final String branchName, final Context context) {
-        vcsService.renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                context.setWorkBranchName(branchName);
+        vcsServiceProvider.getVcsService()
+                          .renameBranch(context.getProject(), context.getWorkBranchName(), branchName, new AsyncCallback<Void>() {
+                              @Override
+                              public void onSuccess(final Void result) {
+                                  context.setWorkBranchName(branchName);
 
-                workflow.fireStepDoneEvent(RENAME_WORK_BRANCH);
-                notificationHelper.showInfo(messages.stepRenameWorkBranchLocalBranchRenamed(branchName));
+                                  workflow.fireStepDoneEvent(RENAME_WORK_BRANCH);
+                                  notificationHelper.showInfo(messages.stepRenameWorkBranchLocalBranchRenamed(branchName));
 
-                workflow.setStep(addForkRemoteStep);
-                workflow.executeStep();
-            }
+                                  workflow.setStep(addForkRemoteStep);
+                                  workflow.executeStep();
+                              }
 
-            @Override
-            public void onFailure(final Throwable caught) {
-                workflow.fireStepErrorEvent(RENAME_WORK_BRANCH);
-                notificationHelper.showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorRenameLocalBranch());
-            }
-        });
+                              @Override
+                              public void onFailure(final Throwable caught) {
+                                  workflow.fireStepErrorEvent(RENAME_WORK_BRANCH);
+                                  notificationHelper
+                                          .showError(RenameWorkBranchStep.class, messages.stepRenameWorkBranchErrorRenameLocalBranch());
+                              }
+                          });
     }
 }

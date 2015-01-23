@@ -17,7 +17,7 @@ import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.value.Context;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoPullRequestException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
@@ -37,7 +37,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
 public class PushBranchOnForkStep implements Step {
 
     private final Step               issuePullRequestStep;
-    private final VcsService         vcsService;
+    private final VcsServiceProvider vcsServiceProvider;
     private final VcsHostingService  vcsHostingService;
     private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
@@ -47,13 +47,13 @@ public class PushBranchOnForkStep implements Step {
 
     @Inject
     public PushBranchOnForkStep(@Nonnull final IssuePullRequestStep issuePullRequestStep,
-                                @Nonnull final VcsService vcsService,
+                                @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final VcsHostingService vcsHostingService,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @NotNull final ContributeMessages messages,
                                 @NotNull final DialogFactory dialogFactory) {
         this.issuePullRequestStep = issuePullRequestStep;
-        this.vcsService = vcsService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
@@ -109,23 +109,29 @@ public class PushBranchOnForkStep implements Step {
     }
 
     protected void pushBranch(final ContributorWorkflow workflow, final Context context, final Notification notification) {
-        vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(), new AsyncCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
-                notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(), notification);
+        vcsServiceProvider.getVcsService()
+                          .pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(),
+                                      new AsyncCallback<Void>() {
+                                          @Override
+                                          public void onSuccess(final Void result) {
+                                              workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
+                                              notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(),
+                                                                                    notification);
 
-                workflow.setStep(issuePullRequestStep);
-                workflow.executeStep();
-            }
+                                              workflow.setStep(issuePullRequestStep);
+                                              workflow.executeStep();
+                                          }
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
+                                          @Override
+                                          public void onFailure(final Throwable exception) {
+                                              workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
 
-                final String errorMessage = messages.stepPushBranchErrorPushingBranch(exception.getMessage());
-                notificationHelper.finishNotificationWithError(PushBranchOnForkStep.class, errorMessage, notification);
-            }
-        });
+                                              final String errorMessage =
+                                                      messages.stepPushBranchErrorPushingBranch(exception.getMessage());
+                                              notificationHelper
+                                                      .finishNotificationWithError(PushBranchOnForkStep.class, errorMessage,
+                                                                                   notification);
+                                          }
+                                      });
     }
 }

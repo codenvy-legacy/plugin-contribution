@@ -57,10 +57,10 @@ public class GitHubHostingService implements VcsHostingService {
     private final UrlTemplates urlTemplates;
 
     @Inject
-    public GitHubHostingService(final DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                                final DtoFactory dtoFactory,
-                                final GitHubClientService gitHubClientService,
-                                final UrlTemplates urlTemplates) {
+    public GitHubHostingService(@Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                                @Nonnull final DtoFactory dtoFactory,
+                                @Nonnull final GitHubClientService gitHubClientService,
+                                @Nonnull final UrlTemplates urlTemplates) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
@@ -197,8 +197,14 @@ public class GitHubHostingService implements VcsHostingService {
 
     @Nonnull
     @Override
-    public String makePullRequestUrl(@Nonnull String username, @Nonnull String repository, @Nonnull String pullRequestNumber) {
+    public String makePullRequestUrl(@Nonnull final String username, @Nonnull final String repository,
+                                     @Nonnull final String pullRequestNumber) {
         return urlTemplates.gitPullRequestTemplate(username, repository, pullRequestNumber);
+    }
+
+    @Override
+    public boolean isVcsHostRemoteUrl(@Nonnull String remoteUrl) {
+        return remoteUrl.startsWith(SSH_URL_PREFIX) || remoteUrl.startsWith(HTTPS_URL_PREFIX);
     }
 
     @Override

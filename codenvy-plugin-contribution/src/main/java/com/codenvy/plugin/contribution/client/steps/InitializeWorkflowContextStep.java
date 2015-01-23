@@ -12,12 +12,14 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -29,14 +31,14 @@ import java.util.Map;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
 
 /**
- * This step initialize the contribution workflow.
+ * This step initialize the contribution workflow context.
  *
  * @author Kevin Pollet
  */
-public class InitializeWorkflowStep implements Step {
+public class InitializeWorkflowContextStep implements Step {
     private static final String ORIGIN_REMOTE_NAME = "origin";
 
-    private final VcsService              vcsService;
+    private final VcsServiceProvider      vcsServiceProvider;
     private final VcsHostingService       vcsHostingService;
     private final AppContext              appContext;
     private final NotificationHelper      notificationHelper;
@@ -45,14 +47,14 @@ public class InitializeWorkflowStep implements Step {
     private final Step                    createWorkBranchStep;
 
     @Inject
-    public InitializeWorkflowStep(@Nonnull final VcsService vcsService,
-                                  @Nonnull final VcsHostingService vcsHostingService,
-                                  @Nonnull final AppContext appContext,
-                                  @Nonnull final NotificationHelper notificationHelper,
-                                  @Nonnull final ContributePartPresenter contributePartPresenter,
-                                  @Nonnull final ContributeMessages messages,
-                                  @Nonnull final CreateWorkBranchStep createWorkBranchStep) {
-        this.vcsService = vcsService;
+    public InitializeWorkflowContextStep(@Nonnull final VcsServiceProvider vcsServiceProvider,
+                                         @Nonnull final VcsHostingService vcsHostingService,
+                                         @Nonnull final AppContext appContext,
+                                         @Nonnull final NotificationHelper notificationHelper,
+                                         @Nonnull final ContributePartPresenter contributePartPresenter,
+                                         @Nonnull final ContributeMessages messages,
+                                         @Nonnull final CreateWorkBranchStep createWorkBranchStep) {
+        this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
@@ -64,9 +66,11 @@ public class InitializeWorkflowStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
+        final CurrentProject currentProject = appContext.getCurrentProject();
+        final VcsService vcsService = vcsServiceProvider.getVcsService();
 
-        if (appContext.getCurrentProject() != null) {
-            final ProjectDescriptor project = appContext.getCurrentProject().getRootProject();
+        if (currentProject != null && vcsService != null) {
+            final ProjectDescriptor project = currentProject.getRootProject();
             final Map<String, List<String>> attributes = project.getAttributes();
 
             context.setProject(project);
@@ -108,7 +112,7 @@ public class InitializeWorkflowStep implements Step {
 
                 @Override
                 public void onFailure(final Throwable exception) {
-                    notificationHelper.showError(InitializeWorkflowStep.class,
+                    notificationHelper.showError(InitializeWorkflowContextStep.class,
                                                  messages.contributorExtensionErrorSetupOriginRepository(exception.getMessage()),
                                                  exception);
                 }

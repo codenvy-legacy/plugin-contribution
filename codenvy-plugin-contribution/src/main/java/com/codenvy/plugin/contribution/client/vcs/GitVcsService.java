@@ -33,19 +33,8 @@ import java.util.List;
  * Git backed implementation for {@link VcsService}.
  */
 public class GitVcsService implements VcsService {
-    /**
-     * The git client service.
-     */
-    private final GitServiceClient service;
-
-    /**
-     * The DTO factory.
-     */
-    private final DtoFactory dtoFactory;
-
-    /**
-     * Unmarshaller for DTOs.
-     */
+    private final GitServiceClient       service;
+    private final DtoFactory             dtoFactory;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
     @Inject

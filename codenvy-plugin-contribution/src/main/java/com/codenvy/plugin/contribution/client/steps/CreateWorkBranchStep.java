@@ -17,6 +17,7 @@ import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPre
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -38,19 +39,19 @@ public class CreateWorkBranchStep implements Step {
 
     private final ContributeMessages      messages;
     private final NotificationHelper      notificationHelper;
-    private final VcsService              vcsService;
+    private final VcsServiceProvider      vcsServiceProvider;
     private final ContributePartPresenter contributePartPresenter;
     private final Step                    commitWorkingTreeStep;
 
     @Inject
     public CreateWorkBranchStep(@Nonnull final ContributeMessages messages,
                                 @Nonnull final NotificationHelper notificationHelper,
-                                @Nonnull final VcsService vcsService,
+                                @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final ContributePartPresenter contributePartPresenter,
                                 @Nonnull final CommitWorkingTreeStep commitWorkingTreeStep) {
         this.messages = messages;
         this.notificationHelper = notificationHelper;
-        this.vcsService = vcsService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.contributePartPresenter = contributePartPresenter;
         this.commitWorkingTreeStep = commitWorkingTreeStep;
     }
@@ -58,6 +59,7 @@ public class CreateWorkBranchStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
+        final VcsService vcsService = vcsServiceProvider.getVcsService();
 
         final String workingBranchName = generateWorkingBranchName();
         context.setWorkBranchName(workingBranchName);
