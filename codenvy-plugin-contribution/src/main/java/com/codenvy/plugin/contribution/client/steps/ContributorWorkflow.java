@@ -36,12 +36,10 @@ public class ContributorWorkflow {
     @Inject
     public ContributorWorkflow(@Nonnull final Context context,
                                @Nonnull final DtoFactory dtoFactory,
-                               @Nonnull final EventBus eventBus,
-                               @Nonnull final AuthenticateUserStep authenticateUserStep) {
+                               @Nonnull final EventBus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.configuration = dtoFactory.createDto(Configuration.class);
-        this.step = authenticateUserStep; //initial state
     }
 
     /**

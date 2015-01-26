@@ -22,11 +22,14 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
+import com.codenvy.plugin.contribution.client.steps.AuthenticateUserStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
+import com.codenvy.plugin.contribution.client.steps.Step;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
@@ -50,18 +53,20 @@ public class ContributorExtension {
     private final DtoFactory              dtoFactory;
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
     private final ContributorWorkflow     workflow;
+    private final Step                    authenticateUserStep;
 
     @Inject
-    public ContributorExtension(final EventBus eventBus,
-                                final ContributeMessages messages,
-                                final ContributeResources resources,
-                                final AppContext appContext,
-                                final NotificationHelper notificationHelper,
-                                final ContributePartPresenter contributePartPresenter,
-                                final ProjectServiceClient projectService,
-                                final DtoFactory dtoFactory,
-                                final DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                                final ContributorWorkflow workflow) {
+    public ContributorExtension(@Nonnull final EventBus eventBus,
+                                @Nonnull final ContributeMessages messages,
+                                @Nonnull final ContributeResources resources,
+                                @Nonnull final AppContext appContext,
+                                @Nonnull final NotificationHelper notificationHelper,
+                                @Nonnull final ContributePartPresenter contributePartPresenter,
+                                @Nonnull final ProjectServiceClient projectService,
+                                @Nonnull final DtoFactory dtoFactory,
+                                @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                                @Nonnull final ContributorWorkflow workflow,
+                                @Nonnull final AuthenticateUserStep authenticateUserStep) {
         this.messages = messages;
         this.workflow = workflow;
         this.appContext = appContext;
@@ -70,6 +75,7 @@ public class ContributorExtension {
         this.projectService = projectService;
         this.dtoFactory = dtoFactory;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
+        this.authenticateUserStep = authenticateUserStep;
 
         resources.contributeCss().ensureInjected();
 
@@ -177,6 +183,7 @@ public class ContributorExtension {
     }
 
     private void startContributionWorkflow() {
+        workflow.setStep(authenticateUserStep);
         workflow.executeStep();
     }
 
