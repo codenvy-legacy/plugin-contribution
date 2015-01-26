@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import com.codenvy.api.factory.dto.Factory;
+import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
@@ -28,9 +30,11 @@ import java.util.List;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 
 /**
- * This step creates the working branch for the user contribution.
+ * This step creates the working branch for the user contribution. The next step is executed when the user click on the contribute/update
+ * button. See {@link com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter#onContribute()}
  *
  * @author Kevin Pollet
  */
@@ -41,79 +45,95 @@ public class CreateWorkBranchStep implements Step {
     private final NotificationHelper      notificationHelper;
     private final VcsServiceProvider      vcsServiceProvider;
     private final ContributePartPresenter contributePartPresenter;
-    private final Step                    commitWorkingTreeStep;
+    private final AppContext              appContext;
 
     @Inject
     public CreateWorkBranchStep(@Nonnull final ContributeMessages messages,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final ContributePartPresenter contributePartPresenter,
-                                @Nonnull final CommitWorkingTreeStep commitWorkingTreeStep) {
+                                @Nonnull final AppContext appContext) {
         this.messages = messages;
         this.notificationHelper = notificationHelper;
         this.vcsServiceProvider = vcsServiceProvider;
         this.contributePartPresenter = contributePartPresenter;
-        this.commitWorkingTreeStep = commitWorkingTreeStep;
+        this.appContext = appContext;
     }
 
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
+        final Factory factory = appContext.getFactory();
         final VcsService vcsService = vcsServiceProvider.getVcsService();
 
-        final String workingBranchName = generateWorkingBranchName();
-        context.setWorkBranchName(workingBranchName);
+        // if we come from a factory we have to create the working branch
+        if (factory != null && factory.getProject().getAttributes().containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+            final String workingBranchName = generateWorkBranchName();
+            context.setWorkBranchName(workingBranchName);
 
-        final Notification createWorkingBranchNotification =
-                new Notification(messages.contributorExtensionCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
-        notificationHelper.showNotification(createWorkingBranchNotification);
+            final Notification createWorkingBranchNotification =
+                    new Notification(messages.contributorExtensionCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
+            notificationHelper.showNotification(createWorkingBranchNotification);
 
-        // the working branch is only created if it doesn't exist
-        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
-            @Override
-            public void onFailure(final Throwable exception) {
-                notificationHelper.finishNotificationWithError(CreateWorkBranchStep.class, exception, createWorkingBranchNotification);
-            }
-
-            @Override
-            public void onSuccess(final List<Branch> branches) {
-                boolean workingBranchExists = false;
-
-                for (final Branch oneBranch : branches) {
-                    if (workingBranchName.equals(oneBranch.getDisplayName())) {
-                        workingBranchExists = true;
-                        break;
-                    }
+            // the working branch is only created if it doesn't exist
+            vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    notificationHelper.finishNotificationWithError(CreateWorkBranchStep.class, exception, createWorkingBranchNotification);
                 }
 
-                // shorthand for create + checkout new temporary working branch -> checkout -b branchName
-                vcsService.checkoutBranch(context.getProject(), workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
-                    @Override
-                    public void onSuccess(final String result) {
-                        contributePartPresenter.open();
-                        notificationHelper.finishNotification(messages.contributorExtensionWorkBranchCreated(workingBranchName),
-                                                              createWorkingBranchNotification);
+                @Override
+                public void onSuccess(final List<Branch> branches) {
+                    boolean workingBranchExists = false;
 
-                        // the step is executed when the user click on the contribute button
-                        workflow.setStep(commitWorkingTreeStep);
+                    for (final Branch oneBranch : branches) {
+                        if (workingBranchName.equals(oneBranch.getDisplayName())) {
+                            workingBranchExists = true;
+                            break;
+                        }
                     }
 
-                    @Override
-                    public void onFailure(final Throwable exception) {
-                        notificationHelper.finishNotificationWithError(CreateWorkBranchStep.class, exception,
-                                                                       createWorkingBranchNotification);
-                    }
-                });
-            }
-        });
+                    // shorthand for create + checkout new temporary working branch -> checkout -b branchName
+                    vcsService.checkoutBranch(context.getProject(), workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
+                        @Override
+                        public void onSuccess(final String result) {
+                            contributePartPresenter.open();
+                            notificationHelper.finishNotification(messages.contributorExtensionWorkBranchCreated(workingBranchName),
+                                                                  createWorkingBranchNotification);
+                        }
+
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            notificationHelper.finishNotificationWithError(CreateWorkBranchStep.class, exception,
+                                                                           createWorkingBranchNotification);
+                        }
+                    });
+                }
+            });
+
+            // if it's a github project the working branch is the current one
+        } else {
+            vcsService.getBranchName(context.getProject(), new AsyncCallback<String>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    notificationHelper.showError(CreateWorkBranchStep.class, exception);
+                }
+
+                @Override
+                public void onSuccess(final String branchName) {
+                    context.setWorkBranchName(branchName);
+                    contributePartPresenter.open();
+                }
+            });
+        }
     }
 
     /**
-     * Generates the working branch name used for the contribution.
+     * Generates the work branch name used for the contribution.
      *
-     * @return the working branch name, never {@code null}.
+     * @return the work branch name, never {@code null}.
      */
-    private String generateWorkingBranchName() {
+    private String generateWorkBranchName() {
         final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MMddyyyy");
         return WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
     }
