@@ -18,7 +18,6 @@ import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartVie
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartViewImpl;
 import com.codenvy.plugin.contribution.client.steps.AddForkRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.AddReviewFactoryLinkStep;
-import com.codenvy.plugin.contribution.client.steps.AuthenticateUserStep;
 import com.codenvy.plugin.contribution.client.steps.AuthorizeCodenvyOnVCSHostStep;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
@@ -61,7 +60,6 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // the steps
         bind(ContributorWorkflow.class).in(Singleton.class);
-        bind(AuthenticateUserStep.class);
         bind(InitializeWorkflowContextStep.class);
         bind(CreateWorkBranchStep.class);
         bind(CommitWorkingTreeStep.class);

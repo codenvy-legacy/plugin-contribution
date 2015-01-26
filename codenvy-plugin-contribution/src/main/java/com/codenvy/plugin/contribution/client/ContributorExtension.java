@@ -24,8 +24,8 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
-import com.codenvy.plugin.contribution.client.steps.AuthenticateUserStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
+import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowContextStep;
 import com.codenvy.plugin.contribution.client.steps.Step;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -59,7 +59,7 @@ public class ContributorExtension {
     private final DtoFactory              dtoFactory;
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
     private final ContributorWorkflow     workflow;
-    private final Step                    authenticateUserStep;
+    private final Step                    initializeWorkflowContextStep;
     private final VcsHostingService       vcsHostingService;
     private final VcsServiceProvider      vcsServiceProvider;
 
@@ -76,7 +76,7 @@ public class ContributorExtension {
                                 @Nonnull final ContributorWorkflow workflow,
                                 @Nonnull final VcsHostingService vcsHostingService,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
-                                @Nonnull final AuthenticateUserStep authenticateUserStep) {
+                                @Nonnull final InitializeWorkflowContextStep initializeWorkflowContextStep) {
         this.messages = messages;
         this.workflow = workflow;
         this.appContext = appContext;
@@ -87,7 +87,7 @@ public class ContributorExtension {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.vcsHostingService = vcsHostingService;
         this.vcsServiceProvider = vcsServiceProvider;
-        this.authenticateUserStep = authenticateUserStep;
+        this.initializeWorkflowContextStep = initializeWorkflowContextStep;
 
         resources.contributeCss().ensureInjected();
 
@@ -145,7 +145,8 @@ public class ContributorExtension {
 
                                         @Override
                                         protected void onSuccess(final ProjectDescriptor project) {
-                                            startContributionWorkflow();
+                                            workflow.setStep(initializeWorkflowContextStep);
+                                            workflow.executeStep();
                                         }
                                     });
                                 }
@@ -227,11 +228,6 @@ public class ContributorExtension {
         projectUpdate.setAttributes(projectDescriptor.getAttributes());
         projectUpdate.setRunners(projectDescriptor.getRunners());
         projectUpdate.setBuilders(projectDescriptor.getBuilders());
-    }
-
-    private void startContributionWorkflow() {
-        workflow.setStep(authenticateUserStep);
-        workflow.executeStep();
     }
 
     private void exitContributeMode() {
