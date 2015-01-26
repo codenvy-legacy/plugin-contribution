@@ -148,7 +148,7 @@ public class GitVcsService implements VcsService {
 
     @Override
     public void getBranchName(@Nonnull final ProjectDescriptor project, @Nonnull final AsyncCallback<String> callback) {
-        service.status(project, new AsyncRequestCallback<Status>() {
+        service.status(project, new AsyncRequestCallback<Status>(dtoUnmarshallerFactory.newUnmarshaller(Status.class)) {
             @Override
             protected void onSuccess(final Status result) {
                 callback.onSuccess(result.getBranchName());

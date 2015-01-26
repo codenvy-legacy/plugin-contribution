@@ -12,6 +12,8 @@ package com.codenvy.plugin.contribution.client;
 
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
+import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
+import com.codenvy.api.project.shared.dto.NewProject;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.api.project.shared.dto.ProjectUpdate;
 import com.codenvy.ide.api.app.AppContext;
@@ -119,24 +121,35 @@ public class ContributorExtension {
                     for (final Remote oneRemote : remotes) {
                         final String remoteUrl = oneRemote.getUrl();
                         if (remoteUrl != null && vcsHostingService.isVcsHostRemoteUrl(remoteUrl)) {
+                            final Factory factory = appContext.getFactory();
+                            final Map<String, List<String>> projectAttributes = project.getAttributes();
 
-                            if (appContext.getFactory() != null) {
-                                initializeProjectAttributesFromFactory(appContext.getFactory(), project, new AsyncCallback<Void>() {
-                                    @Override
-                                    public void onFailure(final Throwable exception) {
-                                        notificationHelper
-                                                .showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
-                                                        exception.getMessage()), exception);
-                                    }
+                            setContributionFlag(projectAttributes, factory);
 
-                                    @Override
-                                    public void onSuccess(final Void result) {
-                                        startContributionWorkflow();
-                                    }
-                                });
-                            }
+                            setClonedBranch(projectAttributes, factory, vcsService, project, new AsyncCallback<Void>() {
+                                @Override
+                                public void onFailure(final Throwable exception) {
+                                    notificationHelper.showError(ContributorExtension.class, exception);
+                                }
 
-                            startContributionWorkflow();
+                                @Override
+                                public void onSuccess(final Void result) {
+                                    updateProjectAttributes(project, projectAttributes, new AsyncRequestCallback<ProjectDescriptor>(
+                                            dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
+                                        @Override
+                                        protected void onFailure(final Throwable exception) {
+                                            notificationHelper
+                                                    .showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
+                                                            exception.getMessage()), exception);
+                                        }
+
+                                        @Override
+                                        protected void onSuccess(final ProjectDescriptor project) {
+                                            startContributionWorkflow();
+                                        }
+                                    });
+                                }
+                            });
 
                             break;
                         }
@@ -146,55 +159,61 @@ public class ContributorExtension {
         }
     }
 
-    private void initializeProjectAttributesFromFactory(final Factory factory,
-                                                        final ProjectDescriptor project,
-                                                        final AsyncCallback<Void> callback) {
-        final Map<String, List<String>> attributes = project.getAttributes();
+    private void setContributionFlag(final Map<String, List<String>> projectAttributes, final Factory factory) {
+        if (factory != null) {
+            final NewProject factoryProject = factory.getProject();
 
-        if (factory.getProject() != null && factory.getProject().getAttributes() != null) {
-            final Map<String, List<String>> attributesFromFactory = factory.getProject().getAttributes();
+            if (factoryProject != null && factoryProject.getAttributes() != null) {
+                final Map<String, List<String>> factoryAttributes = factoryProject.getAttributes();
 
-            if (attributesFromFactory.containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
-
-                setTheContributionFlag(attributes, attributesFromFactory.get(ATTRIBUTE_CONTRIBUTE_KEY));
-
-                setTheClonedBranch(attributes, factory);
-
-                persistToProjectAttributes(project, attributes, new AsyncRequestCallback<ProjectDescriptor>(
-                        dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
-                    @Override
-                    protected void onSuccess(final ProjectDescriptor project) {
-                        callback.onSuccess(null);
-                    }
-
-                    @Override
-                    protected void onFailure(final Throwable exception) {
-                        callback.onFailure(exception);
-                    }
-                });
+                final List<String> attributeContributeValue = factoryAttributes.get(ATTRIBUTE_CONTRIBUTE_KEY);
+                if (attributeContributeValue != null) {
+                    projectAttributes.put(ATTRIBUTE_CONTRIBUTE_KEY, attributeContributeValue);
+                }
             }
         }
     }
 
-    private void setTheContributionFlag(final Map<String, List<String>> attributesToUpdate, final List<String> contributeFlagFromFactory) {
-        attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_KEY, contributeFlagFromFactory);
-    }
+    private void setClonedBranch(final Map<String, List<String>> projectAttributes,
+                                 final Factory factory,
+                                 final VcsService vcsService,
+                                 final ProjectDescriptor project,
+                                 final AsyncCallback<Void> callback) {
 
-    private void setTheClonedBranch(final Map<String, List<String>> attributesToUpdate, final Factory factory) {
-        final Map<String, String> parametersMap = factory.getSource().getProject().getParameters();
+        if (projectAttributes.containsKey(ATTRIBUTE_CONTRIBUTE_BRANCH)) {
+            callback.onSuccess(null);
 
-        for (final String parameter : parametersMap.keySet()) {
-            if ("branch".equals(parameter)) {
-                final List<String> clonedBranchAttribute = asList(parametersMap.get(parameter));
-                attributesToUpdate.put(ATTRIBUTE_CONTRIBUTE_BRANCH, clonedBranchAttribute);
-                break;
+        } else {
+            if (factory != null && factory.getSource() != null) {
+                final ImportSourceDescriptor factoryProject = factory.getSource().getProject();
+                final Map<String, String> parameters = factoryProject.getParameters();
+
+                final String branchName = parameters.get("branch");
+                if (branchName != null) {
+                    projectAttributes.put(ATTRIBUTE_CONTRIBUTE_BRANCH, asList(branchName));
+                    callback.onSuccess(null);
+                    return;
+                }
             }
+
+            vcsService.getBranchName(project, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    callback.onFailure(exception);
+                }
+
+                @Override
+                public void onSuccess(final String branchName) {
+                    projectAttributes.put(ATTRIBUTE_CONTRIBUTE_BRANCH, asList(branchName));
+                    callback.onSuccess(null);
+                }
+            });
         }
     }
 
-    private void persistToProjectAttributes(final ProjectDescriptor currentProject,
-                                            final Map<String, List<String>> attributesToUpdate,
-                                            final AsyncRequestCallback<ProjectDescriptor> updateCallback) {
+    private void updateProjectAttributes(final ProjectDescriptor currentProject,
+                                         final Map<String, List<String>> attributesToUpdate,
+                                         final AsyncRequestCallback<ProjectDescriptor> updateCallback) {
         final ProjectUpdate projectToUpdate = dtoFactory.createDto(ProjectUpdate.class);
         copyProjectInfo(currentProject, projectToUpdate);
         projectToUpdate.setAttributes(attributesToUpdate);
