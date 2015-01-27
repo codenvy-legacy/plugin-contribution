@@ -19,6 +19,7 @@ import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartVie
 import com.codenvy.plugin.contribution.client.steps.AddForkRemoteStep;
 import com.codenvy.plugin.contribution.client.steps.AddReviewFactoryLinkStep;
 import com.codenvy.plugin.contribution.client.steps.AuthorizeCodenvyOnVCSHostStep;
+import com.codenvy.plugin.contribution.client.steps.CheckoutBranchToPushStep;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.steps.CreateForkStep;
@@ -27,7 +28,6 @@ import com.codenvy.plugin.contribution.client.steps.GenerateReviewFactoryStep;
 import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowContextStep;
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
-import com.codenvy.plugin.contribution.client.steps.RenameWorkBranchStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -68,7 +68,7 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(GenerateReviewFactoryStep.class);
         bind(IssuePullRequestStep.class);
         bind(PushBranchOnForkStep.class);
-        bind(RenameWorkBranchStep.class);
+        bind(CheckoutBranchToPushStep.class);
         bind(AddForkRemoteStep.class);
         bind(CreateForkStep.class);
         install(new GinFactoryModuleBuilder().build(WaitForkOnRemoteStepFactory.class));

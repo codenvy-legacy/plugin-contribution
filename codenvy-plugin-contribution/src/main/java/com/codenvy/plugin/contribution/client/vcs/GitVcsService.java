@@ -68,12 +68,12 @@ public class GitVcsService implements VcsService {
                                final boolean createNew, @Nonnull final AsyncCallback<String> callback) {
         service.branchCheckout(project, name, null, createNew, new AsyncRequestCallback<String>() {
             @Override
-            protected void onSuccess(String result) {
+            protected void onSuccess(final String result) {
                 callback.onSuccess(result);
             }
 
             @Override
-            protected void onFailure(Throwable exception) {
+            protected void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
             }
         });

@@ -125,22 +125,16 @@ public interface ContributeMessages extends Messages {
     String stepDefineWorkBranchWorkBranchCreated(String branchName);
 
     /*
-     * Rename work branch step
+     * Checkout work branch to push step
      */
-    @Key("step.rename.work.branch.local.branch.renamed")
-    String stepRenameWorkBranchLocalBranchRenamed(String branchName);
+    @Key("step.checkout.branch.to.push.local.branch.checked.out")
+    String stepCheckoutBranchToPushLocalBranchCheckedOut(String branchName);
 
-    @Key("step.rename.work.branch.missing.config.title")
-    String stepRenameWorkBranchMissingConfigTitle();
+    @Key("step.checkout.branch.to.push.error.list.local.branches")
+    String stepCheckoutBranchToPushErrorListLocalBranches();
 
-    @Key("step.rename.work.branch.error.list.local.branches")
-    String stepRenameWorkBranchErrorListLocalBranches();
-
-    @Key("step.rename.work.branch.error.local.branch.exists")
-    String stepRenameWorkBranchErrorLocalBranchExists(String branchName);
-
-    @Key("step.rename.work.branch.error.rename.local.branch")
-    String stepRenameWorkBranchErrorRenameLocalBranch();
+    @Key("step.checkout.branch.to.push.error.checkout.local.branch")
+    String stepCheckoutBranchToPushErrorCheckoutLocalBranch();
 
     /*
      * Add fork remote step

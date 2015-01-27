@@ -55,7 +55,7 @@ public class StepEvent extends GwtEvent<StepHandler> {
         COMMIT_WORKING_TREE,
         AUTHORIZE_CODENVY_ON_VCS_HOST,
         CREATE_FORK,
-        RENAME_WORK_BRANCH,
+        CHECKOUT_BRANCH_TO_PUSH,
         ADD_FORK_REMOTE,
         PUSH_BRANCH_ON_FORK,
         ISSUE_PULL_REQUEST,

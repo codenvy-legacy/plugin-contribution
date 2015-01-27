@@ -33,17 +33,17 @@ public class CreateForkStep implements Step {
     private final VcsHostingService  vcsHostingService;
     private final ContributeMessages messages;
     private final NotificationHelper notificationHelper;
-    private final Step               renameWorkBranchStep;
+    private final Step               checkoutBranchToPushStep;
 
     @Inject
     public CreateForkStep(@Nonnull final VcsHostingService vcsHostingService,
                           @Nonnull final ContributeMessages messages,
                           @Nonnull final NotificationHelper notificationHelper,
-                          @Nonnull final RenameWorkBranchStep renameWorkBranchStep) {
+                          @Nonnull final CheckoutBranchToPushStep checkoutBranchToPushStep) {
         this.vcsHostingService = vcsHostingService;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
-        this.renameWorkBranchStep = renameWorkBranchStep;
+        this.checkoutBranchToPushStep = checkoutBranchToPushStep;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class CreateForkStep implements Step {
                 workflow.fireStepDoneEvent(CREATE_FORK);
                 notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
 
-                workflow.setStep(renameWorkBranchStep);
+                workflow.setStep(checkoutBranchToPushStep);
                 workflow.executeStep();
             }
 
@@ -92,7 +92,7 @@ public class CreateForkStep implements Step {
                 notificationHelper
                         .finishNotification(messages.stepCreateForkRequestForkCreation(repositoryOwner, repositoryName), notification);
 
-                workflow.setStep(renameWorkBranchStep);
+                workflow.setStep(checkoutBranchToPushStep);
                 workflow.executeStep();
             }
 
