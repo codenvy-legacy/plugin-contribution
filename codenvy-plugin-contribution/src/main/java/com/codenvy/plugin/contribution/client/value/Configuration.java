@@ -18,11 +18,11 @@ import com.codenvy.dto.shared.DTO;
 @DTO
 public interface Configuration {
 
-    String getBranchName();
+    String getContributionBranchName();
 
-    void setBranchName(String name);
+    void setContributionBranchName(String name);
 
-    Configuration withBranchName(String name);
+    Configuration withContributionBranchName(String name);
 
     String getContributionComment();
 

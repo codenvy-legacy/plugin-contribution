@@ -16,6 +16,7 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
@@ -23,9 +24,12 @@ import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
 import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent;
 import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeHandler;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.vcs.Branch;
+import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
 
@@ -33,6 +37,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.codenvy.ide.api.constraints.Constraints.LAST;
 import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
@@ -66,6 +72,12 @@ public class ContributePartPresenter extends BasePresenter
     /** The application context. */
     private final AppContext appContext;
 
+    /** The vcs service. */
+    private final VcsService vcsService;
+
+    /** The notification helper. */
+    private final NotificationHelper notificationHelper;
+
     @Inject
     public ContributePartPresenter(@Nonnull final ContributePartView view,
                                    @Nonnull final ContributeMessages messages,
@@ -74,7 +86,9 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final Provider<ContributorWorkflow> workflow,
                                    @Nonnull final VcsHostingService vcsHostingService,
                                    @Nonnull final Provider<CommitWorkingTreeStep> commitWorkingTreeStep,
-                                   @Nonnull final AppContext appContext) {
+                                   @Nonnull final AppContext appContext,
+                                   @Nonnull final VcsService vcsService,
+                                   @Nonnull final NotificationHelper notificationHelper) {
         this.view = view;
         this.workspaceAgent = workspaceAgent;
         this.workflow = workflow;
@@ -82,6 +96,8 @@ public class ContributePartPresenter extends BasePresenter
         this.messages = messages;
         this.commitWorkingTreeStep = commitWorkingTreeStep;
         this.appContext = appContext;
+        this.vcsService = vcsService;
+        this.notificationHelper = notificationHelper;
 
         this.view.setDelegate(this);
         eventBus.addHandler(StepEvent.TYPE, this);
@@ -89,8 +105,26 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     public void open() {
-        view.reset();
-        workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
+        final Context context = workflow.get().getContext();
+        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(ContributePartPresenter.class, exception);
+            }
+
+            @Override
+            public void onSuccess(final List<Branch> branches) {
+                final List<String> branchNames = new ArrayList<>();
+                for (final Branch oneBranch : branches) {
+                    branchNames.add(oneBranch.getDisplayName());
+                }
+
+                view.reset();
+                view.setContributionBranchName(workflow.get().getContext().getWorkBranchName());
+                view.setContributionBranchNameSuggestionList(branchNames);
+                workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
+            }
+        });
     }
 
     public void remove() {
@@ -108,15 +142,17 @@ public class ContributePartPresenter extends BasePresenter
     @Override
     public void onContribute() {
         view.hideStatusSection();
-        view.resetStatusSection();
+        view.clearStatusSection();
         view.setContributeEnabled(false);
         view.setContributionProgressState(true);
 
-        // resume the contribution workflow and execute the current step
+        // resume the contribution workflow and execute the commit tree step
         final ContributorWorkflow workflow = this.workflow.get();
-        workflow.getConfiguration().setBranchName(view.getBranchName());
-        workflow.getConfiguration().setContributionComment(view.getContributionComment());
-        workflow.getConfiguration().setContributionTitle(view.getContributionTitle());
+        workflow.getConfiguration()
+                .withContributionBranchName(view.getContributionBranchName())
+                .withContributionComment(view.getContributionComment())
+                .withContributionTitle(view.getContributionTitle());
+
         workflow.setStep(commitWorkingTreeStep.get());
         workflow.executeStep();
     }
@@ -133,7 +169,7 @@ public class ContributePartPresenter extends BasePresenter
     @Override
     public void onNewContribution() {
         view.hideStatusSection();
-        view.resetStatusSection();
+        view.clearStatusSection();
         view.hideNewContributionSection();
 
         final Factory factory = appContext.getFactory();
@@ -154,21 +190,16 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     @Override
-    public String suggestBranchName() {
-        return workflow.get().getContext().getWorkBranchName();
-    }
-
-    @Override
     public void updateControls() {
-        final String branchName = view.getBranchName();
+        final String branchName = view.getContributionBranchName();
         final String contributionTitle = view.getContributionTitle();
 
         boolean ready = true;
-        view.showBranchNameError(false);
+        view.showContributionBranchNameError(false);
         view.showContributionTitleError(false);
 
         if (branchName == null || !branchName.matches("[0-9A-Za-z-]+")) {
-            view.showBranchNameError(true);
+            view.showContributionBranchNameError(true);
             ready = false;
         }
 
@@ -262,7 +293,7 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onWorkflowModeChange(@Nonnull final WorkflowModeEvent event) {
-        view.setBranchNameEnabled(event.getMode() != UPDATE);
+        view.setContributionBranchNameEnabled(event.getMode() != UPDATE);
         view.setContributionTitleEnabled(event.getMode() != UPDATE);
         view.setContributionCommentEnabled(event.getMode() != UPDATE);
         view.setContributeButtonText(

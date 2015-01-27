@@ -52,7 +52,7 @@ public class RenameWorkBranchStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
-        final String newBranchName = workflow.getConfiguration().getBranchName();
+        final String newBranchName = workflow.getConfiguration().getContributionBranchName();
 
         if (newBranchName.equals(context.getWorkBranchName())) {
             workflow.fireStepDoneEvent(RENAME_WORK_BRANCH);

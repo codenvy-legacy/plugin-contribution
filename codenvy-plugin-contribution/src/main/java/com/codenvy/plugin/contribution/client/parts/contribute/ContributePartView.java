@@ -13,6 +13,8 @@ package com.codenvy.plugin.contribution.client.parts.contribute;
 import com.codenvy.ide.api.mvp.View;
 import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 
+import java.util.List;
+
 /**
  * Interface for the contribution configuration shown when the user decides to send their contribution.
  */
@@ -33,11 +35,40 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setClonedBranch(String branch);
 
     /**
-     * Returns the current content of the branch name.
+     * Returns the contribution branch name.
      *
-     * @return the branch name
+     * @return the contribution branch name
      */
-    String getBranchName();
+    String getContributionBranchName();
+
+    /**
+     * Sets the contribution branch name.
+     *
+     * @param branchName
+     *         the contribution branch name.
+     */
+    void setContributionBranchName(String branchName);
+
+    /**
+     * Set the contribution branch name suggestions.
+     *
+     * @param branchNames
+     *         the branch name suggestion list.
+     */
+    void setContributionBranchNameSuggestionList(List<String> branchNames);
+
+    /**
+     * Sets the enabled/disabled state of the contribution branch name field.
+     */
+    void setContributionBranchNameEnabled(boolean enabled);
+
+    /**
+     * Sets the contribution branch name input error state.
+     *
+     * @param showError
+     *         {@code true} if the contribution branch name is in error, {@code false} otherwise.
+     */
+    void showContributionBranchNameError(boolean showError);
 
     /**
      * Returns the current content of the contribution comment.
@@ -47,6 +78,11 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     String getContributionComment();
 
     /**
+     * Sets the enabled/disabled state of the contribution comment field.
+     */
+    void setContributionCommentEnabled(boolean enabled);
+
+    /**
      * Returns the contribution title.
      *
      * @return the title.
@@ -54,24 +90,17 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     String getContributionTitle();
 
     /**
-     * Sets the focused/unfocused state of the branch name field.
-     */
-    void setBranchNameFocus(boolean focused);
-
-    /**
-     * Sets the enabled/disabled state of the branch name field.
-     */
-    void setBranchNameEnabled(boolean enabled);
-
-    /**
-     * Sets the enabled/disabled state of the contribution comment field.
-     */
-    void setContributionCommentEnabled(boolean enabled);
-
-    /**
      * Sets the enabled/disabled state of the contribution title field.
      */
     void setContributionTitleEnabled(boolean enabled);
+
+    /**
+     * Sets the contribution title input error state.
+     *
+     * @param showError
+     *         {@code true} if the contribution title is in error, {@code false} otherwise.
+     */
+    void showContributionTitleError(boolean showError);
 
     /**
      * Sets the enabled/disabled state of the "Contribute" button.
@@ -90,40 +119,24 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setContributeButtonText(String text);
 
     /**
-     * Sets the branch name input error state.
-     *
-     * @param showError
-     *         {@code true} if the branch name is in error, {@code false} otherwise.
-     */
-    void showBranchNameError(boolean showError);
-
-    /**
-     * Sets the contribution title input error state.
-     *
-     * @param showError
-     *         {@code true} if the contribution title is in error, {@code false} otherwise.
-     */
-    void showContributionTitleError(boolean showError);
-
-    /**
      * Shows the status section.
      */
     void showStatusSection();
 
     /**
-     * Hides the status section.
-     */
-    void hideStatusSection();
-
-    /**
-     * Resets the status section.
-     */
-    void resetStatusSection();
-
-    /**
      * Show the status footer.
      */
     void showStatusSectionFooter();
+
+    /**
+     * Clears the status section.
+     */
+    void clearStatusSection();
+
+    /**
+     * Hides the status section.
+     */
+    void hideStatusSection();
 
     /**
      * Show the new contribution section.
@@ -182,12 +195,5 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
 
         /** Performs any action when view state is modified. */
         void updateControls();
-
-        /**
-         * Suggests a branch name for the current work.
-         *
-         * @return the suggestion.
-         */
-        String suggestBranchName();
     }
 }

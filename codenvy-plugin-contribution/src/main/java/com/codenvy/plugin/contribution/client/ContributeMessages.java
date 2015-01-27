@@ -34,11 +34,11 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.configure.contribution.section.title")
     String contributePartConfigureContributionSectionTitle();
 
-    @Key("contribute.part.configure.contribution.section.branch.name.label")
-    String contributePartConfigureContributionSectionBranchNameLabel();
+    @Key("contribute.part.configure.contribution.section.contribution.branch.name.label")
+    String contributePartConfigureContributionSectionContributionBranchNameLabel();
 
-    @Key("contribute.part.configure.contribution.section.branch.name.placeholder")
-    String contributePartConfigureContributionSectionBranchNamePlaceholder();
+    @Key("contribute.part.configure.contribution.section.contribution.branch.name.placeholder")
+    String contributePartConfigureContributionSectionContributionBranchNamePlaceholder();
 
     @Key("contribute.part.configure.contribution.section.contribution.title.label")
     String contributePartConfigureContributionSectionContributionTitleLabel();

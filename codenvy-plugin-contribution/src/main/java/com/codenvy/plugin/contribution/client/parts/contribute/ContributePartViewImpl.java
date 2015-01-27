@@ -26,7 +26,9 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -34,6 +36,8 @@ import org.vectomatic.dom.svg.ui.SVGImage;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 
 import static com.google.gwt.dom.client.Style.Unit.PX;
 
@@ -44,9 +48,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     /** The uUI binder for this component. */
     private static final ContributePartViewUiBinder UI_BINDER = GWT.create(ContributePartViewUiBinder.class);
-
-    /** The button loader resources. */
-    private final ButtonLoaderResources buttonLoaderResources;
 
     /** The contribute button. */
     @UiField
@@ -64,9 +65,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiField
     Label clonedBranch;
 
-    /** The input component for the branch name. */
+    /** The input component for the contribution branch name. */
     @UiField
-    TextBox branchName;
+    SuggestBox contributionBranchName;
 
     /** The input component for the contribution title. */
     @UiField
@@ -124,7 +125,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
         this.messages = messages;
         this.resources = resources;
-        this.buttonLoaderResources = buttonLoaderResources;
 
         this.container.add(UI_BINDER.createAndBindUi(this));
 
@@ -135,8 +135,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
         this.statusSection.setVisible(false);
         this.newContributionSection.setVisible(false);
-        this.branchName.getElement()
-                       .setPropertyString("placeholder", messages.contributePartConfigureContributionSectionBranchNamePlaceholder());
+        this.contributionBranchName.getElement().setPropertyString("placeholder",
+                                                                   messages.contributePartConfigureContributionSectionContributionBranchNamePlaceholder());
         this.contributionTitle.getElement().setPropertyString("placeholder",
                                                               messages.contributePartConfigureContributionSectionContributionTitlePlaceholder());
         this.contributionComment.getElement().setPropertyString("placeholder",
@@ -145,11 +145,13 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     @Override
     public void reset() {
-        branchName.setValue(delegate.suggestBranchName());
+        contributionBranchName.setValue("");
+        setContributionBranchNameSuggestionList(Collections.<String>emptyList());
+        contributionTitle.setValue("");
         contributionComment.setValue("");
 
         hideStatusSection();
-        resetStatusSection();
+        clearStatusSection();
 
         hideNewContributionSection();
 
@@ -174,8 +176,21 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public String getBranchName() {
-        return branchName.getValue();
+    public String getContributionBranchName() {
+        return contributionBranchName.getValue();
+    }
+
+    @Override
+    public void setContributionBranchName(final String branchName) {
+        contributionBranchName.setValue(branchName);
+    }
+
+    @Override
+    public void setContributionBranchNameSuggestionList(final List<String> branchNames) {
+        final MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)contributionBranchName.getSuggestOracle();
+        oracle.clear();
+        oracle.addAll(branchNames);
+        oracle.setDefaultSuggestionsFromText(branchNames);
     }
 
     @Override
@@ -189,13 +204,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void setBranchNameEnabled(final boolean enabled) {
-        branchName.setEnabled(enabled);
-    }
-
-    @Override
-    public void setBranchNameFocus(final boolean focused) {
-        branchName.setFocus(focused);
+    public void setContributionBranchNameEnabled(final boolean enabled) {
+        contributionBranchName.setEnabled(enabled);
     }
 
     @Override
@@ -219,11 +229,11 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void showBranchNameError(final boolean showError) {
+    public void showContributionBranchNameError(final boolean showError) {
         if (showError) {
-            branchName.addStyleName(resources.contributeCss().inputError());
+            contributionBranchName.addStyleName(resources.contributeCss().inputError());
         } else {
-            branchName.removeStyleName(resources.contributeCss().inputError());
+            contributionBranchName.removeStyleName(resources.contributeCss().inputError());
         }
     }
 
@@ -247,7 +257,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void resetStatusSection() {
+    public void clearStatusSection() {
         statusSectionFooter.setVisible(false);
         createForkStatus.clear();
         pushBranchStatus.clear();
@@ -306,20 +316,14 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @SuppressWarnings("UnusedParameters")
-    @UiHandler("branchName")
-    public void branchNameChanged(final ValueChangeEvent<String> event) {
+    @UiHandler("contributionBranchName")
+    public void contributionBranchNameChanged(final ValueChangeEvent<String> event) {
         delegate.updateControls();
     }
 
     @SuppressWarnings("UnusedParameters")
-    @UiHandler("branchName")
-    public void branchNameKeyUp(final KeyUpEvent event) {
-        delegate.updateControls();
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    @UiHandler("branchName")
-    public void branchNamePaste(final PasteEvent event) {
+    @UiHandler("contributionBranchName")
+    public void contributionBranchNameKeyUp(final KeyUpEvent event) {
         delegate.updateControls();
     }
 

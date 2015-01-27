@@ -170,8 +170,9 @@
             <g:HTMLPanel addStyleNames="{style.section} {style.border}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartConfigureContributionSectionTitle}"/>
                 <div class="{style.fieldItem}">
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartConfigureContributionSectionBranchNameLabel}"/>
-                    <my:PasteAwareTextBox ui:field="branchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
+                    <g:Label addStyleNames="{style.label}"
+                             text="{messages.contributePartConfigureContributionSectionContributionBranchNameLabel}"/>
+                    <g:SuggestBox ui:field="contributionBranchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
                 </div>
                 <div class="{style.fieldItem}">
                     <g:Label addStyleNames="{style.label}"

@@ -69,7 +69,7 @@ public class CommitWorkingTreeStep implements Step {
             @Override
             public void onSuccess(final Boolean hasUncommittedChanges) {
                 if (hasUncommittedChanges) {
-                    commitPresenter.showView(messages.contributorExtensionDefaultCommitDescription(configuration.getBranchName(),
+                    commitPresenter.showView(messages.contributorExtensionDefaultCommitDescription(configuration.getContributionBranchName(),
                                                                                                    configuration.getContributionTitle()));
                 } else {
                     proceed(workflow);
