@@ -193,6 +193,9 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
         /** Performs any action appropriate in response to the user having pressed the start new contribution button. */
         void onNewContribution();
 
+        /** Performs any action appropriate in response to the user having pressed the refresh contribution branch names list button. */
+        void onRefreshContributionBranchNameList();
+
         /** Performs any action when view state is modified. */
         void updateControls();
     }

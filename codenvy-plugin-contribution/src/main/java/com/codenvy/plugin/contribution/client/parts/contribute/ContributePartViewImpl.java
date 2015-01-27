@@ -33,12 +33,14 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
 import org.vectomatic.dom.svg.ui.SVGImage;
+import org.vectomatic.dom.svg.ui.SVGPushButton;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.gwt.dom.client.Style.Cursor.POINTER;
 import static com.google.gwt.dom.client.Style.Unit.PX;
 
 /**
@@ -68,6 +70,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     /** The input component for the contribution branch name. */
     @UiField
     SuggestBox contributionBranchName;
+
+    @UiField
+    SVGPushButton refreshContributionBranchNameListButton;
 
     /** The input component for the contribution title. */
     @UiField
@@ -132,6 +137,11 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
         this.contributeButtonText = contributeButton.getText();
         this.contributeButton.addStyleName(buttonLoaderResources.Css().buttonLoader());
+
+        this.refreshContributionBranchNameListButton.getElement().getStyle().setWidth(23, PX);
+        this.refreshContributionBranchNameListButton.getElement().getStyle().setHeight(23, PX);
+        this.refreshContributionBranchNameListButton.getElement().getStyle().setCursor(POINTER);
+        this.refreshContributionBranchNameListButton.getElement().getStyle().setProperty("fill", "#dbdbdb");
 
         this.statusSection.setVisible(false);
         this.newContributionSection.setVisible(false);
@@ -293,7 +303,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     private SVGImage getStatusImage(final boolean success) {
-        final SVGImage image = new SVGImage(success ? resources.ok() : resources.error());
+        final SVGImage image = new SVGImage(success ? resources.statusOkIcon() : resources.statusErrorIcon());
         image.getElement().getStyle().setWidth(15, PX);
         image.getElement().getStyle().setProperty("fill", success ? "#FFFFFF" : "#CF3C3E");
 
@@ -325,6 +335,12 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiHandler("contributionBranchName")
     public void contributionBranchNameKeyUp(final KeyUpEvent event) {
         delegate.updateControls();
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @UiHandler("refreshContributionBranchNameListButton")
+    public void refreshContributionBranchNameList(final ClickEvent event) {
+        delegate.onRefreshContributionBranchNameList();
     }
 
     @SuppressWarnings("UnusedParameters")

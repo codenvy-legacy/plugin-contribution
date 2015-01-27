@@ -19,16 +19,19 @@ import org.vectomatic.dom.svg.ui.SVGResource;
  * Contributor plugin resources.
  */
 public interface ContributeResources extends ClientBundle {
-    interface ContributeCss extends Styles {
-        String blueButton();
-    }
-
     @Source({"Contribute.css", "com/codenvy/ide/api/ui/style.css", "com/codenvy/ide/ui/Styles.css"})
     ContributeCss contributeCss();
 
     @Source("images/ok.svg")
-    SVGResource ok();
+    SVGResource statusOkIcon();
 
     @Source("images/error.svg")
-    SVGResource error();
+    SVGResource statusErrorIcon();
+
+    @Source("images/refresh.svg")
+    SVGResource refreshIcon();
+
+    interface ContributeCss extends Styles {
+        String blueButton();
+    }
 }

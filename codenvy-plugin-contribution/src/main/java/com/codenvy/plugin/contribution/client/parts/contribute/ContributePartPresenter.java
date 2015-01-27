@@ -105,20 +105,14 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     public void open() {
-        final Context context = workflow.get().getContext();
-        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+        getLocalBranchNamesList(new AsyncCallback<List<String>>() {
             @Override
             public void onFailure(final Throwable exception) {
                 notificationHelper.showError(ContributePartPresenter.class, exception);
             }
 
             @Override
-            public void onSuccess(final List<Branch> branches) {
-                final List<String> branchNames = new ArrayList<>();
-                for (final Branch oneBranch : branches) {
-                    branchNames.add(oneBranch.getDisplayName());
-                }
-
+            public void onSuccess(final List<String> branchNames) {
                 view.reset();
                 view.setContributionBranchName(workflow.get().getContext().getWorkBranchName());
                 view.setContributionBranchNameSuggestionList(branchNames);
@@ -187,6 +181,21 @@ public class ContributePartPresenter extends BasePresenter
                 Window.open(factoryUrl, "", "");
             }
         }
+    }
+
+    @Override
+    public void onRefreshContributionBranchNameList() {
+        getLocalBranchNamesList(new AsyncCallback<List<String>>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(ContributePartPresenter.class, exception);
+            }
+
+            @Override
+            public void onSuccess(final List<String> branchNames) {
+                view.setContributionBranchNameSuggestionList(branchNames);
+            }
+        });
     }
 
     @Override
@@ -299,5 +308,25 @@ public class ContributePartPresenter extends BasePresenter
         view.setContributeButtonText(
                 event.getMode() == UPDATE ? messages.contributePartConfigureContributionSectionButtonContributeUpdateText()
                                           : messages.contributePartConfigureContributionSectionButtonContributeText());
+    }
+
+    private void getLocalBranchNamesList(final AsyncCallback<List<String>> callback) {
+        final Context context = workflow.get().getContext();
+        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+
+            @Override
+            public void onSuccess(final List<Branch> branches) {
+                final List<String> branchNames = new ArrayList<>();
+                for (final Branch oneBranch : branches) {
+                    branchNames.add(oneBranch.getDisplayName());
+                }
+
+                callback.onSuccess(branchNames);
+            }
+        });
     }
 }
