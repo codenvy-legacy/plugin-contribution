@@ -53,14 +53,14 @@ public class InitializeWorkflowContextStep implements Step {
                                          @Nonnull final NotificationHelper notificationHelper,
                                          @Nonnull final ContributePartPresenter contributePartPresenter,
                                          @Nonnull final ContributeMessages messages,
-                                         @Nonnull final CreateWorkBranchStep createWorkBranchStep) {
+                                         @Nonnull final DefineWorkBranchStep defineWorkBranchStep) {
         this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
         this.contributePartPresenter = contributePartPresenter;
         this.messages = messages;
-        this.createWorkBranchStep = createWorkBranchStep;
+        this.createWorkBranchStep = defineWorkBranchStep;
     }
 
     @Override

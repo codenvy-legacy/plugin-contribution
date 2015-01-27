@@ -116,6 +116,15 @@ public interface ContributeMessages extends Messages {
     String notificationMessagePrefix(String notificationMessage);
 
     /*
+     * Define work branch step
+     */
+    @Key("step.define.work.branch.creating.work.branch")
+    String stepDefineWorkBranchCreatingWorkBranch(String branchName);
+
+    @Key("step.define.work.branch.work.branch.created")
+    String stepDefineWorkBranchWorkBranchCreated(String branchName);
+
+    /*
      * Rename work branch step
      */
     @Key("step.rename.work.branch.local.branch.renamed")
@@ -217,12 +226,6 @@ public interface ContributeMessages extends Messages {
     /*
      * Contributor extension
      */
-    @Key("contributor.extension.creating.work.branch")
-    String contributorExtensionCreatingWorkBranch(String branchName);
-
-    @Key("contributor.extension.work.branch.created")
-    String contributorExtensionWorkBranchCreated(String branchName);
-
     @Key("contributor.extension.error.updating.contribution.attributes")
     String contributorExtensionErrorUpdatingContributionAttributes(String exceptionMessage);
 

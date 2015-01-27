@@ -33,13 +33,19 @@ import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 
 /**
- * This step creates the working branch for the user contribution. The next step is executed when the user click on the contribute/update
+ * This step defines the working branch for the user contribution.
+ * <ul>
+ * <li>If the user comes from a contribution factory the contribution branch has to be created automatically.
+ * <li>If the project is cloned from GitHub the contribution branch is the current one.
+ * </ul>
+ * <p/>
+ * The next step is executed when the user click on the contribute/update
  * button. See {@link com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter#onContribute()}
  *
  * @author Kevin Pollet
  */
-public class CreateWorkBranchStep implements Step {
-    private static final String WORKING_BRANCH_NAME_PREFIX = "contrib-";
+public class DefineWorkBranchStep implements Step {
+    private static final String GENERATED_WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ContributeMessages      messages;
     private final NotificationHelper      notificationHelper;
@@ -48,7 +54,7 @@ public class CreateWorkBranchStep implements Step {
     private final AppContext              appContext;
 
     @Inject
-    public CreateWorkBranchStep(@Nonnull final ContributeMessages messages,
+    public DefineWorkBranchStep(@Nonnull final ContributeMessages messages,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final ContributePartPresenter contributePartPresenter,
@@ -72,14 +78,14 @@ public class CreateWorkBranchStep implements Step {
             context.setWorkBranchName(workingBranchName);
 
             final Notification createWorkingBranchNotification =
-                    new Notification(messages.contributorExtensionCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
+                    new Notification(messages.stepDefineWorkBranchCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
             notificationHelper.showNotification(createWorkingBranchNotification);
 
             // the working branch is only created if it doesn't exist
             vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
                 @Override
                 public void onFailure(final Throwable exception) {
-                    notificationHelper.finishNotificationWithError(CreateWorkBranchStep.class, exception, createWorkingBranchNotification);
+                    notificationHelper.finishNotificationWithError(DefineWorkBranchStep.class, exception, createWorkingBranchNotification);
                 }
 
                 @Override
@@ -98,13 +104,13 @@ public class CreateWorkBranchStep implements Step {
                         @Override
                         public void onSuccess(final String result) {
                             contributePartPresenter.open();
-                            notificationHelper.finishNotification(messages.contributorExtensionWorkBranchCreated(workingBranchName),
+                            notificationHelper.finishNotification(messages.stepDefineWorkBranchWorkBranchCreated(workingBranchName),
                                                                   createWorkingBranchNotification);
                         }
 
                         @Override
                         public void onFailure(final Throwable exception) {
-                            notificationHelper.finishNotificationWithError(CreateWorkBranchStep.class, exception,
+                            notificationHelper.finishNotificationWithError(DefineWorkBranchStep.class, exception,
                                                                            createWorkingBranchNotification);
                         }
                     });
@@ -116,7 +122,7 @@ public class CreateWorkBranchStep implements Step {
             vcsService.getBranchName(context.getProject(), new AsyncCallback<String>() {
                 @Override
                 public void onFailure(final Throwable exception) {
-                    notificationHelper.showError(CreateWorkBranchStep.class, exception);
+                    notificationHelper.showError(DefineWorkBranchStep.class, exception);
                 }
 
                 @Override
@@ -135,6 +141,6 @@ public class CreateWorkBranchStep implements Step {
      */
     private String generateWorkBranchName() {
         final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MMddyyyy");
-        return WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
+        return GENERATED_WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
     }
 }
