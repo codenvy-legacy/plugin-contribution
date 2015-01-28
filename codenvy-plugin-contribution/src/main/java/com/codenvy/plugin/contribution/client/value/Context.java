@@ -11,11 +11,28 @@
 package com.codenvy.plugin.contribution.client.value;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.google.web.bindery.event.shared.EventBus;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.Objects;
+
+import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty;
+import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.CLONED_BRANCH_NAME;
+import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.ORIGIN_REPOSITORY_NAME;
+import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.ORIGIN_REPOSITORY_OWNER;
+import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.PROJECT;
+import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.WORK_BRANCH_NAME;
 
 /**
- * Contribution context, with information on current project, branch etc.
+ * Context used to share information between the steps in the contribution workflow.
+ *
+ * @author Kevin Pollet
  */
 public class Context {
+    /** The event bus. */
+    private final EventBus eventBus;
+
     /** The project. */
     private ProjectDescriptor project;
 
@@ -37,9 +54,6 @@ public class Context {
     /** The issue number of the pull request issued for the contribution. */
     private String pullRequestIssueNumber;
 
-    /** Flag that tells is the fork has been seen. */
-    private boolean forkReady = false;
-
     /** The generated review factory URL. */
     private String reviewFactoryUrl;
 
@@ -49,101 +63,72 @@ public class Context {
     /** The name of the forked repository. */
     private String forkedRepositoryName;
 
+    @Inject
+    public Context(@Nonnull final EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
     public ProjectDescriptor getProject() {
         return project;
     }
 
-    public void setProject(ProjectDescriptor desc) {
-        project = desc;
-    }
+    public void setProject(final ProjectDescriptor project) {
+        final ProjectDescriptor oldValue = this.project;
+        this.project = project;
 
-    public Context withProject(ProjectDescriptor desc) {
-        project = desc;
-        return this;
+        fireContextPropertyChange(PROJECT, oldValue, project);
     }
 
     public String getClonedBranchName() {
         return clonedBranchName;
     }
 
-    public void setClonedBranchName(String name) {
-        clonedBranchName = name;
-    }
+    public void setClonedBranchName(final String clonedBranchName) {
+        final String oldValue = this.clonedBranchName;
+        this.clonedBranchName = clonedBranchName;
 
-    public Context withClonedBranchName(String name) {
-        clonedBranchName = name;
-        return this;
+        fireContextPropertyChange(CLONED_BRANCH_NAME, oldValue, clonedBranchName);
     }
 
     public String getWorkBranchName() {
         return workBranchName;
     }
 
-    public void setWorkBranchName(String name) {
-        workBranchName = name;
-    }
+    public void setWorkBranchName(final String workBranchName) {
+        final String oldValue = this.workBranchName;
+        this.workBranchName = workBranchName;
 
-    public Context withWorkBranchName(String name) {
-        workBranchName = name;
-        return this;
-    }
-
-    /**
-     * Tells if the fork is ready.
-     *
-     * @return true iff the fork is ready
-     */
-    public boolean getForkReady() {
-        return forkReady;
-    }
-
-    /**
-     * Sets the fork ready flag.
-     *
-     * @param newValue
-     *         the new value
-     */
-    public void setForkReady(final boolean newValue) {
-        forkReady = newValue;
+        fireContextPropertyChange(WORK_BRANCH_NAME, oldValue, workBranchName);
     }
 
     public String getHostUserLogin() {
         return hostUserLogin;
     }
 
-    public void setHostUserLogin(String hostUserLogin) {
+    public void setHostUserLogin(final String hostUserLogin) {
         this.hostUserLogin = hostUserLogin;
-    }
-
-    public Context withHostUserLogin(String hostUserLogin) {
-        this.hostUserLogin = hostUserLogin;
-        return this;
     }
 
     public String getOriginRepositoryOwner() {
         return originRepositoryOwner;
     }
 
-    public void setOriginRepositoryOwner(String originRepositoryOwner) {
+    public void setOriginRepositoryOwner(final String originRepositoryOwner) {
+        final String oldValue = this.originRepositoryOwner;
         this.originRepositoryOwner = originRepositoryOwner;
-    }
 
-    public Context withOriginRepositoryOwner(String originRepositoryOwner) {
-        this.originRepositoryOwner = originRepositoryOwner;
-        return this;
+        fireContextPropertyChange(ORIGIN_REPOSITORY_OWNER, oldValue, originRepositoryOwner);
     }
 
     public String getOriginRepositoryName() {
         return originRepositoryName;
     }
 
-    public void setOriginRepositoryName(String originRepositoryName) {
+    public void setOriginRepositoryName(final String originRepositoryName) {
+        final String oldValue = this.originRepositoryName;
         this.originRepositoryName = originRepositoryName;
-    }
 
-    public Context withOriginRepositoryName(String originRepositoryName) {
-        this.originRepositoryName = originRepositoryName;
-        return this;
+        fireContextPropertyChange(ORIGIN_REPOSITORY_NAME, oldValue, originRepositoryName);
     }
 
     /**
@@ -165,11 +150,6 @@ public class Context {
         this.pullRequestIssueNumber = pullRequestIssueNumber;
     }
 
-    public Context withPullRequestIssueNumber(final String pullRequestIssueNumber) {
-        this.pullRequestIssueNumber = pullRequestIssueNumber;
-        return this;
-    }
-
     /**
      * Returns the generated review factory URL (if available).
      *
@@ -182,23 +162,11 @@ public class Context {
     /**
      * Sets the generated review factory URL (if available).
      *
-     * @param factoryUrl
+     * @param reviewFactoryUrl
      *         new value
      */
-    public void setReviewFactoryUrl(final String factoryUrl) {
-        this.reviewFactoryUrl = factoryUrl;
-    }
-
-    /**
-     * Sets the generated review factory URL (if available).
-     *
-     * @param factoryUrl
-     *         new value
-     * @return this object
-     */
-    public Context withReviewFactoryUrl(final String factoryUrl) {
-        this.reviewFactoryUrl = factoryUrl;
-        return this;
+    public void setReviewFactoryUrl(final String reviewFactoryUrl) {
+        this.reviewFactoryUrl = reviewFactoryUrl;
     }
 
     public String getForkedRemoteName() {
@@ -215,5 +183,11 @@ public class Context {
 
     public void setForkedRepositoryName(String forkedRepositoryName) {
         this.forkedRepositoryName = forkedRepositoryName;
+    }
+
+    private void fireContextPropertyChange(final ContextProperty contextProperty, final Object oldValue, final Object newValue) {
+        if (!Objects.equals(oldValue, newValue)) {
+            eventBus.fireEvent(new ContextPropertyChangeEvent(this, contextProperty));
+        }
     }
 }

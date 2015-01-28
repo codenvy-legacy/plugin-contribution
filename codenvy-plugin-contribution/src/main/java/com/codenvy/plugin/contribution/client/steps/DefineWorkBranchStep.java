@@ -15,7 +15,6 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -50,19 +49,16 @@ public class DefineWorkBranchStep implements Step {
     private final ContributeMessages      messages;
     private final NotificationHelper      notificationHelper;
     private final VcsServiceProvider      vcsServiceProvider;
-    private final ContributePartPresenter contributePartPresenter;
     private final AppContext              appContext;
 
     @Inject
     public DefineWorkBranchStep(@Nonnull final ContributeMessages messages,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
-                                @Nonnull final ContributePartPresenter contributePartPresenter,
                                 @Nonnull final AppContext appContext) {
         this.messages = messages;
         this.notificationHelper = notificationHelper;
         this.vcsServiceProvider = vcsServiceProvider;
-        this.contributePartPresenter = contributePartPresenter;
         this.appContext = appContext;
     }
 
@@ -103,7 +99,6 @@ public class DefineWorkBranchStep implements Step {
                     vcsService.checkoutBranch(context.getProject(), workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                         @Override
                         public void onSuccess(final String result) {
-                            contributePartPresenter.open();
                             notificationHelper.finishNotification(messages.stepDefineWorkBranchWorkBranchCreated(workingBranchName),
                                                                   createWorkingBranchNotification);
                         }
@@ -128,7 +123,6 @@ public class DefineWorkBranchStep implements Step {
                 @Override
                 public void onSuccess(final String branchName) {
                     context.setWorkBranchName(branchName);
-                    contributePartPresenter.open();
                 }
             });
         }

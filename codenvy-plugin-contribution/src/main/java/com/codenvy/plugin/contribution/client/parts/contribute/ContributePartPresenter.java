@@ -12,6 +12,7 @@ package com.codenvy.plugin.contribution.client.parts.contribute;
 
 import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.factory.dto.Factory;
+import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
@@ -19,11 +20,14 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
+import com.codenvy.plugin.contribution.client.steps.Step;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
 import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent;
 import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeHandler;
 import com.codenvy.plugin.contribution.client.value.Context;
+import com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent;
+import com.codenvy.plugin.contribution.client.value.ContextPropertyChangeHandler;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -36,7 +40,6 @@ import com.google.web.bindery.event.shared.EventBus;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +53,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEv
  * @author Kevin Pollet
  */
 public class ContributePartPresenter extends BasePresenter
-        implements ContributePartView.ActionDelegate, StepHandler, WorkflowModeHandler {
+        implements ContributePartView.ActionDelegate, StepHandler, WorkflowModeHandler, ContextPropertyChangeHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -61,13 +64,13 @@ public class ContributePartPresenter extends BasePresenter
     private final ContributeMessages messages;
 
     /** The contributor workflow controller. */
-    private final Provider<ContributorWorkflow> workflow;
+    private final ContributorWorkflow workflow;
 
     /** The VCS hosting service. */
     private final VcsHostingService vcsHostingService;
 
     /** The step to authorize Codenvy on GitHub. */
-    private final Provider<CommitWorkingTreeStep> commitWorkingTreeStep;
+    private final Step commitWorkingTreeStep;
 
     /** The application context. */
     private final AppContext appContext;
@@ -83,9 +86,9 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final ContributeMessages messages,
                                    @Nonnull final WorkspaceAgent workspaceAgent,
                                    @Nonnull final EventBus eventBus,
-                                   @Nonnull final Provider<ContributorWorkflow> workflow,
+                                   @Nonnull final ContributorWorkflow workflow,
                                    @Nonnull final VcsHostingService vcsHostingService,
-                                   @Nonnull final Provider<CommitWorkingTreeStep> commitWorkingTreeStep,
+                                   @Nonnull final CommitWorkingTreeStep commitWorkingTreeStep,
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final VcsService vcsService,
                                    @Nonnull final NotificationHelper notificationHelper) {
@@ -102,35 +105,16 @@ public class ContributePartPresenter extends BasePresenter
         this.view.setDelegate(this);
         eventBus.addHandler(StepEvent.TYPE, this);
         eventBus.addHandler(WorkflowModeEvent.TYPE, this);
+        eventBus.addHandler(ContextPropertyChangeEvent.TYPE, this);
     }
 
     public void open() {
-        getLocalBranchNamesList(new AsyncCallback<List<String>>() {
-            @Override
-            public void onFailure(final Throwable exception) {
-                notificationHelper.showError(ContributePartPresenter.class, exception);
-            }
-
-            @Override
-            public void onSuccess(final List<String> branchNames) {
-                view.reset();
-                view.setContributionBranchName(workflow.get().getContext().getWorkBranchName());
-                view.setContributionBranchNameSuggestionList(branchNames);
-                workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
-            }
-        });
+        view.reset();
+        workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
     }
 
     public void remove() {
         workspaceAgent.removePart(ContributePartPresenter.this);
-    }
-
-    public void setRepositoryUrl(String url) {
-        view.setRepositoryUrl(url);
-    }
-
-    public void setClonedBranch(String branch) {
-        view.setClonedBranch(branch);
     }
 
     @Override
@@ -141,20 +125,19 @@ public class ContributePartPresenter extends BasePresenter
         view.setContributionProgressState(true);
 
         // resume the contribution workflow and execute the commit tree step
-        final ContributorWorkflow workflow = this.workflow.get();
         workflow.getConfiguration()
                 .withContributionBranchName(view.getContributionBranchName())
                 .withContributionComment(view.getContributionComment())
                 .withContributionTitle(view.getContributionTitle());
 
-        workflow.setStep(commitWorkingTreeStep.get());
+        workflow.setStep(commitWorkingTreeStep);
         workflow.executeStep();
     }
 
 
     @Override
     public void onOpenOnRepositoryHost() {
-        final Context context = workflow.get().getContext();
+        final Context context = workflow.getContext();
 
         Window.open(vcsHostingService.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
                                                          context.getPullRequestIssueNumber()), "", "");
@@ -185,7 +168,8 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onRefreshContributionBranchNameList() {
-        getLocalBranchNamesList(new AsyncCallback<List<String>>() {
+        final Context context = workflow.getContext();
+        getLocalBranchNamesList(context.getProject(), new AsyncCallback<List<String>>() {
             @Override
             public void onFailure(final Throwable exception) {
                 notificationHelper.showError(ContributePartPresenter.class, exception);
@@ -310,9 +294,53 @@ public class ContributePartPresenter extends BasePresenter
                                           : messages.contributePartConfigureContributionSectionButtonContributeText());
     }
 
-    private void getLocalBranchNamesList(final AsyncCallback<List<String>> callback) {
-        final Context context = workflow.get().getContext();
-        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+    @Override
+    public void onContextPropertyChange(final ContextPropertyChangeEvent event) {
+        final Context context = event.getContext();
+
+        switch (event.getContextProperty()) {
+            case CLONED_BRANCH_NAME: {
+                view.setClonedBranch(context.getClonedBranchName());
+            }
+            break;
+
+            case WORK_BRANCH_NAME: {
+                view.setContributionBranchName(context.getWorkBranchName());
+            }
+            break;
+
+            case ORIGIN_REPOSITORY_NAME:
+            case ORIGIN_REPOSITORY_OWNER: {
+                final String originRepositoryName = context.getOriginRepositoryName();
+                final String originRepositoryOwner = context.getOriginRepositoryOwner();
+
+                if (originRepositoryName != null && originRepositoryOwner != null) {
+                    view.setRepositoryUrl(vcsHostingService.makeHttpRemoteUrl(originRepositoryOwner, originRepositoryName));
+                }
+            }
+            break;
+
+            case PROJECT: {
+                getLocalBranchNamesList(context.getProject(), new AsyncCallback<List<String>>() {
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        notificationHelper.showError(ContributePartPresenter.class, exception);
+                    }
+
+                    @Override
+                    public void onSuccess(final List<String> branchNames) {
+                        view.setContributionBranchNameSuggestionList(branchNames);
+                    }
+                });
+            }
+            break;
+        }
+
+        updateControls();
+    }
+
+    private void getLocalBranchNamesList(final ProjectDescriptor project, final AsyncCallback<List<String>> callback) {
+        vcsService.listLocalBranches(project, new AsyncCallback<List<Branch>>() {
             @Override
             public void onFailure(final Throwable exception) {
                 callback.onFailure(exception);

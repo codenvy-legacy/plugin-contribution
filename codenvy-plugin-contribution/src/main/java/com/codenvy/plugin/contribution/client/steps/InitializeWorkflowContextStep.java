@@ -15,7 +15,6 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
-import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
@@ -38,27 +37,24 @@ import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBU
 public class InitializeWorkflowContextStep implements Step {
     private static final String ORIGIN_REMOTE_NAME = "origin";
 
-    private final VcsServiceProvider      vcsServiceProvider;
-    private final VcsHostingService       vcsHostingService;
-    private final AppContext              appContext;
-    private final NotificationHelper      notificationHelper;
-    private final ContributePartPresenter contributePartPresenter;
-    private final ContributeMessages      messages;
-    private final Step                    createWorkBranchStep;
+    private final VcsServiceProvider vcsServiceProvider;
+    private final VcsHostingService  vcsHostingService;
+    private final AppContext         appContext;
+    private final NotificationHelper notificationHelper;
+    private final ContributeMessages messages;
+    private final Step               createWorkBranchStep;
 
     @Inject
     public InitializeWorkflowContextStep(@Nonnull final VcsServiceProvider vcsServiceProvider,
                                          @Nonnull final VcsHostingService vcsHostingService,
                                          @Nonnull final AppContext appContext,
                                          @Nonnull final NotificationHelper notificationHelper,
-                                         @Nonnull final ContributePartPresenter contributePartPresenter,
                                          @Nonnull final ContributeMessages messages,
                                          @Nonnull final DefineWorkBranchStep defineWorkBranchStep) {
         this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
-        this.contributePartPresenter = contributePartPresenter;
         this.messages = messages;
         this.createWorkBranchStep = defineWorkBranchStep;
     }
@@ -95,13 +91,8 @@ public class InitializeWorkflowContextStep implements Step {
                                 !attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).isEmpty()) {
 
                                 final String clonedBranch = attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).get(0);
-
                                 context.setClonedBranchName(clonedBranch);
-                                contributePartPresenter.setClonedBranch(clonedBranch);
                             }
-
-                            final String remoteUrl = vcsHostingService.makeHttpRemoteUrl(repositoryOwner, repositoryName);
-                            contributePartPresenter.setRepositoryUrl(remoteUrl);
 
                             workflow.setStep(createWorkBranchStep);
                             workflow.executeStep();

@@ -95,6 +95,7 @@ public class ContributorExtension implements ProjectActionHandler {
 
     @Override
     public void onProjectOpened(final ProjectActionEvent event) {
+        contributePartPresenter.open();
         initializeContributorExtension(event.getProject());
     }
 
