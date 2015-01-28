@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.value.Context;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
@@ -18,7 +17,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -30,24 +28,16 @@ public class WaitForkOnRemoteStep implements Step {
 
     private final VcsHostingService vcsHostingService;
     private final Step              nextStep;
-    private final EventBus          eventBus;
     private       Timer             timer;
 
     @AssistedInject
-    public WaitForkOnRemoteStep(@Nonnull final VcsHostingService host,
-                                @Nonnull final @Assisted Step nextStep,
-                                @Nonnull final EventBus eventBus) {
+    public WaitForkOnRemoteStep(@Nonnull final VcsHostingService host, @Nonnull final @Assisted Step nextStep) {
         this.vcsHostingService = host;
         this.nextStep = nextStep;
-        this.eventBus = eventBus;
     }
 
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
-        check(workflow);
-    }
-
-    private void wait(final ContributorWorkflow workflow) {
         if (timer == null) {
             timer = new Timer() {
                 @Override
@@ -55,39 +45,31 @@ public class WaitForkOnRemoteStep implements Step {
                     checkRepository(workflow.getContext(), new AsyncCallback<Void>() {
                         @Override
                         public void onFailure(final Throwable caught) {
-                            check(workflow);
+                            timer.schedule(POLL_FREQUENCY_MS);
                         }
 
                         @Override
                         public void onSuccess(final Void result) {
-                            eventBus.fireEvent(new StepEvent(CREATE_FORK, true));
+                            workflow.fireStepDoneEvent(CREATE_FORK);
 
-                            workflow.getContext().setForkReady(true);
-                            check(workflow);
+                            workflow.setStep(nextStep);
+                            workflow.executeStep();
                         }
                     });
                 }
             };
         }
-        timer.schedule(POLL_FREQUENCY_MS);
-    }
 
-    private void check(final ContributorWorkflow workflow) {
-        if (workflow.getContext().getForkReady()) {
-            workflow.setStep(nextStep);
-            workflow.executeStep();
-        } else {
-            wait(workflow);
-        }
+        timer.schedule(POLL_FREQUENCY_MS);
     }
 
     private void checkRepository(final Context context, final AsyncCallback<Void> callback) {
         vcsHostingService.getRepositoriesList(new AsyncCallback<List<Repository>>() {
 
             @Override
-            public void onSuccess(final List<Repository> result) {
-                for (final Repository repo : result) {
-                    if (repo.getName().equals(context.getForkedRepositoryName())) {
+            public void onSuccess(final List<Repository> repositories) {
+                for (final Repository oneRepository : repositories) {
+                    if (oneRepository.getName().equals(context.getForkedRepositoryName())) {
                         callback.onSuccess(null);
                         return;
                     }
@@ -96,8 +78,8 @@ public class WaitForkOnRemoteStep implements Step {
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                callback.onFailure(caught);
+            public void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
             }
         });
     }
