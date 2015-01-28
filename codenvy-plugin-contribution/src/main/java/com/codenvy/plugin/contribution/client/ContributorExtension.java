@@ -50,7 +50,7 @@ import static java.util.Arrays.asList;
  */
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
-public class ContributorExtension {
+public class ContributorExtension implements ProjectActionHandler {
     private final ContributeMessages      messages;
     private final AppContext              appContext;
     private final NotificationHelper      notificationHelper;
@@ -90,26 +90,24 @@ public class ContributorExtension {
         this.initializeWorkflowContextStep = initializeWorkflowContextStep;
 
         resources.contributeCss().ensureInjected();
-
-        eventBus.addHandler(ProjectActionEvent.TYPE, new ProjectActionHandler() {
-            @Override
-            public void onProjectOpened(final ProjectActionEvent event) {
-                initializeContributorExtension(event);
-            }
-
-            @Override
-            public void onProjectClosed(final ProjectActionEvent projectActionEvent) {
-                exitContributeMode();
-            }
-        });
+        eventBus.addHandler(ProjectActionEvent.TYPE, this);
     }
 
-    private void initializeContributorExtension(final ProjectActionEvent event) {
-        final ProjectDescriptor project = event.getProject();
+    @Override
+    public void onProjectOpened(final ProjectActionEvent event) {
+        initializeContributorExtension(event.getProject());
+    }
 
-        // vcs supported and initialized in current project
+    @Override
+    public void onProjectClosed(final ProjectActionEvent event) {
+        contributePartPresenter.remove();
+    }
+
+    private void initializeContributorExtension(final ProjectDescriptor project) {
         final VcsService vcsService = vcsServiceProvider.getVcsService();
-        if (vcsService != null) {
+        final List<String> projectPermissions = project.getPermissions();
+
+        if (vcsService != null && projectPermissions != null && projectPermissions.contains("write")) {
             vcsService.listRemotes(project, new AsyncCallback<List<Remote>>() {
                 @Override
                 public void onFailure(final Throwable exception) {
@@ -228,9 +226,5 @@ public class ContributorExtension {
         projectUpdate.setAttributes(projectDescriptor.getAttributes());
         projectUpdate.setRunners(projectDescriptor.getRunners());
         projectUpdate.setBuilders(projectDescriptor.getBuilders());
-    }
-
-    private void exitContributeMode() {
-        contributePartPresenter.remove();
     }
 }
