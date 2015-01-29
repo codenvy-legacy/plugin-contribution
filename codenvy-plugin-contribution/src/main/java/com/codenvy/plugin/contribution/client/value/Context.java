@@ -42,13 +42,19 @@ public class Context {
     /** The name of the working branch. */
     private String workBranchName;
 
-    /** The name of the user on VCS. */
+    /** The name of the user on host VCS. */
     private String hostUserLogin;
 
-    /** The name of the owner of the origin repository on VCS. */
-    private String originRepositoryOwner;
+    /** The name of the owner of the repository forked on VCS. */
+    private String upstreamRepositoryOwner;
 
     /** The name of the repository forked on VCS. */
+    private String upstreamRepositoryName;
+
+    /** The name of the owner of the repository cloned on VCS. */
+    private String originRepositoryOwner;
+
+    /** The name of the repository cloned on VCS. */
     private String originRepositoryName;
 
     /** The issue number of the pull request issued for the contribution. */
@@ -107,6 +113,22 @@ public class Context {
 
     public void setHostUserLogin(final String hostUserLogin) {
         this.hostUserLogin = hostUserLogin;
+    }
+
+    public String getUpstreamRepositoryOwner() {
+        return upstreamRepositoryOwner;
+    }
+
+    public void setUpstreamRepositoryOwner(String upstreamRepositoryOwner) {
+        this.upstreamRepositoryOwner = upstreamRepositoryOwner;
+    }
+
+    public String getUpstreamRepositoryName() {
+        return upstreamRepositoryName;
+    }
+
+    public void setUpstreamRepositoryName(String upstreamRepositoryName) {
+        this.upstreamRepositoryName = upstreamRepositoryName;
     }
 
     public String getOriginRepositoryOwner() {

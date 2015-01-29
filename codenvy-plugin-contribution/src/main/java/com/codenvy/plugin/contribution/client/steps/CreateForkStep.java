@@ -49,51 +49,54 @@ public class CreateForkStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
-        final String owner = context.getOriginRepositoryOwner();
-        final String repository = context.getOriginRepositoryName();
+        final String originRepositoryOwner = context.getOriginRepositoryOwner();
+        final String originRepositoryName = context.getOriginRepositoryName();
+        final String upstreamRepositoryOwner = context.getUpstreamRepositoryOwner();
+        final String upstreamRepositoryName = context.getUpstreamRepositoryName();
 
-        // get list of forks existing for origin repository
-        vcsHostingService.getUserFork(context.getHostUserLogin(), owner, repository, new AsyncCallback<Repository>() {
-            @Override
-            public void onSuccess(final Repository fork) {
-                context.setForkedRepositoryName(fork.getName());
+        // the upstream repository has been cloned a fork must be created
+        if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) && originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
+            vcsHostingService.getUserFork(context.getHostUserLogin(), upstreamRepositoryOwner, upstreamRepositoryName,
+                                          new AsyncCallback<Repository>() {
+                                              @Override
+                                              public void onSuccess(final Repository fork) {
+                                                  notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
+                                                  proceed(fork.getName(), workflow);
+                                              }
 
-                workflow.fireStepDoneEvent(CREATE_FORK);
-                notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
+                                              @Override
+                                              public void onFailure(final Throwable exception) {
+                                                  if (exception instanceof NoUserForkException) {
+                                                      createFork(workflow, upstreamRepositoryOwner, upstreamRepositoryName);
+                                                      return;
+                                                  }
 
-                workflow.setStep(checkoutBranchToPushStep);
-                workflow.executeStep();
-            }
+                                                  workflow.fireStepErrorEvent(CREATE_FORK);
+                                                  notificationHelper.showError(CreateForkStep.class, exception);
+                                              }
+                                          });
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                if (exception instanceof NoUserForkException) {
-                    createFork(workflow, owner, repository);
-                    return;
-                }
 
-                workflow.fireStepErrorEvent(CREATE_FORK);
-                notificationHelper.showError(CreateForkStep.class, exception);
-            }
-        });
+            // user fork has been cloned
+        } else {
+            notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
+            proceed(originRepositoryName, workflow);
+        }
     }
 
-    private void createFork(final ContributorWorkflow workflow, final String repositoryOwner, final String repositoryName) {
+    private void createFork(final ContributorWorkflow workflow, final String upstreamRepositoryOwner, final String upstreamRepositoryName) {
         final Notification notification =
-                new Notification(messages.stepCreateForkCreateFork(repositoryOwner, repositoryName), INFO, PROGRESS);
+                new Notification(messages.stepCreateForkCreateFork(upstreamRepositoryOwner, upstreamRepositoryName), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        vcsHostingService.fork(repositoryOwner, repositoryName, new AsyncCallback<Repository>() {
+        vcsHostingService.fork(upstreamRepositoryOwner, upstreamRepositoryName, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository result) {
-                workflow.getContext().setForkedRepositoryName(result.getName());
+                notificationHelper.finishNotification(
+                        messages.stepCreateForkRequestForkCreation(upstreamRepositoryOwner, upstreamRepositoryName),
+                        notification);
 
-                workflow.fireStepDoneEvent(CREATE_FORK);
-                notificationHelper
-                        .finishNotification(messages.stepCreateForkRequestForkCreation(repositoryOwner, repositoryName), notification);
-
-                workflow.setStep(checkoutBranchToPushStep);
-                workflow.executeStep();
+                proceed(result.getName(), workflow);
             }
 
             @Override
@@ -101,9 +104,16 @@ public class CreateForkStep implements Step {
                 workflow.fireStepErrorEvent(CREATE_FORK);
 
                 final String errorMessage =
-                        messages.stepCreateForkErrorCreatingFork(repositoryOwner, repositoryName, exception.getMessage());
+                        messages.stepCreateForkErrorCreatingFork(upstreamRepositoryOwner, upstreamRepositoryName, exception.getMessage());
                 notificationHelper.finishNotificationWithError(CreateForkStep.class, errorMessage, notification);
             }
         });
+    }
+
+    private void proceed(final String forkName, final ContributorWorkflow workflow) {
+        workflow.getContext().setForkedRepositoryName(forkName);
+        workflow.fireStepDoneEvent(CREATE_FORK);
+        workflow.setStep(checkoutBranchToPushStep);
+        workflow.executeStep();
     }
 }

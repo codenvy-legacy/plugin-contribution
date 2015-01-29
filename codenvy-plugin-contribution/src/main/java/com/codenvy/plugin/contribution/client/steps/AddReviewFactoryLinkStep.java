@@ -60,8 +60,8 @@ public class AddReviewFactoryLinkStep implements Step {
         final String commentText = messages.stepAddReviewFactoryLinkPullRequestComment(factoryUrl);
 
         vcsHostingService.commentPullRequest(
-                context.getOriginRepositoryOwner(),
-                context.getOriginRepositoryName(),
+                context.getUpstreamRepositoryOwner(),
+                context.getUpstreamRepositoryName(),
                 context.getPullRequestIssueNumber(),
                 commentText,
                 new AsyncCallback<IssueComment>() {

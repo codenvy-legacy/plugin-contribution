@@ -28,20 +28,20 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  * @author Kevin Pollet
  */
 public class CommitWorkingTreeStep implements Step {
-    private final CommitPresenter               commitPresenter;
-    private final ContributeMessages            messages;
-    private final NotificationHelper            notificationHelper;
-    private final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep;
+    private final CommitPresenter    commitPresenter;
+    private final ContributeMessages messages;
+    private final NotificationHelper notificationHelper;
+    private final Step               createForkStep;
 
     @Inject
     public CommitWorkingTreeStep(@Nonnull final CommitPresenter commitPresenter,
                                  @Nonnull final ContributeMessages messages,
                                  @Nonnull final NotificationHelper notificationHelper,
-                                 @Nonnull final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep) {
+                                 @Nonnull final CreateForkStep createForkStep) {
         this.commitPresenter = commitPresenter;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
-        this.authorizeCodenvyOnVCSHostStep = authorizeCodenvyOnVCSHostStep;
+        this.createForkStep = createForkStep;
     }
 
     @Override
@@ -69,8 +69,9 @@ public class CommitWorkingTreeStep implements Step {
             @Override
             public void onSuccess(final Boolean hasUncommittedChanges) {
                 if (hasUncommittedChanges) {
-                    commitPresenter.showView(messages.contributorExtensionDefaultCommitDescription(configuration.getContributionBranchName(),
-                                                                                                   configuration.getContributionTitle()));
+                    commitPresenter
+                            .showView(messages.contributorExtensionDefaultCommitDescription(configuration.getContributionBranchName(),
+                                                                                            configuration.getContributionTitle()));
                 } else {
                     proceed(workflow);
                 }
@@ -80,7 +81,7 @@ public class CommitWorkingTreeStep implements Step {
 
     private void proceed(final ContributorWorkflow workflow) {
         workflow.fireStepDoneEvent(COMMIT_WORKING_TREE);
-        workflow.setStep(authorizeCodenvyOnVCSHostStep);
+        workflow.setStep(createForkStep);
         workflow.executeStep();
     }
 }

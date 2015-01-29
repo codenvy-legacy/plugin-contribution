@@ -139,7 +139,7 @@ public class ContributePartPresenter extends BasePresenter
     public void onOpenOnRepositoryHost() {
         final Context context = workflow.getContext();
 
-        Window.open(vcsHostingService.makePullRequestUrl(context.getOriginRepositoryOwner(), context.getOriginRepositoryName(),
+        Window.open(vcsHostingService.makePullRequestUrl(context.getUpstreamRepositoryOwner(), context.getUpstreamRepositoryName(),
                                                          context.getPullRequestIssueNumber()), "", "");
     }
 
@@ -235,7 +235,7 @@ public class ContributePartPresenter extends BasePresenter
     @Override
     public void onStepDone(@Nonnull final StepEvent event) {
         switch (event.getStep()) {
-            case AUTHORIZE_CODENVY_ON_VCS_HOST: {
+            case COMMIT_WORKING_TREE: {
                 view.showStatusSection();
             }
             break;

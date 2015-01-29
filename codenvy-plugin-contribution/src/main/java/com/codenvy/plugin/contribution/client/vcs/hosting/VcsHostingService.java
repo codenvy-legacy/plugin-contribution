@@ -130,6 +130,16 @@ public interface VcsHostingService {
     void getForks(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<List<Repository>> callback);
 
     /**
+     * Returns the information of the given repository.
+     *
+     * @param owner
+     *         the repository owner.
+     * @param repository
+     *         the repository name.
+     */
+    void getRepository(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<Repository> callback);
+
+    /**
      * Returns the user repositories on the repository host.
      *
      * @param callback

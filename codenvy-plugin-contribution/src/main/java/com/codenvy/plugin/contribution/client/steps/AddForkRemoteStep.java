@@ -29,7 +29,8 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  * Adds the forked remote repository to the remotes of the project.
  */
 public class AddForkRemoteStep implements Step {
-    private final static String FORK_REMOTE_NAME = "fork";
+    private final static String ORIGIN_REMOTE_NAME = "origin";
+    private final static String FORK_REMOTE_NAME   = "fork";
 
     private final VcsServiceProvider vcsServiceProvider;
     private final Step               pushBranchOnForkStep;
@@ -53,9 +54,20 @@ public class AddForkRemoteStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
-        final String remoteUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+        final String originRepositoryOwner = context.getOriginRepositoryOwner();
+        final String originRepositoryName = context.getOriginRepositoryName();
+        final String upstreamRepositoryOwner = context.getUpstreamRepositoryOwner();
+        final String upstreamRepositoryName = context.getUpstreamRepositoryName();
 
-        checkRemotePresent(workflow, remoteUrl);
+        // the fork remote has to be added only if we cloned the upstream else it's origin
+        if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) && originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
+            final String remoteUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+            checkRemotePresent(workflow, remoteUrl);
+
+        } else {
+            context.setForkedRemoteName(ORIGIN_REMOTE_NAME);
+            proceed(workflow);
+        }
     }
 
     private void checkRemotePresent(final ContributorWorkflow workflow, final String remoteUrl) {

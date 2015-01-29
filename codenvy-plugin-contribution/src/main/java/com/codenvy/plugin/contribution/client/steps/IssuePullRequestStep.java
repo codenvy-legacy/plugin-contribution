@@ -56,63 +56,70 @@ public class IssuePullRequestStep implements Step {
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
         final Configuration configuration = workflow.getConfiguration();
-        final String owner = context.getOriginRepositoryOwner();
-        final String repository = context.getOriginRepositoryName();
-        final String title = configuration.getContributionTitle();
+        final String upstreamRepositoryOwner = context.getUpstreamRepositoryOwner();
+        final String upstreamRepositoryName = context.getUpstreamRepositoryName();
+        final String contributionTitle = configuration.getContributionTitle();
         final String baseBranch = context.getClonedBranchName() != null ? context.getClonedBranchName() : DEFAULT_BASE_BRANCH;
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
-        final String body = configuration.getContributionComment();
+        final String contributionComment = configuration.getContributionComment();
 
         final Notification notification = new Notification(messages.stepIssuePullRequestIssuingPullRequest(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        vcsHostingService.createPullRequest(owner, repository, title, headBranch, baseBranch, body, new AsyncCallback<PullRequest>() {
-            @Override
-            public void onSuccess(final PullRequest pullRequest) {
-                context.setPullRequestIssueNumber(pullRequest.getNumber());
+        vcsHostingService.createPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, contributionTitle, headBranch, baseBranch,
+                                            contributionComment, new AsyncCallback<PullRequest>() {
+                    @Override
+                    public void onSuccess(final PullRequest pullRequest) {
+                        context.setPullRequestIssueNumber(pullRequest.getNumber());
 
-                workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                workflow.fireWorkflowModeChangeEvent(UPDATE);
-                notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
+                        workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
+                        workflow.fireWorkflowModeChangeEvent(UPDATE);
+                        notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
 
-                workflow.setStep(generateReviewFactoryStep);
-                workflow.executeStep();
-            }
+                        workflow.setStep(generateReviewFactoryStep);
+                        workflow.executeStep();
+                    }
 
-            @Override
-            public void onFailure(final Throwable exception) {
-                if (exception instanceof PullRequestAlreadyExistsException) {
-                    vcsHostingService.getPullRequest(owner, repository, headBranch, new AsyncCallback<PullRequest>() {
-                        @Override
-                        public void onSuccess(final PullRequest pullRequest) {
-                            context.setPullRequestIssueNumber(pullRequest.getNumber());
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        if (exception instanceof PullRequestAlreadyExistsException) {
+                            vcsHostingService
+                                    .getPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, headBranch,
+                                                    new AsyncCallback<PullRequest>() {
+                                                        @Override
+                                                        public void onSuccess(final PullRequest pullRequest) {
+                                                            context.setPullRequestIssueNumber(pullRequest.getNumber());
 
-                            workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                            workflow.fireWorkflowModeChangeEvent(UPDATE);
-                            notificationHelper
-                                    .finishNotification(messages.stepIssuePullRequestExistingPullRequestUpdated(headBranch), notification);
+                                                            workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
+                                                            workflow.fireWorkflowModeChangeEvent(UPDATE);
+                                                            notificationHelper
+                                                                    .finishNotification(
+                                                                            messages.stepIssuePullRequestExistingPullRequestUpdated(
+                                                                                    headBranch),
+                                                                            notification);
 
-                        }
+                                                        }
 
-                        @Override
-                        public void onFailure(final Throwable exception) {
+                                                        @Override
+                                                        public void onFailure(final Throwable exception) {
+                                                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
+                                                            notificationHelper.showError(IssuePullRequestStep.class, exception);
+                                                        }
+                                                    });
+
+                        } else if (exception instanceof NoCommitsInPullRequestException) {
                             workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
-                            notificationHelper.showError(IssuePullRequestStep.class, exception);
-                        }
-                    });
-
-                } else if (exception instanceof NoCommitsInPullRequestException) {
-                    workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
-                    notificationHelper.finishNotificationWithWarning(messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits(),
-                                                                     notification);
-
-                } else {
-                    workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
-                    notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
-                                                                   messages.stepIssuePullRequestErrorCreatePullRequest(),
+                            notificationHelper
+                                    .finishNotificationWithWarning(messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits(),
                                                                    notification);
-                }
-            }
-        });
+
+                        } else {
+                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
+                            notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
+                                                                           messages.stepIssuePullRequestErrorCreatePullRequest(),
+                                                                           notification);
+                        }
+                    }
+                });
     }
 }

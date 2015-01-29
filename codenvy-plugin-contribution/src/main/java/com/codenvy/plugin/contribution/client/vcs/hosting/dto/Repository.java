@@ -20,11 +20,11 @@ public interface Repository {
 
     Repository withName(String name);
 
-    String getUrl();
+    String getCloneUrl();
 
-    void setUrl(String url);
+    void setCloneUrl(String cloneUrl);
 
-    Repository withUrl(String url);
+    Repository withCloneUrl(String cloneUrl);
 
     boolean isFork();
 
@@ -37,4 +37,10 @@ public interface Repository {
     void setPrivateRepo(boolean isPrivateRepo);
 
     Repository withPrivateRepo(boolean isPrivateRepo);
+
+    Repository getParent();
+
+    void setParent(Repository parent);
+
+    Repository withParent(Repository parent);
 }

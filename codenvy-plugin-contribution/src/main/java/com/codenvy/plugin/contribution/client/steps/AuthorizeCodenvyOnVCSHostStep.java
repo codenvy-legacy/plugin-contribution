@@ -38,7 +38,7 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
     private static final String BAD_CREDENTIALS_EXCEPTION_MESSAGE = "Bad credentials";
 
     private final String             baseUrl;
-    private final Step               forkCreationStep;
+    private final Step               initializeWorkflowContextStep;
     private final NotificationHelper notificationHelper;
     private final VcsHostingService  vcsHostingService;
     private final AppContext         appContext;
@@ -46,13 +46,13 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
 
     @Inject
     public AuthorizeCodenvyOnVCSHostStep(@Nonnull @Named("restContext") final String baseUrl,
-                                         @Nonnull final CreateForkStep createForkStep,
+                                         @Nonnull final InitializeWorkflowContextStep initializeWorkflowContextStep,
                                          @Nonnull final NotificationHelper notificationHelper,
                                          @Nonnull final VcsHostingService vcsHostingService,
                                          @Nonnull final AppContext appContext,
                                          @Nonnull final ContributeMessages messages) {
         this.baseUrl = baseUrl;
-        this.forkCreationStep = createForkStep;
+        this.initializeWorkflowContextStep = initializeWorkflowContextStep;
         this.notificationHelper = notificationHelper;
         this.vcsHostingService = vcsHostingService;
         this.appContext = appContext;
@@ -104,7 +104,7 @@ public class AuthorizeCodenvyOnVCSHostStep implements Step {
     private void onVCSHostUserAuthenticated(final ContributorWorkflow workflow, final HostUser user) {
         workflow.getContext().setHostUserLogin(user.getLogin());
         workflow.fireStepDoneEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
-        workflow.setStep(forkCreationStep);
+        workflow.setStep(initializeWorkflowContextStep);
         workflow.executeStep();
     }
 

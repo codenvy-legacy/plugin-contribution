@@ -90,6 +90,38 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     @Override
+    public void getRepository(@Nonnull String owner, @Nonnull String repository, @Nonnull final AsyncCallback<Repository> callback) {
+        gitHubClientService.getRepository(owner, repository, new AsyncRequestCallback<GitHubRepository>(
+                dtoUnmarshallerFactory.newUnmarshaller(GitHubRepository.class)) {
+            @Override
+            protected void onSuccess(final GitHubRepository githubRepository) {
+                final GitHubRepository githubRepositoryParent = githubRepository.getParent();
+                final Repository parent = githubRepositoryParent == null ? null : dtoFactory.createDto(Repository.class)
+                                                                                            .withFork(githubRepositoryParent.isFork())
+                                                                                            .withName(githubRepositoryParent.getName())
+                                                                                            .withParent(null)
+                                                                                            .withPrivateRepo(
+                                                                                                    githubRepositoryParent.isPrivateRepo())
+                                                                                            .withCloneUrl(
+                                                                                                    githubRepositoryParent.getCloneUrl());
+
+                final Repository repository = dtoFactory.createDto(Repository.class)
+                                                        .withFork(githubRepository.isFork())
+                                                        .withName(githubRepository.getName())
+                                                        .withParent(parent)
+                                                        .withPrivateRepo(githubRepository.isPrivateRepo())
+                                                        .withCloneUrl(githubRepository.getCloneUrl());
+                callback.onSuccess(repository);
+            }
+
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
+    }
+
+    @Override
     public void getRepositoriesList(@Nonnull final AsyncCallback<List<Repository>> callback) {
         gitHubClientService.getRepositoriesList(
                 new AsyncRequestCallback<GitHubRepositoryList>(dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
@@ -99,7 +131,7 @@ public class GitHubHostingService implements VcsHostingService {
                         for (final GitHubRepository original : result.getRepositories()) {
                             final Repository repository = dtoFactory.createDto(Repository.class);
                             repository.withFork(original.isFork()).withName(original.getName())
-                                      .withPrivateRepo(original.isPrivateRepo()).withUrl(original.getUrl());
+                                      .withPrivateRepo(original.isPrivateRepo()).withCloneUrl(original.getCloneUrl());
                             repositories.add(repository);
                         }
                         callback.onSuccess(repositories);
@@ -145,7 +177,7 @@ public class GitHubHostingService implements VcsHostingService {
                                              for (final GitHubRepository original : result.getRepositories()) {
                                                  final Repository repository = dtoFactory.createDto(Repository.class);
                                                  repository.withFork(original.isFork()).withName(original.getName())
-                                                           .withPrivateRepo(original.isPrivateRepo()).withUrl(original.getUrl());
+                                                           .withPrivateRepo(original.isPrivateRepo()).withCloneUrl(original.getCloneUrl());
                                                  repositories.add(repository);
                                              }
                                              callback.onSuccess(repositories);
@@ -169,7 +201,7 @@ public class GitHubHostingService implements VcsHostingService {
                                          if (result != null) {
                                              final Repository repository = dtoFactory.createDto(Repository.class);
                                              repository.withFork(result.isFork()).withName(result.getName())
-                                                       .withPrivateRepo(result.isPrivateRepo()).withUrl(result.getUrl());
+                                                       .withPrivateRepo(result.isPrivateRepo()).withCloneUrl(result.getCloneUrl());
                                              callback.onSuccess(repository);
                                          } else {
                                              callback.onFailure(new Exception("No repository."));
@@ -372,13 +404,12 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     protected Repository getUserFork(final String login, final List<Repository> forks) {
-        Repository userFork = null;
         for (final Repository repository : forks) {
-            String forkURL = repository.getUrl();
-            if (forkURL.toLowerCase().contains("/repos/" + login + "/")) {
-                userFork = repository;
+            final String repositoryUrl = repository.getCloneUrl();
+            if (repositoryUrl.toLowerCase().contains("/" + login.toLowerCase() + "/")) {
+                return repository;
             }
         }
-        return userFork;
+        return null;
     }
 }

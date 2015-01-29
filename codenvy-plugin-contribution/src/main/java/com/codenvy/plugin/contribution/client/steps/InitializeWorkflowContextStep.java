@@ -20,6 +20,7 @@ import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -42,7 +43,7 @@ public class InitializeWorkflowContextStep implements Step {
     private final AppContext         appContext;
     private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
-    private final Step               createWorkBranchStep;
+    private final Step               defineWorkBranchStep;
 
     @Inject
     public InitializeWorkflowContextStep(@Nonnull final VcsServiceProvider vcsServiceProvider,
@@ -56,7 +57,7 @@ public class InitializeWorkflowContextStep implements Step {
         this.appContext = appContext;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
-        this.createWorkBranchStep = defineWorkBranchStep;
+        this.defineWorkBranchStep = defineWorkBranchStep;
     }
 
     @Override
@@ -79,12 +80,12 @@ public class InitializeWorkflowContextStep implements Step {
 
                         // save origin repository name & owner in context
                         if (ORIGIN_REMOTE_NAME.equalsIgnoreCase(remote.getName())) {
-                            final String resultRemoteUrl = remote.getUrl();
-                            final String repositoryName = vcsHostingService.getRepositoryNameFromUrl(resultRemoteUrl);
-                            final String repositoryOwner = vcsHostingService.getRepositoryOwnerFromUrl(resultRemoteUrl);
+                            final String originUrl = remote.getUrl();
+                            final String originRepositoryName = vcsHostingService.getRepositoryNameFromUrl(originUrl);
+                            final String originRepositoryOwner = vcsHostingService.getRepositoryOwnerFromUrl(originUrl);
 
-                            context.setOriginRepositoryOwner(repositoryOwner);
-                            context.setOriginRepositoryName(repositoryName);
+                            context.setOriginRepositoryOwner(originRepositoryOwner);
+                            context.setOriginRepositoryName(originRepositoryName);
 
                             // set project information
                             if (attributes.containsKey(ATTRIBUTE_CONTRIBUTE_BRANCH) &&
@@ -94,8 +95,32 @@ public class InitializeWorkflowContextStep implements Step {
                                 context.setClonedBranchName(clonedBranch);
                             }
 
-                            workflow.setStep(createWorkBranchStep);
-                            workflow.executeStep();
+                            // here we have to determine what is the upstream repository
+                            vcsHostingService.getRepository(originRepositoryOwner, originRepositoryName, new AsyncCallback<Repository>() {
+                                @Override
+                                public void onFailure(final Throwable exception) {
+                                    notificationHelper.showError(InitializeWorkflowContextStep.class, exception);
+                                }
+
+                                @Override
+                                public void onSuccess(final Repository repository) {
+                                    if (repository.isFork() && originRepositoryOwner.equalsIgnoreCase(context.getHostUserLogin())) {
+                                        final String upstreamUrl = repository.getParent().getCloneUrl();
+                                        final String upstreamRepositoryName = vcsHostingService.getRepositoryNameFromUrl(upstreamUrl);
+                                        final String upstreamRepositoryOwner = vcsHostingService.getRepositoryOwnerFromUrl(upstreamUrl);
+
+                                        context.setUpstreamRepositoryName(upstreamRepositoryName);
+                                        context.setUpstreamRepositoryOwner(upstreamRepositoryOwner);
+
+                                    } else {
+                                        context.setUpstreamRepositoryName(originRepositoryName);
+                                        context.setUpstreamRepositoryOwner(originRepositoryOwner);
+                                    }
+
+                                    workflow.setStep(defineWorkBranchStep);
+                                    workflow.executeStep();
+                                }
+                            });
                             break;
                         }
                     }

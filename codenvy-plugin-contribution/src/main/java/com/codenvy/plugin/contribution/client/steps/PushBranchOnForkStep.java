@@ -67,11 +67,11 @@ public class PushBranchOnForkStep implements Step {
         final Notification notification = new Notification(messages.stepPushBranchPushingBranch(), INFO, PROGRESS);
         notificationHelper.showNotification(notification);
 
-        final String owner = context.getOriginRepositoryOwner();
-        final String repository = context.getOriginRepositoryName();
+        final String upstreamRepositoryOwner = context.getUpstreamRepositoryOwner();
+        final String upstreamRepositoryName = context.getUpstreamRepositoryName();
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
 
-        vcsHostingService.getPullRequest(owner, repository, headBranch, new AsyncCallback<PullRequest>() {
+        vcsHostingService.getPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, headBranch, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest pullRequest) {
                 final ConfirmCallback okCallback = new ConfirmCallback() {
