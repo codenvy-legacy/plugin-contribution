@@ -14,69 +14,27 @@ import com.codenvy.dto.shared.DTO;
 
 @DTO
 public interface PullRequest {
-    /**
-     * Get pull request id.
-     *
-     * @return {@link String} id
-     */
     String getId();
-
-    void setId(String id);
 
     PullRequest withId(String id);
 
-    /**
-     * Get pull request URL.
-     *
-     * @return {@link String} url
-     */
     String getUrl();
-
-    void setUrl(String url);
 
     PullRequest withUrl(String url);
 
-    /**
-     * Get pull request html URL.
-     *
-     * @return {@link String} html_url
-     */
     String getHtmlUrl();
-
-    void setHtmlUrl(String htmlUrl);
 
     PullRequest withHtmlUrl(String htmlUrl);
 
-    /**
-     * Get pull request number.
-     *
-     * @return {@link String} number
-     */
     String getNumber();
-
-    void setNumber(String number);
 
     PullRequest withNumber(String number);
 
-    /**
-     * Get pull request state.
-     *
-     * @return {@link String} state
-     */
     String getState();
-
-    void setState(String state);
 
     PullRequest withState(String state);
 
-    /**
-     * Get pull request head.
-     *
-     * @return {@link PullRequestHead} head
-     */
     PullRequestHead getHead();
-
-    void setHead(PullRequestHead head);
 
     PullRequest withHead(PullRequestHead head);
 }

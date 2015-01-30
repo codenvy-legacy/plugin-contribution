@@ -17,22 +17,15 @@ import com.codenvy.dto.shared.DTO;
  */
 @DTO
 public interface Configuration {
-
     String getContributionBranchName();
-
-    void setContributionBranchName(String name);
 
     Configuration withContributionBranchName(String name);
 
     String getContributionComment();
 
-    void setContributionComment(String comment);
-
     Configuration withContributionComment(String comment);
 
     String getContributionTitle();
-
-    void setContributionTitle(String title);
 
     Configuration withContributionTitle(String title);
 }

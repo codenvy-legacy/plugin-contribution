@@ -16,31 +16,21 @@ import com.codenvy.dto.shared.DTO;
 public interface Repository {
     String getName();
 
-    void setName(String name);
-
     Repository withName(String name);
 
     String getCloneUrl();
-
-    void setCloneUrl(String cloneUrl);
 
     Repository withCloneUrl(String cloneUrl);
 
     boolean isFork();
 
-    void setFork(boolean isFork);
-
     Repository withFork(boolean isFork);
 
     boolean isPrivateRepo();
 
-    void setPrivateRepo(boolean isPrivateRepo);
-
     Repository withPrivateRepo(boolean isPrivateRepo);
 
     Repository getParent();
-
-    void setParent(Repository parent);
 
     Repository withParent(Repository parent);
 }

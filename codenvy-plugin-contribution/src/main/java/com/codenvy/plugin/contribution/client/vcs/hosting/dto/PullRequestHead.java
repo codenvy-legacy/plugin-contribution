@@ -14,36 +14,15 @@ import com.codenvy.dto.shared.DTO;
 
 @DTO
 public interface PullRequestHead {
-    /**
-     * Get pull request head label.
-     *
-     * @return {@link String} label
-     */
     String getLabel();
-
-    void setLabel(String label);
 
     PullRequestHead withLabel(String label);
 
-    /**
-     * Get pull request head ref.
-     *
-     * @return {@link String} ref
-     */
     String getRef();
-
-    void setRef(String ref);
 
     PullRequestHead withRef(String ref);
 
-    /**
-     * Get pull request head sha.
-     *
-     * @return {@link String} sha
-     */
     String getSha();
-
-    void setSha(String sha);
 
     PullRequestHead withSha(String sha);
 }
