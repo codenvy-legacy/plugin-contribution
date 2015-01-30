@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ISSUE_PULL_REQUEST;
-import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent.Mode.UPDATE;
 
 /**
  * Create the pull request on the remote VCS repository.
@@ -71,7 +70,6 @@ public class IssuePullRequestStep implements Step {
                         context.setPullRequestIssueNumber(pullRequest.getNumber());
 
                         workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                        workflow.fireWorkflowModeChangeEvent(UPDATE);
                         notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
 
                         workflow.setStep(generateReviewFactoryStep);
@@ -89,7 +87,6 @@ public class IssuePullRequestStep implements Step {
                                                             context.setPullRequestIssueNumber(pullRequest.getNumber());
 
                                                             workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                                                            workflow.fireWorkflowModeChangeEvent(UPDATE);
                                                             notificationHelper
                                                                     .finishNotification(
                                                                             messages.stepIssuePullRequestExistingPullRequestUpdated(

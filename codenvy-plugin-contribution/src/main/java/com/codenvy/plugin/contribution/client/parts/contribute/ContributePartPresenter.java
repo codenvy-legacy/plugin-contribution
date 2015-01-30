@@ -19,15 +19,13 @@ import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
+import com.codenvy.plugin.contribution.client.steps.Context;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.steps.Step;
-import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
-import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
-import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent;
-import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeHandler;
-import com.codenvy.plugin.contribution.client.steps.Context;
 import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent;
 import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeHandler;
+import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
+import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -45,7 +43,6 @@ import java.util.List;
 
 import static com.codenvy.ide.api.constraints.Constraints.LAST;
 import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
-import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent.Mode.UPDATE;
 
 /**
  * Part for the contribution configuration.
@@ -53,7 +50,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEv
  * @author Kevin Pollet
  */
 public class ContributePartPresenter extends BasePresenter
-        implements ContributePartView.ActionDelegate, StepHandler, WorkflowModeHandler, ContextPropertyChangeHandler {
+        implements ContributePartView.ActionDelegate, StepHandler, ContextPropertyChangeHandler {
     /** The component view. */
     private final ContributePartView view;
 
@@ -104,7 +101,6 @@ public class ContributePartPresenter extends BasePresenter
 
         this.view.setDelegate(this);
         eventBus.addHandler(StepEvent.TYPE, this);
-        eventBus.addHandler(WorkflowModeEvent.TYPE, this);
         eventBus.addHandler(ContextPropertyChangeEvent.TYPE, this);
     }
 
@@ -256,6 +252,10 @@ public class ContributePartPresenter extends BasePresenter
                 view.setContributionProgressState(false);
                 view.showStatusSectionFooter();
                 view.showNewContributionSection();
+                view.setContributionBranchNameEnabled(false);
+                view.setContributionTitleEnabled(false);
+                view.setContributionCommentEnabled(false);
+                view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
             }
             break;
         }
@@ -282,16 +282,6 @@ public class ContributePartPresenter extends BasePresenter
 
         view.setContributeEnabled(true);
         view.setContributionProgressState(false);
-    }
-
-    @Override
-    public void onWorkflowModeChange(@Nonnull final WorkflowModeEvent event) {
-        view.setContributionBranchNameEnabled(event.getMode() != UPDATE);
-        view.setContributionTitleEnabled(event.getMode() != UPDATE);
-        view.setContributionCommentEnabled(event.getMode() != UPDATE);
-        view.setContributeButtonText(
-                event.getMode() == UPDATE ? messages.contributePartConfigureContributionSectionButtonContributeUpdateText()
-                                          : messages.contributePartConfigureContributionSectionButtonContributeText());
     }
 
     @Override

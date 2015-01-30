@@ -12,14 +12,11 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
-import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Provider;
-
-import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent.Mode;
 
 /**
  * This class is responsible to maintain the context between the different steps and to maintain the state of the contribution workflow.
@@ -110,17 +107,5 @@ public class ContributorWorkflow {
      */
     void fireStepErrorEvent(StepEvent.Step step) {
         eventBus.fireEvent(new StepEvent(step, false));
-    }
-
-    /**
-     * Fires an {@link com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent} indicating that we have to switch to the
-     * update
-     * or contribute mode.
-     *
-     * @param mode
-     *         the workflow mode.
-     */
-    void fireWorkflowModeChangeEvent(Mode mode) {
-        eventBus.fireEvent(new WorkflowModeEvent(mode));
     }
 }
