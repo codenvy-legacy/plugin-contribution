@@ -64,7 +64,7 @@ public class WaitForkOnRemoteStep implements Step {
     }
 
     private void checkRepository(final Context context, final AsyncCallback<Void> callback) {
-        vcsHostingService.getRepositoriesList(new AsyncCallback<List<Repository>>() {
+        vcsHostingService.getRepositories(new AsyncCallback<List<Repository>>() {
 
             @Override
             public void onSuccess(final List<Repository> repositories) {

@@ -121,7 +121,7 @@ public interface VcsHostingService {
      * @param callback
      *         callback called when operation is done.
      */
-    void getRepositoriesList(@Nonnull AsyncCallback<List<Repository>> callback);
+    void getRepositories(@Nonnull AsyncCallback<List<Repository>> callback);
 
     /**
      * Returns the repository name from the given url.
