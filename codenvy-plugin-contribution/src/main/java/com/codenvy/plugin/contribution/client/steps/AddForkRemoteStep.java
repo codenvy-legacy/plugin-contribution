@@ -60,7 +60,8 @@ public class AddForkRemoteStep implements Step {
         final String upstreamRepositoryName = context.getUpstreamRepositoryName();
 
         // the fork remote has to be added only if we cloned the upstream else it's origin
-        if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) && originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
+        if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) &&
+            originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
             final String remoteUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
             checkRemotePresent(workflow, remoteUrl);
 

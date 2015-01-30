@@ -55,7 +55,8 @@ public class CreateForkStep implements Step {
         final String upstreamRepositoryName = context.getUpstreamRepositoryName();
 
         // the upstream repository has been cloned a fork must be created
-        if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) && originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
+        if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) &&
+            originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
             vcsHostingService.getUserFork(context.getHostUserLogin(), upstreamRepositoryOwner, upstreamRepositoryName,
                                           new AsyncCallback<Repository>() {
                                               @Override

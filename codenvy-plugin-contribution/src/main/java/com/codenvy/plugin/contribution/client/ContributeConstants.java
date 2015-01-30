@@ -26,7 +26,7 @@ public final class ContributeConstants {
     /**
      * github flow contribute value for the contribute attribute.
      */
-    public static final String GITHUB_CONTRIBUTE_FLAG      = "github";
+    public static final String GITHUB_CONTRIBUTE_FLAG = "github";
 
     /**
      * Project attribute key for the branch initially cloned.

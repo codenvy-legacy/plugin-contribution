@@ -46,10 +46,10 @@ import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBU
 public class DefineWorkBranchStep implements Step {
     private static final String GENERATED_WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
-    private final ContributeMessages      messages;
-    private final NotificationHelper      notificationHelper;
-    private final VcsServiceProvider      vcsServiceProvider;
-    private final AppContext              appContext;
+    private final ContributeMessages messages;
+    private final NotificationHelper notificationHelper;
+    private final VcsServiceProvider vcsServiceProvider;
+    private final AppContext         appContext;
 
     @Inject
     public DefineWorkBranchStep(@Nonnull final ContributeMessages messages,
