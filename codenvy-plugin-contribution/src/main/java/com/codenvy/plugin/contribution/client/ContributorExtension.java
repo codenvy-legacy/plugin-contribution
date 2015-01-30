@@ -24,9 +24,7 @@ import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
-import com.codenvy.plugin.contribution.client.steps.AuthorizeCodenvyOnVCSHostStep;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
-import com.codenvy.plugin.contribution.client.steps.Step;
 import com.codenvy.plugin.contribution.client.vcs.Remote;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
@@ -59,7 +57,6 @@ public class ContributorExtension implements ProjectActionHandler {
     private final DtoFactory              dtoFactory;
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
     private final ContributorWorkflow     workflow;
-    private final Step                    authorizeCodenvyOnVCSHostStep;
     private final VcsHostingService       vcsHostingService;
     private final VcsServiceProvider      vcsServiceProvider;
 
@@ -75,8 +72,7 @@ public class ContributorExtension implements ProjectActionHandler {
                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final ContributorWorkflow workflow,
                                 @Nonnull final VcsHostingService vcsHostingService,
-                                @Nonnull final VcsServiceProvider vcsServiceProvider,
-                                @Nonnull final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep) {
+                                @Nonnull final VcsServiceProvider vcsServiceProvider) {
         this.messages = messages;
         this.workflow = workflow;
         this.appContext = appContext;
@@ -87,7 +83,6 @@ public class ContributorExtension implements ProjectActionHandler {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.vcsHostingService = vcsHostingService;
         this.vcsServiceProvider = vcsServiceProvider;
-        this.authorizeCodenvyOnVCSHostStep = authorizeCodenvyOnVCSHostStep;
 
         resources.contributeCss().ensureInjected();
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
@@ -144,7 +139,7 @@ public class ContributorExtension implements ProjectActionHandler {
                                         @Override
                                         protected void onSuccess(final ProjectDescriptor project) {
                                             contributePartPresenter.open();
-                                            workflow.setStep(authorizeCodenvyOnVCSHostStep);
+                                            workflow.init();
                                             workflow.executeStep();
                                         }
                                     });

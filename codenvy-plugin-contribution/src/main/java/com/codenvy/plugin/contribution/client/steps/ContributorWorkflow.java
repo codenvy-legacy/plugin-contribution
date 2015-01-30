@@ -19,6 +19,7 @@ import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent.Mode;
 
@@ -28,18 +29,32 @@ import static com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEv
  * @author Kevin Pollet
  */
 public class ContributorWorkflow {
-    private final Context       context;
-    private final EventBus      eventBus;
-    private final Configuration configuration;
-    private       Step          step;
+    private final EventBus          eventBus;
+    private final Step              initialStep;
+    private final DtoFactory        dtoFactory;
+    private       Provider<Context> contextProvider;
+    private       Context           context;
+    private       Configuration     configuration;
+    private       Step              step;
 
     @Inject
-    public ContributorWorkflow(@Nonnull final Context context,
-                               @Nonnull final DtoFactory dtoFactory,
-                               @Nonnull final EventBus eventBus) {
-        this.context = context;
+    public ContributorWorkflow(@Nonnull final Provider<Context> contextProvider,
+                               @Nonnull final EventBus eventBus,
+                               @Nonnull final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep,
+                               @Nonnull final DtoFactory dtoFactory) {
+        this.contextProvider = contextProvider;
         this.eventBus = eventBus;
-        this.configuration = dtoFactory.createDto(Configuration.class);
+        this.dtoFactory = dtoFactory;
+        this.initialStep = authorizeCodenvyOnVCSHostStep;
+    }
+
+    /**
+     * Initialize the contributor workflow to it's initial state.
+     */
+    public void init() {
+        setStep(initialStep);
+        context = contextProvider.get();
+        configuration = dtoFactory.createDto(Configuration.class);
     }
 
     /**

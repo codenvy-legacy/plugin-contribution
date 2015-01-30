@@ -155,10 +155,18 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     @Override
     public void reset() {
+        repositoryUrl.setHref("");
+        repositoryUrl.setText("");
+        clonedBranch.setText("");
+
         contributionBranchName.setValue("");
+        setContributionBranchNameEnabled(true);
         setContributionBranchNameSuggestionList(Collections.<String>emptyList());
         contributionTitle.setValue("");
+        setContributionTitleEnabled(true);
         contributionComment.setValue("");
+        setContributionCommentEnabled(true);
+        contributeButton.setText(messages.contributePartConfigureContributionSectionButtonContributeText());
 
         hideStatusSection();
         clearStatusSection();

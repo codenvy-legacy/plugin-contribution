@@ -187,21 +187,21 @@ public class ContributePartPresenter extends BasePresenter
         final String branchName = view.getContributionBranchName();
         final String contributionTitle = view.getContributionTitle();
 
-        boolean ready = true;
+        boolean isValid = true;
         view.showContributionBranchNameError(false);
         view.showContributionTitleError(false);
 
         if (branchName == null || !branchName.matches("[0-9A-Za-z-]+")) {
             view.showContributionBranchNameError(true);
-            ready = false;
+            isValid = false;
         }
 
         if (contributionTitle == null || contributionTitle.trim().isEmpty()) {
             view.showContributionTitleError(true);
-            ready = false;
+            isValid = false;
         }
 
-        view.setContributeEnabled(ready);
+        view.setContributeEnabled(isValid);
     }
 
     @Override

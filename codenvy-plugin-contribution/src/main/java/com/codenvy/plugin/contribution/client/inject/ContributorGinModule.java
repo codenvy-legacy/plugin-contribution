@@ -56,7 +56,7 @@ public class ContributorGinModule extends AbstractGinModule {
 
         // bind the part view
         bind(ContributePartView.class).to(ContributePartViewImpl.class);
-        bind(ContributePartPresenter.class).in(Singleton.class);
+        bind(ContributePartPresenter.class);
 
         // the steps
         bind(ContributorWorkflow.class).in(Singleton.class);
