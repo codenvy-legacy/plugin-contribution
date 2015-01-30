@@ -80,24 +80,6 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void createBranch(@Nonnull final ProjectDescriptor project, @Nonnull final String name,
-                             @Nonnull final String startPoint, @Nonnull final AsyncCallback<Branch> callback) {
-        final Unmarshallable<com.codenvy.ide.ext.git.shared.Branch> unMarshaller =
-                dtoUnmarshallerFactory.newUnmarshaller(com.codenvy.ide.ext.git.shared.Branch.class);
-        service.branchCreate(project, name, startPoint, new AsyncRequestCallback<com.codenvy.ide.ext.git.shared.Branch>(unMarshaller) {
-            @Override
-            protected void onSuccess(final com.codenvy.ide.ext.git.shared.Branch result) {
-                callback.onSuccess(fromGitBranch(result));
-            }
-
-            @Override
-            protected void onFailure(final Throwable exception) {
-                callback.onFailure(exception);
-            }
-        });
-    }
-
-    @Override
     public void commit(final @Nonnull ProjectDescriptor project, final boolean includeUntracked, final @Nonnull String commitMessage,
                        final @Nonnull AsyncCallback<Void> callback) {
         try {
@@ -210,25 +192,6 @@ public class GitVcsService implements VcsService {
             @Override
             protected void onSuccess(Void result) {
                 callback.onSuccess(result);
-            }
-
-            @Override
-            protected void onFailure(final Throwable exception) {
-                callback.onFailure(exception);
-            }
-        });
-    }
-
-    @Override
-    public void renameBranch(@Nonnull final ProjectDescriptor project,
-                             @Nonnull final String oldName,
-                             @Nonnull final String newName,
-                             @Nonnull final AsyncCallback<Void> callback) {
-
-        service.branchRename(project, oldName, newName, new AsyncRequestCallback<String>() {
-            @Override
-            protected void onSuccess(final String result) {
-                callback.onSuccess(null);
             }
 
             @Override

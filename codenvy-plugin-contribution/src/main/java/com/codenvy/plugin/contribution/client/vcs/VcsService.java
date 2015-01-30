@@ -51,21 +51,6 @@ public interface VcsService {
                         @Nonnull AsyncCallback<String> callback);
 
     /**
-     * Create a branch for the given project.
-     *
-     * @param project
-     *         the project descriptor.
-     * @param name
-     *         the name of the branch to create.
-     * @param startPoint
-     *         commit at which to start the new branch.
-     * @param callback
-     *         callback when the operation is done.
-     */
-    void createBranch(@Nonnull ProjectDescriptor project, @Nonnull String name, @Nonnull String startPoint,
-                      @Nonnull AsyncCallback<Branch> callback);
-
-    /**
      * Commits the current changes of the given project.
      *
      * @param project
@@ -146,19 +131,4 @@ public interface VcsService {
      */
     void pushBranch(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String localBranchNameToPush,
                     @Nonnull AsyncCallback<Void> callback);
-
-    /**
-     * Rename a branch of the project.
-     *
-     * @param project
-     *         the project descriptor.
-     * @param oldName
-     *         the name of the branch to rename.
-     * @param newName
-     *         the new name.
-     * @param callback
-     *         callback when the operation is done.
-     */
-    void renameBranch(@Nonnull ProjectDescriptor project, @Nonnull String oldName, @Nonnull String newName,
-                      @Nonnull AsyncCallback<Void> callback);
 }
