@@ -33,18 +33,6 @@ public interface VcsHostingService {
     boolean isVcsHostRemoteUrl(@Nonnull String remoteUrl);
 
     /**
-     * Get all pull requests for given owner:repository
-     *
-     * @param owner
-     *         the username of the owner.
-     * @param repository
-     *         the repository name.
-     * @param callback
-     *         callback called when operation is done.
-     */
-    void getPullRequests(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<List<PullRequest>> callback);
-
-    /**
      * Get a pull request by qualified name.
      *
      * @param owner
@@ -116,18 +104,6 @@ public interface VcsHostingService {
      *         callback called when operation is done.
      */
     void fork(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<Repository> callback);
-
-    /**
-     * Returns the forks of the given repository for the given owner.
-     *
-     * @param owner
-     *         the repository owner.
-     * @param repository
-     *         the repository name.
-     * @param callback
-     *         callback called when operation is done.
-     */
-    void getForks(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<List<Repository>> callback);
 
     /**
      * Returns the information of the given repository.

@@ -165,32 +165,6 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     @Override
-    public void getForks(@Nonnull final String owner, @Nonnull final String repository,
-                         @Nonnull final AsyncCallback<List<Repository>> callback) {
-        gitHubClientService.getForks(owner,
-                                     repository,
-                                     new AsyncRequestCallback<GitHubRepositoryList>(
-                                             dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
-                                         @Override
-                                         protected void onSuccess(final GitHubRepositoryList result) {
-                                             final List<Repository> repositories = new ArrayList<>();
-                                             for (final GitHubRepository original : result.getRepositories()) {
-                                                 final Repository repository = dtoFactory.createDto(Repository.class);
-                                                 repository.withFork(original.isFork()).withName(original.getName())
-                                                           .withPrivateRepo(original.isPrivateRepo()).withCloneUrl(original.getCloneUrl());
-                                                 repositories.add(repository);
-                                             }
-                                             callback.onSuccess(repositories);
-                                         }
-
-                                         @Override
-                                         protected void onFailure(final Throwable exception) {
-                                             callback.onFailure(exception);
-                                         }
-                                     });
-    }
-
-    @Override
     public void fork(@Nonnull final String owner, @Nonnull final String repository, @Nonnull final AsyncCallback<Repository> callback) {
         gitHubClientService.fork(owner,
                                  repository,
@@ -240,8 +214,39 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     @Override
-    public void getPullRequests(@Nonnull final String owner, @Nonnull final String repository,
-                                @Nonnull final AsyncCallback<List<PullRequest>> callback) {
+    public void getPullRequest(@Nonnull final String owner, @Nonnull final String repository, @Nonnull final String headBranch,
+                               @Nonnull final AsyncCallback<PullRequest> callback) {
+        getPullRequests(owner, repository, new AsyncCallback<List<PullRequest>>() {
+
+            @Override
+            public void onSuccess(List<PullRequest> result) {
+                PullRequest pr = getPullRequestByBranch(headBranch, result);
+                if (pr != null) {
+                    callback.onSuccess(pr);
+                } else {
+                    callback.onFailure(new NoPullRequestException(headBranch));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
+            }
+        });
+    }
+
+    /**
+     * Get all pull requests for given owner:repository
+     *
+     * @param owner
+     *         the username of the owner.
+     * @param repository
+     *         the repository name.
+     * @param callback
+     *         callback called when operation is done.
+     */
+    private void getPullRequests(@Nonnull final String owner, @Nonnull final String repository,
+                                 @Nonnull final AsyncCallback<List<PullRequest>> callback) {
         gitHubClientService.getPullRequests(owner,
                                             repository,
                                             new AsyncRequestCallback<GitHubPullRequestList>(
@@ -267,28 +272,6 @@ public class GitHubHostingService implements VcsHostingService {
                                                     callback.onFailure(exception);
                                                 }
                                             });
-    }
-
-    @Override
-    public void getPullRequest(@Nonnull final String owner, @Nonnull final String repository, @Nonnull final String headBranch,
-                               @Nonnull final AsyncCallback<PullRequest> callback) {
-        getPullRequests(owner, repository, new AsyncCallback<List<PullRequest>>() {
-
-            @Override
-            public void onSuccess(List<PullRequest> result) {
-                PullRequest pr = getPullRequestByBranch(headBranch, result);
-                if (pr != null) {
-                    callback.onSuccess(pr);
-                } else {
-                    callback.onFailure(new NoPullRequestException(headBranch));
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                callback.onFailure(caught);
-            }
-        });
     }
 
     protected PullRequest getPullRequestByBranch(final String headBranch, final List<PullRequest> pullRequests) {
@@ -401,6 +384,41 @@ public class GitHubHostingService implements VcsHostingService {
                 callback.onFailure(caught);
             }
         });
+    }
+
+    /**
+     * Returns the forks of the given repository for the given owner.
+     *
+     * @param owner
+     *         the repository owner.
+     * @param repository
+     *         the repository name.
+     * @param callback
+     *         callback called when operation is done.
+     */
+    private void getForks(@Nonnull final String owner, @Nonnull final String repository,
+                          @Nonnull final AsyncCallback<List<Repository>> callback) {
+        gitHubClientService.getForks(owner,
+                                     repository,
+                                     new AsyncRequestCallback<GitHubRepositoryList>(
+                                             dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
+                                         @Override
+                                         protected void onSuccess(final GitHubRepositoryList result) {
+                                             final List<Repository> repositories = new ArrayList<>();
+                                             for (final GitHubRepository original : result.getRepositories()) {
+                                                 final Repository repository = dtoFactory.createDto(Repository.class);
+                                                 repository.withFork(original.isFork()).withName(original.getName())
+                                                           .withPrivateRepo(original.isPrivateRepo()).withCloneUrl(original.getCloneUrl());
+                                                 repositories.add(repository);
+                                             }
+                                             callback.onSuccess(repositories);
+                                         }
+
+                                         @Override
+                                         protected void onFailure(final Throwable exception) {
+                                             callback.onFailure(exception);
+                                         }
+                                     });
     }
 
     protected Repository getUserFork(final String login, final List<Repository> forks) {
