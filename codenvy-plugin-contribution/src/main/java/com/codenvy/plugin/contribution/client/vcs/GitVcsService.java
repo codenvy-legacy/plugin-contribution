@@ -38,17 +38,17 @@ public class GitVcsService implements VcsService {
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
 
     @Inject
-    public GitVcsService(final DtoFactory dtoFactory,
-                         final DtoUnmarshallerFactory dtoUnmarshallerFactory,
-                         final GitServiceClient service) {
+    public GitVcsService(@Nonnull final DtoFactory dtoFactory,
+                         @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                         @Nonnull final GitServiceClient service) {
         this.dtoFactory = dtoFactory;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.service = service;
     }
 
     @Override
-    public void addRemote(@Nonnull final ProjectDescriptor project, @Nonnull final String remote,
-                          @Nonnull final String remoteUrl, @Nonnull final AsyncCallback<Void> callback) {
+    public void addRemote(@Nonnull final ProjectDescriptor project, @Nonnull final String remote, @Nonnull final String remoteUrl,
+                          @Nonnull final AsyncCallback<Void> callback) {
         service.remoteAdd(project, remote, remoteUrl, new AsyncRequestCallback<String>() {
             @Override
             protected void onSuccess(final String notUsed) {
@@ -68,8 +68,8 @@ public class GitVcsService implements VcsService {
                                final boolean createNew, @Nonnull final AsyncCallback<String> callback) {
         service.branchCheckout(project, name, null, createNew, new AsyncRequestCallback<String>() {
             @Override
-            protected void onSuccess(final String result) {
-                callback.onSuccess(result);
+            protected void onSuccess(final String branchName) {
+                callback.onSuccess(branchName);
             }
 
             @Override
@@ -80,8 +80,8 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void commit(final @Nonnull ProjectDescriptor project, final boolean includeUntracked, final @Nonnull String commitMessage,
-                       final @Nonnull AsyncCallback<Void> callback) {
+    public void commit(@Nonnull final ProjectDescriptor project, final boolean includeUntracked, @Nonnull final String commitMessage,
+                       @Nonnull final AsyncCallback<Void> callback) {
         try {
 
             service.add(project, !includeUntracked, null, new RequestCallback<Void>() {
@@ -102,7 +102,7 @@ public class GitVcsService implements VcsService {
                 }
 
                 @Override
-                protected void onFailure(Throwable exception) {
+                protected void onFailure(final Throwable exception) {
                     callback.onFailure(exception);
                 }
             });
@@ -132,8 +132,8 @@ public class GitVcsService implements VcsService {
     public void getBranchName(@Nonnull final ProjectDescriptor project, @Nonnull final AsyncCallback<String> callback) {
         service.status(project, new AsyncRequestCallback<Status>(dtoUnmarshallerFactory.newUnmarshaller(Status.class)) {
             @Override
-            protected void onSuccess(final Status result) {
-                callback.onSuccess(result.getBranchName());
+            protected void onSuccess(final Status status) {
+                callback.onSuccess(status.getBranchName());
             }
 
             @Override
@@ -144,7 +144,7 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
-    public void hasUncommittedChanges(final @Nonnull ProjectDescriptor project, final @Nonnull AsyncCallback<Boolean> callback) {
+    public void hasUncommittedChanges(@Nonnull final ProjectDescriptor project, @Nonnull final AsyncCallback<Boolean> callback) {
         service.status(project, new AsyncRequestCallback<Status>(dtoUnmarshallerFactory.newUnmarshaller(Status.class)) {
             @Override
             protected void onSuccess(final Status status) {
@@ -190,7 +190,7 @@ public class GitVcsService implements VcsService {
                            @Nonnull final String localBranchName, @Nonnull final AsyncCallback<Void> callback) {
         service.push(project, Arrays.asList(localBranchName), remote, true, new AsyncRequestCallback<Void>() {
             @Override
-            protected void onSuccess(Void result) {
+            protected void onSuccess(final Void result) {
                 callback.onSuccess(result);
             }
 
