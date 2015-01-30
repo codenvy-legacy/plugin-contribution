@@ -8,11 +8,12 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client;
+package com.codenvy.plugin.contribution.client.utils;
 
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;

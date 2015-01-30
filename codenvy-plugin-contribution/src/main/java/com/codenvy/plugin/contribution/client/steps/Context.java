@@ -201,7 +201,8 @@ public class Context {
         this.forkedRepositoryName = forkedRepositoryName;
     }
 
-    private void fireContextPropertyChange(final ContextPropertyChangeEvent.ContextProperty contextProperty, final Object oldValue, final Object newValue) {
+    private void fireContextPropertyChange(final ContextPropertyChangeEvent.ContextProperty contextProperty, final Object oldValue,
+                                           final Object newValue) {
         if (!Objects.equals(oldValue, newValue)) {
             eventBus.fireEvent(new ContextPropertyChangeEvent(this, contextProperty));
         }

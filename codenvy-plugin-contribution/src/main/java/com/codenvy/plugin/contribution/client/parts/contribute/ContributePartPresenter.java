@@ -10,14 +10,12 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.Context;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
@@ -26,6 +24,8 @@ import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChange
 import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeHandler;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
+import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
+import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -147,17 +147,10 @@ public class ContributePartPresenter extends BasePresenter
 
         final Factory factory = appContext.getFactory();
         if (factory != null) {
-            String factoryUrl = null;
-            final String createProject = "create-project";
-            for (final Link link : factory.getLinks()) {
-                if (createProject.equals(link.getRel())) {
-                    factoryUrl = link.getHref();
-                    break;
-                }
-            }
+            final String createProjectUrl = FactoryHelper.getCreateProjectRelUrl(factory);
 
-            if (factoryUrl != null) {
-                Window.open(factoryUrl, "", "");
+            if (createProjectUrl != null) {
+                Window.open(createProjectUrl, "", "");
             }
         }
     }

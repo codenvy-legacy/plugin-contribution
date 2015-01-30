@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.api.core.rest.shared.dto.Link;
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
@@ -24,10 +23,11 @@ import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPMethod;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.NotificationHelper;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
+import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
+import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.http.client.Header;
 import com.google.gwt.http.client.Response;
@@ -106,16 +106,10 @@ public class GenerateReviewFactoryStep implements Step {
             @Override
             public void onSuccess(final Factory factory) {
                 // find factory URL inside factory
-                String factoryUrl = null;
-                final String createProject = "create-project";
-                for (final Link link : factory.getLinks()) {
-                    if (createProject.equals(link.getRel())) {
-                        factoryUrl = link.getHref();
-                        break;
-                    }
-                }
-                if (factoryUrl != null) {
-                    workflow.getContext().setReviewFactoryUrl(factoryUrl);
+                final String createProjectUrl = FactoryHelper.getCreateProjectRelUrl(factory);
+
+                if (createProjectUrl != null) {
+                    workflow.getContext().setReviewFactoryUrl(createProjectUrl);
                     workflow.fireStepDoneEvent(GENERATE_REVIEW_FACTORY);
                     workflow.setStep(addReviewFactoryLinkStep);
                     workflow.executeStep();
