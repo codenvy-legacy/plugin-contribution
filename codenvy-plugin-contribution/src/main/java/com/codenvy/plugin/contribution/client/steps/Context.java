@@ -8,21 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.value;
+package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Objects;
-
-import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty;
-import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.CLONED_BRANCH_NAME;
-import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.ORIGIN_REPOSITORY_NAME;
-import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.ORIGIN_REPOSITORY_OWNER;
-import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.PROJECT;
-import static com.codenvy.plugin.contribution.client.value.ContextPropertyChangeEvent.ContextProperty.WORK_BRANCH_NAME;
 
 /**
  * Context used to share information between the steps in the contribution workflow.
@@ -82,7 +76,7 @@ public class Context {
         final ProjectDescriptor oldValue = this.project;
         this.project = project;
 
-        fireContextPropertyChange(PROJECT, oldValue, project);
+        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.PROJECT, oldValue, project);
     }
 
     public String getClonedBranchName() {
@@ -93,7 +87,7 @@ public class Context {
         final String oldValue = this.clonedBranchName;
         this.clonedBranchName = clonedBranchName;
 
-        fireContextPropertyChange(CLONED_BRANCH_NAME, oldValue, clonedBranchName);
+        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.CLONED_BRANCH_NAME, oldValue, clonedBranchName);
     }
 
     public String getWorkBranchName() {
@@ -104,7 +98,7 @@ public class Context {
         final String oldValue = this.workBranchName;
         this.workBranchName = workBranchName;
 
-        fireContextPropertyChange(WORK_BRANCH_NAME, oldValue, workBranchName);
+        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.WORK_BRANCH_NAME, oldValue, workBranchName);
     }
 
     public String getHostUserLogin() {
@@ -139,7 +133,7 @@ public class Context {
         final String oldValue = this.originRepositoryOwner;
         this.originRepositoryOwner = originRepositoryOwner;
 
-        fireContextPropertyChange(ORIGIN_REPOSITORY_OWNER, oldValue, originRepositoryOwner);
+        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.ORIGIN_REPOSITORY_OWNER, oldValue, originRepositoryOwner);
     }
 
     public String getOriginRepositoryName() {
@@ -150,7 +144,7 @@ public class Context {
         final String oldValue = this.originRepositoryName;
         this.originRepositoryName = originRepositoryName;
 
-        fireContextPropertyChange(ORIGIN_REPOSITORY_NAME, oldValue, originRepositoryName);
+        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.ORIGIN_REPOSITORY_NAME, oldValue, originRepositoryName);
     }
 
     /**
@@ -207,7 +201,7 @@ public class Context {
         this.forkedRepositoryName = forkedRepositoryName;
     }
 
-    private void fireContextPropertyChange(final ContextProperty contextProperty, final Object oldValue, final Object newValue) {
+    private void fireContextPropertyChange(final ContextPropertyChangeEvent.ContextProperty contextProperty, final Object oldValue, final Object newValue) {
         if (!Objects.equals(oldValue, newValue)) {
             eventBus.fireEvent(new ContextPropertyChangeEvent(this, contextProperty));
         }

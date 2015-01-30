@@ -13,8 +13,6 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.steps.events.WorkflowModeEvent;
-import com.codenvy.plugin.contribution.client.value.Configuration;
-import com.codenvy.plugin.contribution.client.value.Context;
 import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;

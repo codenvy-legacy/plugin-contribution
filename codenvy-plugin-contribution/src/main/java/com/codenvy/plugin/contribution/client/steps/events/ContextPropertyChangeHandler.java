@@ -8,24 +8,21 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.value;
+package com.codenvy.plugin.contribution.client.steps.events;
 
-import com.codenvy.dto.shared.DTO;
+import com.google.gwt.event.shared.EventHandler;
 
 /**
- * Contribution configuration, which contains the values chosen by the user.
+ * Handler to be advised when a property of the context object is changed.
+ *
+ * @author Kevin Pollet
  */
-@DTO
-public interface Configuration {
-    String getContributionBranchName();
-
-    Configuration withContributionBranchName(String name);
-
-    String getContributionComment();
-
-    Configuration withContributionComment(String comment);
-
-    String getContributionTitle();
-
-    Configuration withContributionTitle(String title);
+public interface ContextPropertyChangeHandler extends EventHandler {
+    /**
+     * Called when a property of the context object changed.
+     *
+     * @param event
+     *         the {@link ContextPropertyChangeEvent} event.
+     */
+    void onContextPropertyChange(ContextPropertyChangeEvent event);
 }
