@@ -34,17 +34,14 @@ public class IssuePullRequestStep implements Step {
     private static final String DEFAULT_BASE_BRANCH = "master";
 
     private final VcsHostingService  vcsHostingService;
-    private final Step               generateReviewFactoryStep;
     private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
 
     @Inject
     public IssuePullRequestStep(@Nonnull final VcsHostingService vcsHostingService,
-                                @Nonnull final GenerateReviewFactoryStep generateReviewFactoryStepStep,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final ContributeMessages messages) {
         this.vcsHostingService = vcsHostingService;
-        this.generateReviewFactoryStep = generateReviewFactoryStepStep;
         this.notificationHelper = notificationHelper;
         this.messages = messages;
     }
@@ -71,9 +68,6 @@ public class IssuePullRequestStep implements Step {
 
                         workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
                         notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
-
-                        workflow.setStep(generateReviewFactoryStep);
-                        workflow.executeStep();
                     }
 
                     @Override

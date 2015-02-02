@@ -11,7 +11,6 @@
 package com.codenvy.plugin.contribution.client.vcs.hosting;
 
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.HostUser;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.IssueComment;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -46,26 +45,6 @@ public interface VcsHostingService {
      */
     void getPullRequest(@Nonnull String owner, @Nonnull String repository, @Nonnull String headBranch,
                         @Nonnull AsyncCallback<PullRequest> callback);
-
-    /**
-     * Add a comment to a pull request.
-     *
-     * @param username
-     *         the username of the owner.
-     * @param repository
-     *         the repository name.
-     * @param pullRequestId
-     *         the id f the pull request.
-     * @param commentText
-     *         the text of the comment.
-     * @param callback
-     *         callback called when operation is done.
-     */
-    void commentPullRequest(@Nonnull String username,
-                            @Nonnull String repository,
-                            @Nonnull String pullRequestId,
-                            @Nonnull String commentText,
-                            @Nonnull AsyncCallback<IssueComment> callback);
 
     /**
      * Creates a pull request.
@@ -202,4 +181,14 @@ public interface VcsHostingService {
      */
     @Nonnull
     String makePullRequestUrl(@Nonnull String username, @Nonnull String repository, @Nonnull String pullRequestNumber);
+
+    /**
+     * Use the VCS hosting comment markup language to format the review factory URL.
+     *
+     * @param reviewFactoryUrl
+     *         the review factory URL to format.
+     * @return the formatted review factory URL.
+     */
+    @Nonnull
+    String formatReviewFactoryUrl(@Nonnull String reviewFactoryUrl);
 }

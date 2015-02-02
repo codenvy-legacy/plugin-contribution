@@ -12,8 +12,6 @@ package com.codenvy.plugin.contribution.client.vcs.hosting;
 
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
-import com.codenvy.ide.ext.github.shared.GitHubIssueComment;
-import com.codenvy.ide.ext.github.shared.GitHubIssueCommentInput;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequestCreationInput;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequestList;
@@ -24,7 +22,6 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.HostUser;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.IssueComment;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequestHead;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
@@ -38,6 +35,8 @@ import java.util.List;
 
 /**
  * {@link VcsHostingService} implementation for GitHub.
+ *
+ * @author Kevin Pollet
  */
 public class GitHubHostingService implements VcsHostingService {
     private static final String SSH_URL_PREFIX                            = "git@github.com:";
@@ -49,21 +48,17 @@ public class GitHubHostingService implements VcsHostingService {
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
     private final DtoFactory             dtoFactory;
     private final GitHubClientService    gitHubClientService;
-
-    /**
-     * The templates for repository URLs.
-     */
-    private final UrlTemplates urlTemplates;
+    private final GitHubTemplates        gitHubTemplates;
 
     @Inject
     public GitHubHostingService(@Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final DtoFactory dtoFactory,
                                 @Nonnull final GitHubClientService gitHubClientService,
-                                @Nonnull final UrlTemplates urlTemplates) {
+                                @Nonnull final GitHubTemplates gitHubTemplates) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
-        this.urlTemplates = urlTemplates;
+        this.gitHubTemplates = gitHubTemplates;
     }
 
     @Override
@@ -171,20 +166,26 @@ public class GitHubHostingService implements VcsHostingService {
     @Nonnull
     @Override
     public String makeSSHRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
-        return urlTemplates.gitSSHRemoteTemplate(username, repository);
+        return gitHubTemplates.sshUrlTemplate(username, repository);
     }
 
     @Nonnull
     @Override
     public String makeHttpRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
-        return urlTemplates.gitHttpRemoteTemplate(username, repository);
+        return gitHubTemplates.httpUrlTemplate(username, repository);
     }
 
     @Nonnull
     @Override
     public String makePullRequestUrl(@Nonnull final String username, @Nonnull final String repository,
                                      @Nonnull final String pullRequestNumber) {
-        return urlTemplates.gitPullRequestTemplate(username, repository, pullRequestNumber);
+        return gitHubTemplates.pullRequestUrlTemplate(username, repository, pullRequestNumber);
+    }
+
+    @Nonnull
+    @Override
+    public String formatReviewFactoryUrl(@Nonnull final String reviewFactoryUrl) {
+        return gitHubTemplates.formattedReviewFactoryUrlTemplate(reviewFactoryUrl);
     }
 
     @Override
@@ -289,38 +290,6 @@ public class GitHubHostingService implements VcsHostingService {
                 }
             }
         });
-    }
-
-    @Override
-    public void commentPullRequest(@Nonnull final String username, @Nonnull final String repository,
-                                   @Nonnull final String pullRequestId, @Nonnull final String commentText,
-                                   @Nonnull final AsyncCallback<IssueComment> callback) {
-
-        final GitHubIssueCommentInput input = dtoFactory.createDto(GitHubIssueCommentInput.class)
-                                                        .withBody(commentText);
-
-        final Unmarshallable<GitHubIssueComment> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubIssueComment.class);
-        gitHubClientService
-                .commentIssue(username, repository, pullRequestId, input, new AsyncRequestCallback<GitHubIssueComment>(unmarshaller) {
-                    @Override
-                    protected void onSuccess(final GitHubIssueComment gitHubIssueComment) {
-                        if (gitHubIssueComment != null) {
-                            final IssueComment issueComment = dtoFactory.createDto(IssueComment.class)
-                                                                        .withId(gitHubIssueComment.getId())
-                                                                        .withUrl(gitHubIssueComment.getUrl())
-                                                                        .withBody(gitHubIssueComment.getBody());
-                            callback.onSuccess(issueComment);
-
-                        } else {
-                            callback.onFailure(new Exception("No pull request comment."));
-                        }
-                    }
-
-                    @Override
-                    protected void onFailure(final Throwable exception) {
-                        callback.onFailure(exception);
-                    }
-                });
     }
 
     @Override

@@ -35,7 +35,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  */
 public class PushBranchOnForkStep implements Step {
 
-    private final Step               issuePullRequestStep;
+    private final Step               generateReviewFactoryStep;
     private final VcsServiceProvider vcsServiceProvider;
     private final VcsHostingService  vcsHostingService;
     private final NotificationHelper notificationHelper;
@@ -45,13 +45,13 @@ public class PushBranchOnForkStep implements Step {
     private final DialogFactory dialogFactory;
 
     @Inject
-    public PushBranchOnForkStep(@Nonnull final IssuePullRequestStep issuePullRequestStep,
+    public PushBranchOnForkStep(@Nonnull final GenerateReviewFactoryStep generateReviewFactoryStep,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final VcsHostingService vcsHostingService,
                                 @Nonnull final NotificationHelper notificationHelper,
                                 @NotNull final ContributeMessages messages,
                                 @NotNull final DialogFactory dialogFactory) {
-        this.issuePullRequestStep = issuePullRequestStep;
+        this.generateReviewFactoryStep = generateReviewFactoryStep;
         this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
         this.notificationHelper = notificationHelper;
@@ -117,7 +117,7 @@ public class PushBranchOnForkStep implements Step {
                                               notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(),
                                                                                     notification);
 
-                                              workflow.setStep(issuePullRequestStep);
+                                              workflow.setStep(generateReviewFactoryStep);
                                               workflow.executeStep();
                                           }
 

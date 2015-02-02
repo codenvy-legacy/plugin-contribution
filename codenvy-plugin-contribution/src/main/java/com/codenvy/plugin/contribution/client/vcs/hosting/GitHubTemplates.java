@@ -13,38 +13,40 @@ package com.codenvy.plugin.contribution.client.vcs.hosting;
 import com.google.gwt.i18n.client.Messages;
 
 /**
- * Templates for repository URLs.
+ * Templates for github constants.
+ *
+ * @author Kevin Pollet
  */
-public interface UrlTemplates extends Messages {
+public interface GitHubTemplates extends Messages {
     /**
-     * The git SSH URL to a github repository.
+     * The SSH URL to a github repository.
      *
      * @param username
-     *         the username name.
+     *         the user name.
      * @param repository
      *         the repository name.
      * @return the URL
      */
     @DefaultMessage("git@github.com:{0}/{1}.git")
-    String gitSSHRemoteTemplate(String username, String repository);
+    String sshUrlTemplate(String username, String repository);
 
     /**
-     * The git HTTP URL to a github repository.
+     * The HTTP URL to a github repository.
      *
      * @param username
-     *         the username name.
+     *         the user name.
      * @param repository
      *         the repository name.
      * @return the URL
      */
     @DefaultMessage("https://github.com/{0}/{1}.git")
-    String gitHttpRemoteTemplate(String username, String repository);
+    String httpUrlTemplate(String username, String repository);
 
     /**
-     * The git URL to a pull request.
+     * The URL to a pull request.
      *
      * @param username
-     *         the username name.
+     *         the user name.
      * @param repository
      *         the repository name.
      * @param pullRequestNumber
@@ -52,5 +54,16 @@ public interface UrlTemplates extends Messages {
      * @return the URL
      */
     @DefaultMessage("https://github.com/{0}/{1}/pull/{2}")
-    String gitPullRequestTemplate(String username, String repository, String pullRequestNumber);
+    String pullRequestUrlTemplate(String username, String repository, String pullRequestNumber);
+
+    /**
+     * The formatted version of the review factory url using the GitHub markup language (markdown).
+     *
+     * @param reviewFactoryUrl
+     *         the review factory url.
+     * @return the formatted version of the review factory url
+     */
+    @DefaultMessage(
+            "[![Review](https://rawgit.com/kevinpollet/2ced2ffddf1636f9116c/raw/85408e7a0233f54d4b3fda1fd5c98afb2bdeb3e8/codenvy-review.svg)]({0})")
+    String formattedReviewFactoryUrlTemplate(String reviewFactoryUrl);
 }

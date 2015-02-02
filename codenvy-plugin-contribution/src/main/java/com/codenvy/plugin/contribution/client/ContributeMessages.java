@@ -187,8 +187,8 @@ public interface ContributeMessages extends Messages {
     @Key("step.add.review.factory.link.pull.request.comment")
     String stepAddReviewFactoryLinkPullRequestComment(String factoryUrl);
 
-    @Key("step.add.review.factory.link.error.posting.factory.link")
-    String stepAddReviewFactoryLinkErrorPostingFactoryLink(String factoryUrl);
+    @Key("step.add.review.factory.link.error.adding.review.factory.link")
+    String stepAddReviewFactoryLinkErrorAddingReviewFactoryLink();
 
     /*
      * Generate review factory step
