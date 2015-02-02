@@ -37,8 +37,8 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.configure.contribution.section.contribution.branch.name.label")
     String contributePartConfigureContributionSectionContributionBranchNameLabel();
 
-    @Key("contribute.part.configure.contribution.section.contribution.branch.name.placeholder")
-    String contributePartConfigureContributionSectionContributionBranchNamePlaceholder();
+    @Key("contribute.part.configure.contribution.section.contribution.branch.name.create.new.item.text")
+    String contributePartConfigureContributionSectionContributionBranchNameCreateNewItemText();
 
     @Key("contribute.part.configure.contribution.section.contribution.title.label")
     String contributePartConfigureContributionSectionContributionTitleLabel();
@@ -87,6 +87,12 @@ public interface ContributeMessages extends Messages {
 
     @Key("contribute.part.configure.contribution.dialog.update.text")
     String contributePartConfigureContributionDialogUpdateText(String branchName);
+
+    @Key("contribute.part.configure.contribution.dialog.new.branch.title")
+    String contributePartConfigureContributionDialogNewBranchTitle();
+
+    @Key("contribute.part.configure.contribution.dialog.new.branch.label")
+    String contributePartConfigureContributionDialogNewBranchLabel();
 
     /*
      * Commit dialog
@@ -184,9 +190,6 @@ public interface ContributeMessages extends Messages {
     /*
      * Add review factory link step
      */
-    @Key("step.add.review.factory.link.pull.request.comment")
-    String stepAddReviewFactoryLinkPullRequestComment(String factoryUrl);
-
     @Key("step.add.review.factory.link.error.adding.review.factory.link")
     String stepAddReviewFactoryLinkErrorAddingReviewFactoryLink();
 

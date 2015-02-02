@@ -13,7 +13,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:my='urn:import:com.codenvy.plugin.contribution.client.dialogs.paste'
-             xmlns:svg='urn:import:org.vectomatic.dom.svg.ui'>
+             xmlns:svg='urn:import:org.vectomatic.dom.svg.ui'
+        >
 
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeMessages" field="messages"/>
     <ui:with type="com.codenvy.plugin.contribution.client.ContributeResources" field="resources"/>
@@ -174,7 +175,8 @@
                     <g:Label addStyleNames="{style.label}"
                              text="{messages.contributePartConfigureContributionSectionContributionBranchNameLabel}"/>
                     <div style="display: flex;">
-                        <g:SuggestBox ui:field="contributionBranchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"/>
+                        <g:ListBox ui:field="contributionBranchName" addStyleNames="{style.field} {resources.contributeCss.inputField}"
+                                   multipleSelect="false"/>
                         <svg:SVGPushButton ui:field="refreshContributionBranchNameListButton" resource="{resources.refreshIcon}"/>
                     </div>
                 </div>

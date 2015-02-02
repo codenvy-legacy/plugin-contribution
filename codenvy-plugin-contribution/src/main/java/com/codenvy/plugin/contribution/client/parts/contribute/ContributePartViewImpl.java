@@ -17,6 +17,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -26,9 +27,8 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -68,8 +68,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     /** The input component for the contribution branch name. */
     @UiField
-    SuggestBox contributionBranchName;
+    ListBox contributionBranchName;
 
+    /** Button used to refresh the contribution branch name list. */
     @UiField
     SVGPushButton refreshContributionBranchNameListButton;
 
@@ -138,14 +139,12 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         this.contributeButton.addStyleName(buttonLoaderResources.Css().buttonLoader());
 
         this.refreshContributionBranchNameListButton.getElement().getStyle().setWidth(23, PX);
-        this.refreshContributionBranchNameListButton.getElement().getStyle().setHeight(23, PX);
+        this.refreshContributionBranchNameListButton.getElement().getStyle().setHeight(20, PX);
         this.refreshContributionBranchNameListButton.getElement().getStyle().setCursor(POINTER);
         this.refreshContributionBranchNameListButton.getElement().getStyle().setProperty("fill", "#dbdbdb");
 
         this.statusSection.setVisible(false);
         this.newContributionSection.setVisible(false);
-        this.contributionBranchName.getElement().setPropertyString("placeholder",
-                                                                   messages.contributePartConfigureContributionSectionContributionBranchNamePlaceholder());
         this.contributionTitle.getElement().setPropertyString("placeholder",
                                                               messages.contributePartConfigureContributionSectionContributionTitlePlaceholder());
         this.contributionComment.getElement().setPropertyString("placeholder",
@@ -171,20 +170,27 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     @Override
     public String getContributionBranchName() {
-        return contributionBranchName.getValue();
+        final int selectedIndex = contributionBranchName.getSelectedIndex();
+        return selectedIndex == -1 ? null : contributionBranchName.getValue(selectedIndex);
     }
 
     @Override
     public void setContributionBranchName(final String branchName) {
-        contributionBranchName.setValue(branchName);
+        for (int i = 0; i < contributionBranchName.getItemCount(); i++) {
+            if (contributionBranchName.getValue(i).equals(branchName)) {
+                contributionBranchName.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 
     @Override
-    public void setContributionBranchNameSuggestionList(final List<String> branchNames) {
-        final MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)contributionBranchName.getSuggestOracle();
-        oracle.clear();
-        oracle.addAll(branchNames);
-        oracle.setDefaultSuggestionsFromText(branchNames);
+    public void setContributionBranchNameList(final List<String> branchNames) {
+        contributionBranchName.clear();
+        contributionBranchName.addItem(messages.contributePartConfigureContributionSectionContributionBranchNameCreateNewItemText());
+        for (final String oneBranchName : branchNames) {
+            contributionBranchName.addItem(oneBranchName);
+        }
     }
 
     @Override
@@ -230,15 +236,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @Override
     public void setContributeEnabled(final boolean enabled) {
         contributeButton.setEnabled(enabled);
-    }
-
-    @Override
-    public void showContributionBranchNameError(final boolean showError) {
-        if (showError) {
-            contributionBranchName.addStyleName(resources.contributeCss().inputError());
-        } else {
-            contributionBranchName.removeStyleName(resources.contributeCss().inputError());
-        }
     }
 
     @Override
@@ -321,61 +318,58 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("contributionBranchName")
-    public void contributionBranchNameChanged(final ValueChangeEvent<String> event) {
-        delegate.updateControls();
-    }
-
-    @SuppressWarnings("UnusedParameters")
-    @UiHandler("contributionBranchName")
-    public void contributionBranchNameKeyUp(final KeyUpEvent event) {
-        delegate.updateControls();
+    protected void contributionBranchNameChange(final ChangeEvent event) {
+        final int selectedIndex = contributionBranchName.getSelectedIndex();
+        if (selectedIndex == 0) {
+            delegate.onCreateNewBranch();
+        }
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("refreshContributionBranchNameListButton")
-    public void refreshContributionBranchNameList(final ClickEvent event) {
+    protected void refreshContributionBranchNameList(final ClickEvent event) {
         delegate.onRefreshContributionBranchNameList();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("contributionComment")
-    public void contributionCommentChanged(final ValueChangeEvent<String> event) {
+    protected void contributionCommentChanged(final ValueChangeEvent<String> event) {
         delegate.updateControls();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("contributionTitle")
-    public void contributionTitleChanged(final ValueChangeEvent<String> event) {
+    protected void contributionTitleChanged(final ValueChangeEvent<String> event) {
         delegate.updateControls();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("openOnRepositoryHostButton")
-    public void openOnRepositoryHostClick(final ClickEvent event) {
+    protected void openOnRepositoryHostClick(final ClickEvent event) {
         delegate.onOpenOnRepositoryHost();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("newContributionButton")
-    public void newContributionClick(final ClickEvent event) {
+    protected void newContributionClick(final ClickEvent event) {
         delegate.onNewContribution();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("contributeButton")
-    public void contributeClick(final ClickEvent event) {
+    protected void contributeClick(final ClickEvent event) {
         delegate.onContribute();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("contributionTitle")
-    public void contributionTitleKeyUp(final KeyUpEvent event) {
+    protected void contributionTitleKeyUp(final KeyUpEvent event) {
         delegate.updateControls();
     }
 
     @SuppressWarnings("UnusedParameters")
     @UiHandler("contributionTitle")
-    public void contributionTitlePaste(final PasteEvent event) {
+    protected void contributionTitlePaste(final PasteEvent event) {
         delegate.updateControls();
     }
 }

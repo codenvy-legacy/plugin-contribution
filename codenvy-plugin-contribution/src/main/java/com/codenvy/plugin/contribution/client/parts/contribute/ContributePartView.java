@@ -45,25 +45,17 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setContributionBranchName(String branchName);
 
     /**
-     * Set the contribution branch name suggestions.
+     * Set the contribution branch name list.
      *
      * @param branchNames
-     *         the branch name suggestion list.
+     *         the branch name list.
      */
-    void setContributionBranchNameSuggestionList(List<String> branchNames);
+    void setContributionBranchNameList(List<String> branchNames);
 
     /**
      * Sets the enabled/disabled state of the contribution branch name field.
      */
     void setContributionBranchNameEnabled(boolean enabled);
-
-    /**
-     * Sets the contribution branch name input error state.
-     *
-     * @param showError
-     *         {@code true} if the contribution branch name is in error, {@code false} otherwise.
-     */
-    void showContributionBranchNameError(boolean showError);
 
     /**
      * Returns the current content of the contribution comment.
@@ -206,6 +198,9 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
 
         /** Performs any action appropriate in response to the user having pressed the refresh contribution branch names list button. */
         void onRefreshContributionBranchNameList();
+
+        /** Performs any action appropriate in response to the user having selected the create new branch item. */
+        void onCreateNewBranch();
 
         /** Performs any action when view state is modified. */
         void updateControls();

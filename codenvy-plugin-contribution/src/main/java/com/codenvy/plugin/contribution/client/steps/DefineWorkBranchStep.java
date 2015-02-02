@@ -70,8 +70,6 @@ public class DefineWorkBranchStep implements Step {
         // if we come from a factory we have to create the working branch
         if (factory != null && factory.getProject().getAttributes().containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
             final String workingBranchName = generateWorkBranchName();
-            context.setWorkBranchName(workingBranchName);
-
             final Notification createWorkingBranchNotification =
                     new Notification(messages.stepDefineWorkBranchCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
             notificationHelper.showNotification(createWorkingBranchNotification);
@@ -98,6 +96,7 @@ public class DefineWorkBranchStep implements Step {
                     vcsService.checkoutBranch(context.getProject(), workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
                         @Override
                         public void onSuccess(final String result) {
+                            context.setWorkBranchName(workingBranchName);
                             notificationHelper.finishNotification(messages.stepDefineWorkBranchWorkBranchCreated(workingBranchName),
                                                                   createWorkingBranchNotification);
                         }

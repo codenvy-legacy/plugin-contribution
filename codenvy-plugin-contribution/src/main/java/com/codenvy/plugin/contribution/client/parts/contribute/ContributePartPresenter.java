@@ -11,10 +11,13 @@
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
 import com.codenvy.api.factory.dto.Factory;
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
 import com.codenvy.ide.api.parts.base.BasePresenter;
+import com.codenvy.ide.ui.dialogs.CancelCallback;
+import com.codenvy.ide.ui.dialogs.DialogFactory;
+import com.codenvy.ide.ui.dialogs.InputCallback;
+import com.codenvy.ide.ui.dialogs.input.InputValidator;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.Context;
@@ -52,32 +55,16 @@ import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
  */
 public class ContributePartPresenter extends BasePresenter
         implements ContributePartView.ActionDelegate, StepHandler, ContextPropertyChangeHandler {
-    /** The component view. */
-    private final ContributePartView view;
-
-    /** The workspace agent. */
-    private final WorkspaceAgent workspaceAgent;
-
-    /** The contribute plugin messages. */
-    private final ContributeMessages messages;
-
-    /** The contributor workflow controller. */
+    private final ContributePartView  view;
+    private final WorkspaceAgent      workspaceAgent;
+    private final ContributeMessages  messages;
     private final ContributorWorkflow workflow;
-
-    /** The VCS hosting service. */
-    private final VcsHostingService vcsHostingService;
-
-    /** The step to authorize Codenvy on GitHub. */
-    private final Step commitWorkingTreeStep;
-
-    /** The application context. */
-    private final AppContext appContext;
-
-    /** The vcs service. */
-    private final VcsService vcsService;
-
-    /** The notification helper. */
-    private final NotificationHelper notificationHelper;
+    private final VcsHostingService   vcsHostingService;
+    private final Step                commitWorkingTreeStep;
+    private final AppContext          appContext;
+    private final VcsService          vcsService;
+    private final NotificationHelper  notificationHelper;
+    private final DialogFactory       dialogFactory;
 
     @Inject
     public ContributePartPresenter(@Nonnull final ContributePartView view,
@@ -89,7 +76,8 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final CommitWorkingTreeStep commitWorkingTreeStep,
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final VcsService vcsService,
-                                   @Nonnull final NotificationHelper notificationHelper) {
+                                   @Nonnull final NotificationHelper notificationHelper,
+                                   @Nonnull final DialogFactory dialogFactory) {
         this.view = view;
         this.workspaceAgent = workspaceAgent;
         this.workflow = workflow;
@@ -99,6 +87,7 @@ public class ContributePartPresenter extends BasePresenter
         this.appContext = appContext;
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
+        this.dialogFactory = dialogFactory;
 
         this.view.setDelegate(this);
         eventBus.addHandler(StepEvent.TYPE, this);
@@ -110,7 +99,7 @@ public class ContributePartPresenter extends BasePresenter
         view.setClonedBranch("");
         view.setContributionBranchName("");
         view.setContributionBranchNameEnabled(true);
-        view.setContributionBranchNameSuggestionList(Collections.<String>emptyList());
+        view.setContributionBranchNameList(Collections.<String>emptyList());
         view.setContributionTitle("");
         view.setContributionTitleEnabled(true);
         view.setContributionComment("");
@@ -193,33 +182,25 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onRefreshContributionBranchNameList() {
-        final Context context = workflow.getContext();
-        getLocalBranchNamesList(context.getProject(), new AsyncCallback<List<String>>() {
-            @Override
-            public void onFailure(final Throwable exception) {
-                notificationHelper.showError(ContributePartPresenter.class, exception);
-            }
+        refreshContributionBranchNameList();
+    }
 
-            @Override
-            public void onSuccess(final List<String> branchNames) {
-                view.setContributionBranchNameSuggestionList(branchNames);
-            }
-        });
+    @Override
+    public void onCreateNewBranch() {
+        dialogFactory.createInputDialog(messages.contributePartConfigureContributionDialogNewBranchTitle(),
+                                        messages.contributePartConfigureContributionDialogNewBranchLabel(),
+                                        new CreateNewBranchCallback(),
+                                        new CancelNewBranchCallback())
+                     .withValidator(new BranchNameValidator())
+                     .show();
     }
 
     @Override
     public void updateControls() {
-        final String branchName = view.getContributionBranchName();
         final String contributionTitle = view.getContributionTitle();
 
         boolean isValid = true;
-        view.showContributionBranchNameError(false);
         view.showContributionTitleError(false);
-
-        if (branchName == null || !branchName.matches("[0-9A-Za-z-]+")) {
-            view.showContributionBranchNameError(true);
-            isValid = false;
-        }
 
         if (contributionTitle == null || contributionTitle.trim().isEmpty()) {
             view.showContributionTitleError(true);
@@ -329,8 +310,18 @@ public class ContributePartPresenter extends BasePresenter
             break;
 
             case WORK_BRANCH_NAME: {
-                view.setContributionBranchName(context.getWorkBranchName());
-                updateControls();
+                refreshContributionBranchNameList(new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        notificationHelper.showError(ContributePartPresenter.class, exception);
+                    }
+
+                    @Override
+                    public void onSuccess(final Void notUsed) {
+                        view.setContributionBranchName(context.getWorkBranchName());
+                        updateControls();
+                    }
+                });
             }
             break;
 
@@ -346,24 +337,28 @@ public class ContributePartPresenter extends BasePresenter
             break;
 
             case PROJECT: {
-                getLocalBranchNamesList(context.getProject(), new AsyncCallback<List<String>>() {
-                    @Override
-                    public void onFailure(final Throwable exception) {
-                        notificationHelper.showError(ContributePartPresenter.class, exception);
-                    }
-
-                    @Override
-                    public void onSuccess(final List<String> branchNames) {
-                        view.setContributionBranchNameSuggestionList(branchNames);
-                    }
-                });
+                refreshContributionBranchNameList();
             }
             break;
         }
     }
 
-    private void getLocalBranchNamesList(final ProjectDescriptor project, final AsyncCallback<List<String>> callback) {
-        vcsService.listLocalBranches(project, new AsyncCallback<List<Branch>>() {
+    private void refreshContributionBranchNameList() {
+        refreshContributionBranchNameList(new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(ContributePartPresenter.class, exception);
+            }
+
+            @Override
+            public void onSuccess(final Void notUsed) {
+                // nothing to do branch name list is refreshed
+            }
+        });
+    }
+
+    private void refreshContributionBranchNameList(final AsyncCallback<Void> callback) {
+        vcsService.listLocalBranches(workflow.getContext().getProject(), new AsyncCallback<List<Branch>>() {
             @Override
             public void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
@@ -376,8 +371,61 @@ public class ContributePartPresenter extends BasePresenter
                     branchNames.add(oneBranch.getDisplayName());
                 }
 
-                callback.onSuccess(branchNames);
+                view.setContributionBranchNameList(branchNames);
+                callback.onSuccess(null);
             }
         });
+    }
+
+    private static class BranchNameValidator implements InputValidator {
+        private static final Violation ERROR_WITH_NO_MESSAGE = new Violation() {
+            @Nullable
+            @Override
+            public String getMessage() {
+                return "";
+            }
+        };
+
+        @Nullable
+        @Override
+        public Violation validate(final String branchName) {
+            return branchName.matches("[0-9A-Za-z-]+") ? null : ERROR_WITH_NO_MESSAGE;
+        }
+    }
+
+    private class CreateNewBranchCallback implements InputCallback {
+        @Override
+        public void accepted(final String branchName) {
+            final Context context = workflow.getContext();
+
+            vcsService.checkoutBranch(context.getProject(), branchName, true, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    notificationHelper.showError(ContributePartPresenter.class, exception);
+                }
+
+                @Override
+                public void onSuccess(final String notUsed) {
+                    refreshContributionBranchNameList(new AsyncCallback<Void>() {
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            notificationHelper.showError(ContributePartPresenter.class, exception);
+                        }
+
+                        @Override
+                        public void onSuccess(final Void notUsed) {
+                            view.setContributionBranchName(branchName);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    private class CancelNewBranchCallback implements CancelCallback {
+        @Override
+        public void cancelled() {
+            view.setContributionBranchName(workflow.getContext().getWorkBranchName());
+        }
     }
 }
