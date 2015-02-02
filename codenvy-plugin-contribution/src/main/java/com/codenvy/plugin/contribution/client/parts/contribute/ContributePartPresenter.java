@@ -130,7 +130,6 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onContribute() {
-        view.hideStatusSection();
         view.clearStatusSection();
         view.setContributeEnabled(false);
         view.setContributionProgressState(true);
@@ -294,6 +293,11 @@ public class ContributePartPresenter extends BasePresenter
     @Override
     public void onStepError(@Nonnull final StepEvent event) {
         switch (event.getStep()) {
+            case COMMIT_WORKING_TREE: {
+                view.hideStatusSection();
+            }
+            break;
+
             case CREATE_FORK: {
                 view.setCreateForkStatus(false);
             }
