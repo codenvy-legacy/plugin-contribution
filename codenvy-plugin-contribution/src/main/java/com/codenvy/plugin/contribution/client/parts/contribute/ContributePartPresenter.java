@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.codenvy.ide.api.constraints.Constraints.LAST;
@@ -105,7 +106,21 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     public void open() {
-        view.reset();
+        view.setRepositoryUrl("");
+        view.setClonedBranch("");
+        view.setContributionBranchName("");
+        view.setContributionBranchNameEnabled(true);
+        view.setContributionBranchNameSuggestionList(Collections.<String>emptyList());
+        view.setContributionTitle("");
+        view.setContributionTitleEnabled(true);
+        view.setContributionComment("");
+        view.setContributionCommentEnabled(true);
+        view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
+        view.hideStatusSection();
+        view.clearStatusSection();
+        view.hideNewContributionSection();
+        updateControls();
+
         workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
     }
 
@@ -141,17 +156,39 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onNewContribution() {
-        view.hideStatusSection();
-        view.clearStatusSection();
-        view.hideNewContributionSection();
-
         final Factory factory = appContext.getFactory();
         if (factory != null) {
             final String createProjectUrl = FactoryHelper.getCreateProjectRelUrl(factory);
-
             if (createProjectUrl != null) {
                 Window.open(createProjectUrl, "", "");
             }
+
+        } else {
+            final Context context = workflow.getContext();
+            vcsService.checkoutBranch(context.getProject(), context.getClonedBranchName(), false, new AsyncCallback<String>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    notificationHelper.showError(ContributePartPresenter.class, exception);
+                }
+
+                @Override
+                public void onSuccess(final String branchName) {
+                    view.setContributionBranchName(context.getClonedBranchName());
+                    view.setContributionBranchNameEnabled(true);
+                    view.setContributionTitle("");
+                    view.setContributionTitleEnabled(true);
+                    view.setContributionComment("");
+                    view.setContributionCommentEnabled(true);
+                    view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
+                    view.hideStatusSection();
+                    view.clearStatusSection();
+                    view.hideNewContributionSection();
+                    updateControls();
+
+                    notificationHelper
+                            .showInfo(messages.contributePartNewContributionBranchClonedCheckedOut(context.getClonedBranchName()));
+                }
+            });
         }
     }
 
@@ -289,6 +326,7 @@ public class ContributePartPresenter extends BasePresenter
 
             case WORK_BRANCH_NAME: {
                 view.setContributionBranchName(context.getWorkBranchName());
+                updateControls();
             }
             break;
 
@@ -318,8 +356,6 @@ public class ContributePartPresenter extends BasePresenter
             }
             break;
         }
-
-        updateControls();
     }
 
     private void getLocalBranchNamesList(final ProjectDescriptor project, final AsyncCallback<List<String>> callback) {

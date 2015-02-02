@@ -37,7 +37,6 @@ import org.vectomatic.dom.svg.ui.SVGPushButton;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.List;
 
 import static com.google.gwt.dom.client.Style.Cursor.POINTER;
@@ -154,29 +153,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void reset() {
-        repositoryUrl.setHref("");
-        repositoryUrl.setText("");
-        clonedBranch.setText("");
-
-        contributionBranchName.setValue("");
-        setContributionBranchNameEnabled(true);
-        setContributionBranchNameSuggestionList(Collections.<String>emptyList());
-        contributionTitle.setValue("");
-        setContributionTitleEnabled(true);
-        contributionComment.setValue("");
-        setContributionCommentEnabled(true);
-        contributeButton.setText(messages.contributePartConfigureContributionSectionButtonContributeText());
-
-        hideStatusSection();
-        clearStatusSection();
-
-        hideNewContributionSection();
-
-        delegate.updateControls();
-    }
-
-    @Override
     public void setRepositoryUrl(final String url) {
         repositoryUrl.setHref(url);
         repositoryUrl.setText(url);
@@ -217,8 +193,18 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
+    public void setContributionComment(final String comment) {
+        contributionComment.setText(comment);
+    }
+
+    @Override
     public String getContributionTitle() {
         return contributionTitle.getValue();
+    }
+
+    @Override
+    public void setContributionTitle(final String title) {
+        contributionTitle.setText(title);
     }
 
     @Override

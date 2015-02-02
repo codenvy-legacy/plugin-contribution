@@ -20,11 +20,6 @@ import java.util.List;
  */
 public interface ContributePartView extends View<ContributePartView.ActionDelegate> {
     /**
-     * Resets the part to its initial state.
-     */
-    void reset();
-
-    /**
      * Set factory's repository URL.
      */
     void setRepositoryUrl(String url);
@@ -78,6 +73,14 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     String getContributionComment();
 
     /**
+     * Sets the contribution comment.
+     *
+     * @param comment
+     *         the contribution comment.
+     */
+    void setContributionComment(String comment);
+
+    /**
      * Sets the enabled/disabled state of the contribution comment field.
      */
     void setContributionCommentEnabled(boolean enabled);
@@ -88,6 +91,14 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
      * @return the title.
      */
     String getContributionTitle();
+
+    /**
+     * Sets the contribution title.
+     *
+     * @param title
+     *         the contribution title.
+     */
+    void setContributionTitle(String title);
 
     /**
      * Sets the enabled/disabled state of the contribution title field.
