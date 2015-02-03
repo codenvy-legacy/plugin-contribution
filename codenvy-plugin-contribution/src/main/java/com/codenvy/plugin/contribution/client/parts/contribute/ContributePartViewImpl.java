@@ -179,8 +179,12 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         for (int i = 0; i < contributionBranchName.getItemCount(); i++) {
             if (contributionBranchName.getValue(i).equals(branchName)) {
                 contributionBranchName.setSelectedIndex(i);
-                break;
+                return;
             }
+        }
+
+        if (contributionBranchName.getItemCount() > 1) {
+            contributionBranchName.setSelectedIndex(1);
         }
     }
 
