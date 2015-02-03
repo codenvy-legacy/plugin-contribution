@@ -38,7 +38,6 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
@@ -155,7 +154,7 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().setVisibility("public");
 
                 // the new factory is not a 'contribute workflow factory'
-                factory.getProject().getAttributes().put(ATTRIBUTE_CONTRIBUTE_KEY, Arrays.asList("false"));
+                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
                 callback.onSuccess(factory);
             }
 
