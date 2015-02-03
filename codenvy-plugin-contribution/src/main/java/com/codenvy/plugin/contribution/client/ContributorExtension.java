@@ -13,7 +13,6 @@ package com.codenvy.plugin.contribution.client;
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.gwt.client.ProjectServiceClient;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
-import com.codenvy.api.project.shared.dto.NewProject;
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.api.project.shared.dto.ProjectUpdate;
 import com.codenvy.ide.api.app.AppContext;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static java.util.Arrays.asList;
 
 /**
@@ -118,8 +116,6 @@ public class ContributorExtension implements ProjectActionHandler {
                             final Factory factory = appContext.getFactory();
                             final Map<String, List<String>> projectAttributes = project.getAttributes();
 
-                            setContributionFlag(projectAttributes, factory);
-
                             setClonedBranch(projectAttributes, factory, vcsService, project, new AsyncCallback<Void>() {
                                 @Override
                                 public void onFailure(final Throwable exception) {
@@ -152,21 +148,6 @@ public class ContributorExtension implements ProjectActionHandler {
                     }
                 }
             });
-        }
-    }
-
-    private void setContributionFlag(final Map<String, List<String>> projectAttributes, final Factory factory) {
-        if (factory != null) {
-            final NewProject factoryProject = factory.getProject();
-
-            if (factoryProject != null && factoryProject.getAttributes() != null) {
-                final Map<String, List<String>> factoryAttributes = factoryProject.getAttributes();
-
-                final List<String> attributeContributeValue = factoryAttributes.get(ATTRIBUTE_CONTRIBUTE_KEY);
-                if (attributeContributeValue != null) {
-                    projectAttributes.put(ATTRIBUTE_CONTRIBUTE_KEY, attributeContributeValue);
-                }
-            }
         }
     }
 
