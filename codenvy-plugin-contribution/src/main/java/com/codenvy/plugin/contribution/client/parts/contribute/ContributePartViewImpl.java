@@ -186,11 +186,15 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     @Override
     public void setContributionBranchNameList(final List<String> branchNames) {
+        final String selectedBranchName = getContributionBranchName();
+
         contributionBranchName.clear();
         contributionBranchName.addItem(messages.contributePartConfigureContributionSectionContributionBranchNameCreateNewItemText());
         for (final String oneBranchName : branchNames) {
             contributionBranchName.addItem(oneBranchName);
         }
+
+        setContributionBranchName(selectedBranchName);
     }
 
     @Override
