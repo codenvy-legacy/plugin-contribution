@@ -29,6 +29,7 @@ import java.util.List;
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.GITHUB_CONTRIBUTE_FLAG;
 
 /**
  * This step defines the working branch for the user contribution.
@@ -67,8 +68,11 @@ public class DefineWorkBranchStep implements Step {
         final Factory factory = appContext.getFactory();
         final VcsService vcsService = vcsServiceProvider.getVcsService();
 
-        // if we come from a factory we have to create the working branch
-        if (factory != null && factory.getProject().getAttributes().containsKey(ATTRIBUTE_CONTRIBUTE_KEY)) {
+        // if we come from a contribute factory we have to create the working branch
+        if (factory != null
+            && factory.getProject().getAttributes().containsKey(ATTRIBUTE_CONTRIBUTE_KEY)
+            && factory.getProject().getAttributes().get(ATTRIBUTE_CONTRIBUTE_KEY).contains(GITHUB_CONTRIBUTE_FLAG)) {
+
             final String workingBranchName = generateWorkBranchName();
             final Notification createWorkingBranchNotification =
                     new Notification(messages.stepDefineWorkBranchCreatingWorkBranch(workingBranchName), INFO, PROGRESS);
