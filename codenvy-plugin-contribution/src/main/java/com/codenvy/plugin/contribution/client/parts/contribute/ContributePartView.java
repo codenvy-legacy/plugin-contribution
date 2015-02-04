@@ -135,14 +135,14 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     void setCurrentStatusStepStatus(boolean success);
 
     /**
-     * Show the status section message.
+     * Shows the status section message.
      */
     void showStatusSectionMessage(String message);
 
     /**
-     * Clears the status section.
+     * Hides the status section message.
      */
-    void clearStatusSection();
+    void hideStatusSectionMessage();
 
     /**
      * Hides the status section.

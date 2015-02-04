@@ -61,20 +61,29 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.status.section.title")
     String contributePartStatusSectionTitle();
 
-    @Key("contribute.part.status.section.fork.created.label")
-    String contributePartStatusSectionForkCreatedLabel();
+    @Key("contribute.part.status.section.fork.created.step.label")
+    String contributePartStatusSectionForkCreatedStepLabel();
 
-    @Key("contribute.part.status.section.branch.pushed.label")
-    String contributePartStatusSectionBranchPushedLabel();
+    @Key("contribute.part.status.section.branch.pushed.step.label")
+    String contributePartStatusSectionBranchPushedStepLabel();
 
-    @Key("contribute.part.status.section.pull.request.issued.label")
-    String contributePartStatusSectionPullRequestIssuedLabel();
+    @Key("contribute.part.status.section.new.commits.pushed.step.label")
+    String contributePartStatusSectionNewCommitsPushedStepLabel();
 
-    @Key("contribute.part.status.section.contribution.created.label")
-    String contributePartStatusSectionContributionCreatedLabel();
+    @Key("contribute.part.status.section.pull.request.issued.step.label")
+    String contributePartStatusSectionPullRequestIssuedStepLabel();
 
-    @Key("contribute.part.status.section.button.open.on.github.text")
-    String contributePartStatusSectionButtonOpenOnGithubText();
+    @Key("contribute.part.status.section.pull.request.updated.step.label")
+    String contributePartStatusSectionPullRequestUpdatedStepLabel();
+
+    @Key("contribute.part.status.section.contribution.created.message")
+    String contributePartStatusSectionContributionCreatedMessage();
+
+    @Key("contribute.part.status.section.contribution.updated.message")
+    String contributePartStatusSectionContributionUpdatedMessage();
+
+    @Key("contribute.part.new.contribution.section.button.open.on.github.text")
+    String contributePartNewContributionSectionButtonOpenOnGithubText();
 
     @Key("contribute.part.new.contribution.section.button.new.text")
     String contributePartNewContributionSectionButtonNewText();

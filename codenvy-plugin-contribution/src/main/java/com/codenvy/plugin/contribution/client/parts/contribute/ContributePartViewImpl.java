@@ -274,15 +274,13 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void hideStatusSection() {
-        statusSection.setVisible(false);
+    public void hideStatusSectionMessage() {
+        statusSectionMessage.setVisible(false);
     }
 
     @Override
-    public void clearStatusSection() {
-        statusSteps.clearStepsStatus();
-        statusSectionMessage.setText("");
-        statusSectionMessage.setVisible(false);
+    public void hideStatusSection() {
+        statusSection.setVisible(false);
     }
 
     @Override

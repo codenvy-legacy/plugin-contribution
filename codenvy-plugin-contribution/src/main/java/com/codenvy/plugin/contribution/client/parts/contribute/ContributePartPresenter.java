@@ -65,6 +65,7 @@ public class ContributePartPresenter extends BasePresenter
     private final VcsService          vcsService;
     private final NotificationHelper  notificationHelper;
     private final DialogFactory       dialogFactory;
+    private       boolean             updateMode;
 
     @Inject
     public ContributePartPresenter(@Nonnull final ContributePartView view,
@@ -88,6 +89,7 @@ public class ContributePartPresenter extends BasePresenter
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
         this.dialogFactory = dialogFactory;
+        this.updateMode = false;
 
         this.view.setDelegate(this);
         eventBus.addHandler(StepEvent.TYPE, this);
@@ -106,8 +108,9 @@ public class ContributePartPresenter extends BasePresenter
         view.setContributionCommentEnabled(true);
         view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
         view.hideStatusSection();
-        view.clearStatusSection();
         view.hideNewContributionSection();
+
+        updateMode = false;
         updateControls();
 
         workspaceAgent.openPart(ContributePartPresenter.this, TOOLING, LAST);
@@ -119,7 +122,17 @@ public class ContributePartPresenter extends BasePresenter
 
     @Override
     public void onContribute() {
-        view.clearStatusSection();
+        if (updateMode) {
+            view.showStatusSection(messages.contributePartStatusSectionNewCommitsPushedStepLabel(),
+                                   messages.contributePartStatusSectionPullRequestUpdatedStepLabel());
+
+        } else {
+            view.showStatusSection(messages.contributePartStatusSectionForkCreatedStepLabel(),
+                                   messages.contributePartStatusSectionBranchPushedStepLabel(),
+                                   messages.contributePartStatusSectionPullRequestIssuedStepLabel());
+        }
+
+        view.hideStatusSectionMessage();
         view.setContributeEnabled(false);
         view.setContributionProgressState(true);
 
@@ -169,8 +182,10 @@ public class ContributePartPresenter extends BasePresenter
                     view.setContributionCommentEnabled(true);
                     view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
                     view.hideStatusSection();
-                    view.clearStatusSection();
+                    view.hideStatusSectionMessage();
                     view.hideNewContributionSection();
+
+                    updateMode = true;
                     updateControls();
 
                     notificationHelper
@@ -241,24 +256,25 @@ public class ContributePartPresenter extends BasePresenter
     @Override
     public void onStepDone(@Nonnull final StepEvent event) {
         switch (event.getStep()) {
-            case COMMIT_WORKING_TREE: {
-                view.showStatusSection(messages.contributePartStatusSectionForkCreatedLabel(),
-                                       messages.contributePartStatusSectionBranchPushedLabel(),
-                                       messages.contributePartStatusSectionPullRequestIssuedLabel());
+            case CREATE_FORK: {
+                if (!updateMode) {
+                    view.setCurrentStatusStepStatus(true);
+                }
             }
             break;
 
-            case CREATE_FORK:
             case PUSH_BRANCH_ON_FORK: {
                 view.setCurrentStatusStepStatus(true);
             }
             break;
 
             case ISSUE_PULL_REQUEST: {
+                updateMode = true;
                 view.setCurrentStatusStepStatus(true);
                 view.setContributeEnabled(true);
                 view.setContributionProgressState(false);
-                view.showStatusSectionMessage(messages.contributePartStatusSectionContributionCreatedLabel());
+                view.showStatusSectionMessage(updateMode ? messages.contributePartStatusSectionContributionUpdatedMessage()
+                                                         : messages.contributePartStatusSectionContributionCreatedMessage());
                 view.showNewContributionSection();
                 view.setContributionBranchNameEnabled(false);
                 view.setContributionTitleEnabled(false);
@@ -277,7 +293,13 @@ public class ContributePartPresenter extends BasePresenter
             }
             break;
 
-            case CREATE_FORK:
+            case CREATE_FORK: {
+                if (!updateMode) {
+                    view.setCurrentStatusStepStatus(false);
+                }
+            }
+            break;
+
             case PUSH_BRANCH_ON_FORK:
             case ISSUE_PULL_REQUEST: {
                 view.setCurrentStatusStepStatus(false);

@@ -160,7 +160,7 @@
                 <g:Label ui:field="statusSectionMessage" addStyleNames="{style.statusMessage}"/>
             </g:FlowPanel>
             <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.newContribution} {style.border}">
-                <g:Button ui:field="openOnRepositoryHostButton" text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
+                <g:Button ui:field="openOnRepositoryHostButton" text="{messages.contributePartNewContributionSectionButtonOpenOnGithubText}"/>
                 <g:Button ui:field="newContributionButton" addStyleNames="{resources.contributeCss.blueButton}"
                           text="{messages.contributePartNewContributionSectionButtonNewText}"/>
             </g:HTMLPanel>
