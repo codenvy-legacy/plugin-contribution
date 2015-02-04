@@ -258,7 +258,7 @@ public class ContributePartPresenter extends BasePresenter
                 view.setCurrentStatusStepStatus(true);
                 view.setContributeEnabled(true);
                 view.setContributionProgressState(false);
-                view.showStatusSectionFooter();
+                view.showStatusSectionMessage(messages.contributePartStatusSectionContributionCreatedLabel());
                 view.showNewContributionSection();
                 view.setContributionBranchNameEnabled(false);
                 view.setContributionTitleEnabled(false);

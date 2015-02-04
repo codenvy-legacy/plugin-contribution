@@ -54,6 +54,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     /** The uUI binder for this component. */
     private static final ContributePartViewUiBinder UI_BINDER = GWT.create(ContributePartViewUiBinder.class);
 
+    /** The status component. */
+    private final StatusSteps statusSteps;
+
     /** The contribute button. */
     @UiField
     Button contributeButton;
@@ -94,9 +97,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiField
     FlowPanel statusSection;
 
-    /** The status section footer. */
+    /** The status section message. */
     @UiField
-    HTMLPanel statusSectionFooter;
+    Label statusSectionMessage;
 
     /** Open on repository host button. */
     @UiField
@@ -112,9 +115,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     /** The contribute button text. */
     private String contributeButtonText;
-
-    /** The status component. */
-    private final StatusSteps statusSteps;
 
     @Inject
     public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
@@ -268,6 +268,12 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
+    public void showStatusSectionMessage(final String message) {
+        statusSectionMessage.setText(message);
+        statusSectionMessage.setVisible(true);
+    }
+
+    @Override
     public void hideStatusSection() {
         statusSection.setVisible(false);
     }
@@ -275,7 +281,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @Override
     public void clearStatusSection() {
         statusSteps.clearStepsStatus();
-        statusSectionFooter.setVisible(false);
+        statusSectionMessage.setText("");
+        statusSectionMessage.setVisible(false);
     }
 
     @Override
@@ -285,11 +292,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         } else {
             contributeButton.setText(contributeButtonText);
         }
-    }
-
-    @Override
-    public void showStatusSectionFooter() {
-        statusSectionFooter.setVisible(true);
     }
 
     @Override
@@ -360,8 +362,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     private class StatusSteps extends FlowPanel {
-        private       int              currentStep;
         private final List<StatusStep> steps;
+        private       int              currentStep;
 
         private StatusSteps() {
             this.currentStep = 0;

@@ -93,15 +93,9 @@
             align-self: flex-end;
         }
 
-        .footer {
+        .statusMessage {
             margin-top: 1em;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .footer .item {
             margin-bottom: 1em;
-            flex-direction: column;
             align-self: center;
             width: auto;
             line-height: 20px;
@@ -163,9 +157,7 @@
             </div>
             <g:FlowPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartStatusSectionTitle}"/>
-                <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
-                    <g:Label addStyleNames="{style.item}" text="{messages.contributePartStatusSectionContributionCreatedLabel}"/>
-                </g:HTMLPanel>
+                <g:Label ui:field="statusSectionMessage" addStyleNames="{style.statusMessage}"/>
             </g:FlowPanel>
             <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.newContribution} {style.border}">
                 <g:Button ui:field="openOnRepositoryHostButton" text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
