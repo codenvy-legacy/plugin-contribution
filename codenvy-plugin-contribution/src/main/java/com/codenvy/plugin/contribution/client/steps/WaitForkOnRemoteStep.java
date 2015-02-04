@@ -20,8 +20,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CREATE_FORK;
-
 public class WaitForkOnRemoteStep implements Step {
     private static final int POLL_FREQUENCY_MS = 1000;
 
