@@ -25,6 +25,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -37,9 +38,12 @@ import org.vectomatic.dom.svg.ui.SVGPushButton;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.gwt.dom.client.Style.Cursor.POINTER;
+import static com.google.gwt.dom.client.Style.TextAlign.CENTER;
+import static com.google.gwt.dom.client.Style.Unit.EM;
 import static com.google.gwt.dom.client.Style.Unit.PX;
 
 /**
@@ -88,19 +92,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     /** The contribution status section. */
     @UiField
-    HTMLPanel statusSection;
-
-    /** The create fork status panel. */
-    @UiField
-    SimplePanel createForkStatus;
-
-    /** The push branch status panel. */
-    @UiField
-    SimplePanel pushBranchStatus;
-
-    /** The issue pull request status panel. */
-    @UiField
-    SimplePanel issuePullRequestStatus;
+    FlowPanel statusSection;
 
     /** The status section footer. */
     @UiField
@@ -121,6 +113,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     /** The contribute button text. */
     private String contributeButtonText;
 
+    /** The status component. */
+    private final StatusSteps statusSteps;
+
     @Inject
     public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
                                   @Nonnull final ContributeMessages messages,
@@ -130,6 +125,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
         this.messages = messages;
         this.resources = resources;
+        this.statusSteps = new StatusSteps();
 
         this.container.add(UI_BINDER.createAndBindUi(this));
 
@@ -149,6 +145,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
                                                               messages.contributePartConfigureContributionSectionContributionTitlePlaceholder());
         this.contributionComment.getElement().setPropertyString("placeholder",
                                                                 messages.contributePartConfigureContributionSectionContributionCommentPlaceholder());
+
+        this.statusSection.insert(statusSteps, 1);
     }
 
     @Override
@@ -256,8 +254,17 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void showStatusSection() {
+    public void showStatusSection(final String... statusSteps) {
+        this.statusSteps.removeAll();
+        for (final String oneStatusStep : statusSteps) {
+            this.statusSteps.addStep(oneStatusStep);
+        }
         statusSection.setVisible(true);
+    }
+
+    @Override
+    public void setCurrentStatusStepStatus(boolean success) {
+        statusSteps.setCurrentStepStatus(success);
     }
 
     @Override
@@ -267,29 +274,8 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     @Override
     public void clearStatusSection() {
+        statusSteps.clearStepsStatus();
         statusSectionFooter.setVisible(false);
-        createForkStatus.clear();
-        pushBranchStatus.clear();
-        issuePullRequestStatus.clear();
-    }
-
-    @Override
-    public void setCreateForkStatus(final boolean success) {
-        createForkStatus.clear();
-        createForkStatus.add(getStatusImage(success));
-    }
-
-
-    @Override
-    public void setPushBranchStatus(final boolean success) {
-        pushBranchStatus.clear();
-        pushBranchStatus.add(getStatusImage(success));
-    }
-
-    @Override
-    public void setIssuePullRequestStatus(final boolean success) {
-        issuePullRequestStatus.clear();
-        issuePullRequestStatus.add(getStatusImage(success));
     }
 
     @Override
@@ -299,14 +285,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
         } else {
             contributeButton.setText(contributeButtonText);
         }
-    }
-
-    private SVGImage getStatusImage(final boolean success) {
-        final SVGImage image = new SVGImage(success ? resources.statusOkIcon() : resources.statusErrorIcon());
-        image.getElement().getStyle().setWidth(15, PX);
-        image.getElement().getStyle().setProperty("fill", success ? "#FFFFFF" : "#CF3C3E");
-
-        return image;
     }
 
     @Override
@@ -379,5 +357,104 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     @UiHandler("contributionTitle")
     protected void contributionTitlePaste(final PasteEvent event) {
         delegate.updateControls();
+    }
+
+    private class StatusSteps extends FlowPanel {
+        private       int              currentStep;
+        private final List<StatusStep> steps;
+
+        private StatusSteps() {
+            this.currentStep = 0;
+            this.steps = new ArrayList<>();
+
+            getElement().getStyle().setProperty("display", "flex");
+            getElement().getStyle().setProperty("flexDirection", "column");
+        }
+
+        public void addStep(final String label) {
+            final StatusStep statusStep = new StatusStep(steps.size() + 1, label);
+
+            steps.add(statusStep);
+            add(statusStep);
+        }
+
+        public void removeAll() {
+            clear();
+            currentStep = 0;
+            steps.clear();
+        }
+
+        public void clearStepsStatus() {
+            currentStep = 0;
+            for (final StatusStep oneStatusStep : steps) {
+                oneStatusStep.clearStatus();
+            }
+        }
+
+        public void setCurrentStepStatus(final boolean status) {
+            steps.get(currentStep).setStatus(status);
+            currentStep++;
+        }
+    }
+
+    private class StatusStep extends FlowPanel {
+        private final SimplePanel status;
+
+        private StatusStep(final int index, final String label) {
+            final Label indexLabel = new Label(String.valueOf(index));
+            final Label titleLabel = new Label(label);
+            this.status = new SimplePanel();
+
+            add(indexLabel);
+            add(titleLabel);
+            add(this.status);
+
+            // initialize panel style
+            this.getElement().getStyle().setProperty("display", "flex");
+            this.getElement().getStyle().setProperty("flexDirection", "row");
+            this.getElement().getStyle().setMarginBottom(1, EM);
+            this.getElement().getStyle().setHeight(24, PX);
+
+            // initialize index style
+            indexLabel.getElement().getStyle().setColor("#47AFDD");
+            indexLabel.getElement().getStyle().setProperty("border", "1px solid #a1a1a1");
+            indexLabel.getElement().getStyle().setProperty("borderRadius", 14, PX);
+            indexLabel.getElement().getStyle().setTextAlign(CENTER);
+            indexLabel.getElement().getStyle().setWidth(22, PX);
+            indexLabel.getElement().getStyle().setHeight(22, PX);
+            indexLabel.getElement().getStyle().setBackgroundColor("#353535");
+            indexLabel.getElement().getStyle().setProperty("alignSelf", "center");
+            indexLabel.getElement().getStyle().setMarginRight(15, PX);
+            indexLabel.getElement().getStyle().setLineHeight(22, PX);
+            indexLabel.getElement().getStyle().setProperty("flexShrink", "0");
+
+            // initialize label style
+            titleLabel.getElement().getStyle().setProperty("alignSelf", "center");
+            titleLabel.getElement().getStyle().setProperty("flexShrink", "0");
+
+            // initialize status style
+            this.status.getElement().getStyle().setProperty("display", "flex");
+            this.status.getElement().getStyle().setProperty("justifyContent", "flex-end");
+            this.status.getElement().getStyle().setProperty("alignSelf", "center");
+            this.status.getElement().getStyle().setProperty("flexGrow", "2");
+            this.status.getElement().getStyle().setProperty("flexShrink", "0");
+        }
+
+        public void setStatus(final boolean success) {
+            status.clear();
+            status.add(getStatusImage(success));
+        }
+
+        public void clearStatus() {
+            status.clear();
+        }
+
+        private SVGImage getStatusImage(final boolean success) {
+            final SVGImage image = new SVGImage(success ? resources.statusOkIcon() : resources.statusErrorIcon());
+            image.getElement().getStyle().setWidth(15, PX);
+            image.getElement().getStyle().setProperty("fill", success ? "#FFFFFF" : "#CF3C3E");
+
+            return image;
+        }
     }
 }

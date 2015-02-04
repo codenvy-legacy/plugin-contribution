@@ -124,7 +124,15 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
     /**
      * Shows the status section.
      */
-    void showStatusSection();
+    void showStatusSection(String... statusSteps);
+
+    /**
+     * Sets the current status step state.
+     *
+     * @param success
+     *         {@code true} if success, {@code false} otherwise.
+     */
+    void setCurrentStatusStepStatus(boolean success);
 
     /**
      * Show the status footer.
@@ -150,30 +158,6 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
      * Hide the new contribution section.
      */
     void hideNewContributionSection();
-
-    /**
-     * Sets the create fork step status.
-     *
-     * @param success
-     *         {@code true} if success, {@code false} if error.
-     */
-    void setCreateForkStatus(boolean success);
-
-    /**
-     * Sets the push branch step status.
-     *
-     * @param success
-     *         {@code true} if success, {@code false} if error.
-     */
-    void setPushBranchStatus(boolean success);
-
-    /**
-     * Sets the issue pull request step status.
-     *
-     * @param success
-     *         {@code true} if success, {@code false} if error.
-     */
-    void setIssuePullRequestStatus(boolean success);
 
     /**
      * Defines if the contribution is in progress.

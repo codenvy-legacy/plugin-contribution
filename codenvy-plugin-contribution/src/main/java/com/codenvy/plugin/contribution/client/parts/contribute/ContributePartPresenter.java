@@ -242,22 +242,20 @@ public class ContributePartPresenter extends BasePresenter
     public void onStepDone(@Nonnull final StepEvent event) {
         switch (event.getStep()) {
             case COMMIT_WORKING_TREE: {
-                view.showStatusSection();
+                view.showStatusSection(messages.contributePartStatusSectionForkCreatedLabel(),
+                                       messages.contributePartStatusSectionBranchPushedLabel(),
+                                       messages.contributePartStatusSectionPullRequestIssuedLabel());
             }
             break;
 
-            case CREATE_FORK: {
-                view.setCreateForkStatus(true);
-            }
-            break;
-
+            case CREATE_FORK:
             case PUSH_BRANCH_ON_FORK: {
-                view.setPushBranchStatus(true);
+                view.setCurrentStatusStepStatus(true);
             }
             break;
 
             case ISSUE_PULL_REQUEST: {
-                view.setIssuePullRequestStatus(true);
+                view.setCurrentStatusStepStatus(true);
                 view.setContributeEnabled(true);
                 view.setContributionProgressState(false);
                 view.showStatusSectionFooter();
@@ -279,18 +277,10 @@ public class ContributePartPresenter extends BasePresenter
             }
             break;
 
-            case CREATE_FORK: {
-                view.setCreateForkStatus(false);
-            }
-            break;
-
-            case PUSH_BRANCH_ON_FORK: {
-                view.setPushBranchStatus(false);
-            }
-            break;
-
+            case CREATE_FORK:
+            case PUSH_BRANCH_ON_FORK:
             case ISSUE_PULL_REQUEST: {
-                view.setIssuePullRequestStatus(false);
+                view.setCurrentStatusStepStatus(false);
             }
             break;
         }

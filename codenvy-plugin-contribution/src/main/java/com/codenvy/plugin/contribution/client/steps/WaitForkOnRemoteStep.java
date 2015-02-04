@@ -49,8 +49,6 @@ public class WaitForkOnRemoteStep implements Step {
 
                         @Override
                         public void onSuccess(final Void result) {
-                            workflow.fireStepDoneEvent(CREATE_FORK);
-
                             workflow.setStep(nextStep);
                             workflow.executeStep();
                         }

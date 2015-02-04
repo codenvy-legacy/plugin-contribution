@@ -93,40 +93,6 @@
             align-self: flex-end;
         }
 
-        .step {
-            display: flex;
-            flex-direction: row;
-            margin-bottom: 1em;
-            height: 24px;
-        }
-
-        .step .number {
-            color: #47afdd;
-            border: 1px solid #a1a1a1;
-            border-radius: 14px;
-            text-align: center;
-            width: 22px;
-            height: 22px;
-            background-color: #353535;
-            align-self: center;
-            margin-right: 15px;
-            line-height: 22px;
-            flex-shrink: 0;
-        }
-
-        .step .label {
-            align-self: center;
-            flex-shrink: 0;
-        }
-
-        .step .status {
-            display: flex;
-            justify-content: flex-end;
-            align-self: center;
-            flex-grow: 2;
-            flex-shrink: 0;
-        }
-
         .footer {
             margin-top: 1em;
             display: flex;
@@ -195,27 +161,12 @@
                           ui:field="contributeButton"
                           text="{messages.contributePartConfigureContributionSectionButtonContributeText}"/>
             </div>
-            <g:HTMLPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
+            <g:FlowPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartStatusSectionTitle}"/>
-                <div class="{style.step}">
-                    <g:Label addStyleNames="{style.number}" text="1"/>
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartStatusSectionForkCreatedLabel}"/>
-                    <g:SimplePanel addStyleNames="{style.status}" ui:field="createForkStatus"/>
-                </div>
-                <div class="{style.step}">
-                    <g:Label addStyleNames="{style.number}" text="2"/>
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartStatusSectionBranchPushedLabel}"/>
-                    <g:SimplePanel addStyleNames="{style.status}" ui:field="pushBranchStatus"/>
-                </div>
-                <div class="{style.step}">
-                    <g:Label addStyleNames="{style.number}" text="3"/>
-                    <g:Label addStyleNames="{style.label}" text="{messages.contributePartStatusSectionPullRequestIssuedLabel}"/>
-                    <g:SimplePanel addStyleNames="{style.status}" ui:field="issuePullRequestStatus"/>
-                </div>
                 <g:HTMLPanel ui:field="statusSectionFooter" addStyleNames="{style.footer}">
                     <g:Label addStyleNames="{style.item}" text="{messages.contributePartStatusSectionContributionCreatedLabel}"/>
                 </g:HTMLPanel>
-            </g:HTMLPanel>
+            </g:FlowPanel>
             <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.newContribution} {style.border}">
                 <g:Button ui:field="openOnRepositoryHostButton" text="{messages.contributePartStatusSectionButtonOpenOnGithubText}"/>
                 <g:Button ui:field="newContributionButton" addStyleNames="{resources.contributeCss.blueButton}"
