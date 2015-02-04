@@ -9,16 +9,20 @@
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
 .blueButton {
-    background: #256c9f;
+    background: #256C9F;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.29), inset 0 1px 0 0 rgba(55, 126, 172, 1);
     border-color: #2f3237;
 }
 
 .blueButton:hover {
-    background: #18537e;
+    background: #18537E;
 }
 
 .blueButton[disabled], .blueButton[disabled]:hover {
     background: rgba(37, 108, 159, 0.35);
     color: rgba(255, 255, 255, 0.35);
+}
+
+.errorMessage {
+    color: #E25252;
 }

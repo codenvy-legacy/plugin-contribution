@@ -274,7 +274,7 @@ public class ContributePartPresenter extends BasePresenter
                 view.setContributeEnabled(true);
                 view.setContributionProgressState(false);
                 view.showStatusSectionMessage(updateMode ? messages.contributePartStatusSectionContributionUpdatedMessage()
-                                                         : messages.contributePartStatusSectionContributionCreatedMessage());
+                                                         : messages.contributePartStatusSectionContributionCreatedMessage(), false);
                 view.showNewContributionSection();
                 view.setContributionBranchNameEnabled(false);
                 view.setContributionTitleEnabled(false);
@@ -296,6 +296,7 @@ public class ContributePartPresenter extends BasePresenter
             case CREATE_FORK: {
                 if (!updateMode) {
                     view.setCurrentStatusStepStatus(false);
+                    view.showStatusSectionMessage(event.getMessage(), true);
                 }
             }
             break;
@@ -303,6 +304,7 @@ public class ContributePartPresenter extends BasePresenter
             case PUSH_BRANCH_ON_FORK:
             case ISSUE_PULL_REQUEST: {
                 view.setCurrentStatusStepStatus(false);
+                view.showStatusSectionMessage(event.getMessage(), true);
             }
             break;
         }

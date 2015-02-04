@@ -169,29 +169,14 @@ public interface ContributeMessages extends Messages {
     /*
      * Create fork step
      */
-    @Key("step.create.fork.use.existing.fork")
-    String stepCreateForkUseExistingFork();
-
-    @Key("step.create.fork.create.fork")
-    String stepCreateForkCreateFork(String username, String repository);
-
-    @Key("step.create.fork.request.fork.creation")
-    String stepCreateForkRequestForkCreation(String owner, String repository);
-
     @Key("step.create.fork.error.creating.fork")
     String stepCreateForkErrorCreatingFork(String owner, String repository, String message);
 
     /*
      * Push branch fork step
      */
-    @Key("step.push.branch.pushing.branch")
-    String stepPushBranchPushingBranch();
-
     @Key("step.push.branch.error.pushing.branch")
     String stepPushBranchErrorPushingBranch(String cause);
-
-    @Key("step.push.branch.branch.pushed")
-    String stepPushBranchBranchPushed();
 
     @Key("step.push.branch.canceling")
     String stepPushBranchCanceling();
@@ -211,15 +196,6 @@ public interface ContributeMessages extends Messages {
     /*
      * Issue pull request step
      */
-    @Key("step.issue.pull.request.pull.request.created")
-    String stepIssuePullRequestPullRequestCreated();
-
-    @Key("step.issue.pull.request.issuing.pull.request")
-    String stepIssuePullRequestIssuingPullRequest();
-
-    @Key("step.issue.pull.request.existing.pull.request.updated")
-    String stepIssuePullRequestExistingPullRequestUpdated(String headBranch);
-
     @Key("step.issue.pull.request.error.create.pull.request")
     String stepIssuePullRequestErrorCreatePullRequest();
 

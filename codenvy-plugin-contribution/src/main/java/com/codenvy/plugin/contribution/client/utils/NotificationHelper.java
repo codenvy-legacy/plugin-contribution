@@ -95,6 +95,17 @@ public final class NotificationHelper {
     }
 
     /**
+     * Shows a notification.
+     *
+     * @param notification
+     *         notification to display.
+     */
+    public void showNotification(@Nonnull final Notification notification) {
+        notification.setMessage(messages.notificationMessagePrefix(notification.getMessage()));
+        notificationManager.showNotification(notification);
+    }
+
+    /**
      * Finish a notification in progress with an error.
      *
      * @param cls
@@ -152,16 +163,5 @@ public final class NotificationHelper {
     public void finishNotification(@Nonnull final String message, @Nonnull final Notification notification) {
         notification.setMessage(messages.notificationMessagePrefix(message));
         notification.setStatus(FINISHED);
-    }
-
-    /**
-     * Shows a notification.
-     *
-     * @param notification
-     *         notification to display.
-     */
-    public void showNotification(@Nonnull final Notification notification) {
-        notification.setMessage(messages.notificationMessagePrefix(notification.getMessage()));
-        notificationManager.showNotification(notification);
     }
 }

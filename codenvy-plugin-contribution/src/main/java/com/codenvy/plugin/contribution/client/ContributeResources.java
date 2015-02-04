@@ -33,5 +33,7 @@ public interface ContributeResources extends ClientBundle {
 
     interface ContributeCss extends Styles {
         String blueButton();
+
+        String errorMessage();
     }
 }

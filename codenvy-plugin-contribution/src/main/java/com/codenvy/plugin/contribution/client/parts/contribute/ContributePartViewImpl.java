@@ -268,7 +268,13 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void showStatusSectionMessage(final String message) {
+    public void showStatusSectionMessage(final String message, final boolean error) {
+        if (error) {
+            statusSectionMessage.addStyleName(resources.contributeCss().errorMessage());
+        } else {
+            statusSectionMessage.removeStyleName(resources.contributeCss().errorMessage());
+        }
+
         statusSectionMessage.setText(message);
         statusSectionMessage.setVisible(true);
     }
@@ -382,13 +388,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
             clear();
             currentStep = 0;
             steps.clear();
-        }
-
-        public void clearStepsStatus() {
-            currentStep = 0;
-            for (final StatusStep oneStatusStep : steps) {
-                oneStatusStep.clearStatus();
-            }
         }
 
         public void setCurrentStepStatus(final boolean status) {

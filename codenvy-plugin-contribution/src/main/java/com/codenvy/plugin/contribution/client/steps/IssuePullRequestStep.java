@@ -11,9 +11,7 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 
-import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoCommitsInPullRequestException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.PullRequestAlreadyExistsException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -23,8 +21,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ISSUE_PULL_REQUEST;
 
 /**
@@ -34,15 +30,12 @@ public class IssuePullRequestStep implements Step {
     private static final String DEFAULT_BASE_BRANCH = "master";
 
     private final VcsHostingService  vcsHostingService;
-    private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
 
     @Inject
     public IssuePullRequestStep(@Nonnull final VcsHostingService vcsHostingService,
-                                @Nonnull final NotificationHelper notificationHelper,
                                 @Nonnull final ContributeMessages messages) {
         this.vcsHostingService = vcsHostingService;
-        this.notificationHelper = notificationHelper;
         this.messages = messages;
     }
 
@@ -57,56 +50,38 @@ public class IssuePullRequestStep implements Step {
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
         final String contributionComment = configuration.getContributionComment();
 
-        final Notification notification = new Notification(messages.stepIssuePullRequestIssuingPullRequest(), INFO, PROGRESS);
-        notificationHelper.showNotification(notification);
-
         vcsHostingService.createPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, contributionTitle, headBranch, baseBranch,
                                             contributionComment, new AsyncCallback<PullRequest>() {
                     @Override
                     public void onSuccess(final PullRequest pullRequest) {
                         context.setPullRequestIssueNumber(pullRequest.getNumber());
-
                         workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                        notificationHelper.finishNotification(messages.stepIssuePullRequestPullRequestCreated(), notification);
                     }
 
                     @Override
                     public void onFailure(final Throwable exception) {
                         if (exception instanceof PullRequestAlreadyExistsException) {
-                            vcsHostingService
-                                    .getPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, headBranch,
-                                                    new AsyncCallback<PullRequest>() {
-                                                        @Override
-                                                        public void onSuccess(final PullRequest pullRequest) {
-                                                            context.setPullRequestIssueNumber(pullRequest.getNumber());
+                            vcsHostingService.getPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, headBranch,
+                                                             new AsyncCallback<PullRequest>() {
+                                                                 @Override
+                                                                 public void onSuccess(final PullRequest pullRequest) {
+                                                                     context.setPullRequestIssueNumber(pullRequest.getNumber());
+                                                                     workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
+                                                                 }
 
-                                                            workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
-                                                            notificationHelper
-                                                                    .finishNotification(
-                                                                            messages.stepIssuePullRequestExistingPullRequestUpdated(
-                                                                                    headBranch),
-                                                                            notification);
-
-                                                        }
-
-                                                        @Override
-                                                        public void onFailure(final Throwable exception) {
-                                                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
-                                                            notificationHelper.showError(IssuePullRequestStep.class, exception);
-                                                        }
-                                                    });
+                                                                 @Override
+                                                                 public void onFailure(final Throwable exception) {
+                                                                     workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST,
+                                                                                                 exception.getMessage());
+                                                                 }
+                                                             });
 
                         } else if (exception instanceof NoCommitsInPullRequestException) {
-                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
-                            notificationHelper
-                                    .finishNotificationWithWarning(messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits(),
-                                                                   notification);
+                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST,
+                                                        messages.stepIssuePullRequestErrorCreatePullRequestWithoutCommits());
 
                         } else {
-                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST);
-                            notificationHelper.finishNotificationWithError(IssuePullRequestStep.class,
-                                                                           messages.stepIssuePullRequestErrorCreatePullRequest(),
-                                                                           notification);
+                            workflow.fireStepErrorEvent(ISSUE_PULL_REQUEST, messages.stepIssuePullRequestErrorCreatePullRequest());
                         }
                     }
                 });

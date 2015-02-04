@@ -136,8 +136,11 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
 
     /**
      * Shows the status section message.
+     *
+     * @param error
+     *         {@code true} if the message displayed is an error, {@code false} otherwise.
      */
-    void showStatusSectionMessage(String message);
+    void showStatusSectionMessage(String message, boolean error);
 
     /**
      * Hides the status section message.

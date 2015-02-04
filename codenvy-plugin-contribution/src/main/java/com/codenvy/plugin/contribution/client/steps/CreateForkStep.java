@@ -10,9 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
@@ -21,8 +19,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CREATE_FORK;
 
 /**
@@ -31,17 +27,14 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
 public class CreateForkStep implements Step {
     private final VcsHostingService  vcsHostingService;
     private final ContributeMessages messages;
-    private final NotificationHelper notificationHelper;
     private final Step               checkoutBranchToPushStep;
 
     @Inject
     public CreateForkStep(@Nonnull final VcsHostingService vcsHostingService,
                           @Nonnull final ContributeMessages messages,
-                          @Nonnull final NotificationHelper notificationHelper,
                           @Nonnull final CheckoutBranchToPushStep checkoutBranchToPushStep) {
         this.vcsHostingService = vcsHostingService;
         this.messages = messages;
-        this.notificationHelper = notificationHelper;
         this.checkoutBranchToPushStep = checkoutBranchToPushStep;
     }
 
@@ -60,7 +53,6 @@ public class CreateForkStep implements Step {
                                           new AsyncCallback<Repository>() {
                                               @Override
                                               public void onSuccess(final Repository fork) {
-                                                  notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
                                                   proceed(fork.getName(), workflow);
                                               }
 
@@ -71,41 +63,30 @@ public class CreateForkStep implements Step {
                                                       return;
                                                   }
 
-                                                  workflow.fireStepErrorEvent(CREATE_FORK);
-                                                  notificationHelper.showError(CreateForkStep.class, exception);
+                                                  workflow.fireStepErrorEvent(CREATE_FORK, exception.getMessage());
                                               }
                                           });
 
-
-            // user fork has been cloned
         } else {
-            notificationHelper.showInfo(messages.stepCreateForkUseExistingFork());
+            // user fork has been cloned
             proceed(originRepositoryName, workflow);
         }
     }
 
     private void createFork(final ContributorWorkflow workflow, final String upstreamRepositoryOwner, final String upstreamRepositoryName) {
-        final Notification notification =
-                new Notification(messages.stepCreateForkCreateFork(upstreamRepositoryOwner, upstreamRepositoryName), INFO, PROGRESS);
-        notificationHelper.showNotification(notification);
-
         vcsHostingService.fork(upstreamRepositoryOwner, upstreamRepositoryName, new AsyncCallback<Repository>() {
             @Override
             public void onSuccess(final Repository result) {
-                notificationHelper.finishNotification(
-                        messages.stepCreateForkRequestForkCreation(upstreamRepositoryOwner, upstreamRepositoryName),
-                        notification);
-
                 proceed(result.getName(), workflow);
             }
 
             @Override
             public void onFailure(final Throwable exception) {
-                workflow.fireStepErrorEvent(CREATE_FORK);
+                final String errorMessage = messages.stepCreateForkErrorCreatingFork(upstreamRepositoryOwner,
+                                                                                     upstreamRepositoryName,
+                                                                                     exception.getMessage());
 
-                final String errorMessage =
-                        messages.stepCreateForkErrorCreatingFork(upstreamRepositoryOwner, upstreamRepositoryName, exception.getMessage());
-                notificationHelper.finishNotificationWithError(CreateForkStep.class, errorMessage, notification);
+                workflow.fireStepErrorEvent(CREATE_FORK, errorMessage);
             }
         });
     }

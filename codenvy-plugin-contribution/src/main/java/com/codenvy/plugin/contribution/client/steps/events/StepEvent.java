@@ -12,24 +12,28 @@ package com.codenvy.plugin.contribution.client.steps.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 
+import javax.annotation.Nonnull;
+
 /**
  * Event sent when a step is done or in error.
  *
  * @author Kevin Pollet
  */
 public class StepEvent extends GwtEvent<StepHandler> {
-    /** Type class used to register this event. */
     public static Type<StepHandler> TYPE = new Type<>();
 
-    /** The step. */
-    private final Step step;
-
-    /** The done step status. */
+    private final Step    step;
     private final boolean success;
+    private final String  message;
 
-    public StepEvent(final Step step, final boolean success) {
+    public StepEvent(@Nonnull final Step step, final boolean success) {
+        this(step, success, null);
+    }
+
+    public StepEvent(@Nonnull final Step step, final boolean success, final String message) {
         this.step = step;
         this.success = success;
+        this.message = message;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class StepEvent extends GwtEvent<StepHandler> {
     }
 
     @Override
-    protected void dispatch(final StepHandler handler) {
+    protected void dispatch(@Nonnull final StepHandler handler) {
         if (success) {
             handler.onStepDone(this);
 
@@ -49,6 +53,10 @@ public class StepEvent extends GwtEvent<StepHandler> {
 
     public Step getStep() {
         return step;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public enum Step {

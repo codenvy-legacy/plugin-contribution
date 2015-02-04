@@ -10,12 +10,11 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.ui.dialogs.CancelCallback;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
+import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoPullRequestException;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
@@ -26,35 +25,30 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.PUSH_BRANCH_ON_FORK;
 
 /**
  * Push the local contribution branch on the user fork.
+ *
+ * @author Kevin Pollet
  */
 public class PushBranchOnForkStep implements Step {
 
     private final Step               generateReviewFactoryStep;
     private final VcsServiceProvider vcsServiceProvider;
     private final VcsHostingService  vcsHostingService;
-    private final NotificationHelper notificationHelper;
     private final ContributeMessages messages;
-
-    /** The dialog factory. */
-    private final DialogFactory dialogFactory;
+    private final DialogFactory      dialogFactory;
 
     @Inject
     public PushBranchOnForkStep(@Nonnull final GenerateReviewFactoryStep generateReviewFactoryStep,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
                                 @Nonnull final VcsHostingService vcsHostingService,
-                                @Nonnull final NotificationHelper notificationHelper,
                                 @NotNull final ContributeMessages messages,
                                 @NotNull final DialogFactory dialogFactory) {
         this.generateReviewFactoryStep = generateReviewFactoryStep;
         this.vcsServiceProvider = vcsServiceProvider;
         this.vcsHostingService = vcsHostingService;
-        this.notificationHelper = notificationHelper;
         this.messages = messages;
         this.dialogFactory = dialogFactory;
     }
@@ -62,10 +56,6 @@ public class PushBranchOnForkStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
-
-        final Notification notification = new Notification(messages.stepPushBranchPushingBranch(), INFO, PROGRESS);
-        notificationHelper.showNotification(notification);
-
         final String upstreamRepositoryOwner = context.getUpstreamRepositoryOwner();
         final String upstreamRepositoryName = context.getUpstreamRepositoryName();
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
@@ -76,14 +66,13 @@ public class PushBranchOnForkStep implements Step {
                 final ConfirmCallback okCallback = new ConfirmCallback() {
                     @Override
                     public void accepted() {
-                        pushBranch(workflow, context, notification);
+                        pushBranch(workflow, context);
                     }
                 };
                 final CancelCallback cancelCallback = new CancelCallback() {
                     @Override
                     public void cancelled() {
-                        workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
-                        notificationHelper.finishNotificationWithWarning(messages.stepPushBranchCanceling(), notification);
+                        workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, messages.stepPushBranchCanceling());
                     }
                 };
 
@@ -97,40 +86,31 @@ public class PushBranchOnForkStep implements Step {
             @Override
             public void onFailure(final Throwable exception) {
                 if (exception instanceof NoPullRequestException) {
-                    pushBranch(workflow, context, notification);
+                    pushBranch(workflow, context);
                     return;
                 }
 
-                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
-                notificationHelper.showError(PushBranchOnForkStep.class, exception);
+                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, exception.getMessage());
             }
         });
     }
 
-    protected void pushBranch(final ContributorWorkflow workflow, final Context context, final Notification notification) {
-        vcsServiceProvider.getVcsService()
-                          .pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(),
-                                      new AsyncCallback<Void>() {
-                                          @Override
-                                          public void onSuccess(final Void result) {
-                                              workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
-                                              notificationHelper.finishNotification(messages.stepPushBranchBranchPushed(),
-                                                                                    notification);
+    protected void pushBranch(final ContributorWorkflow workflow, final Context context) {
+        final VcsService vcsService = vcsServiceProvider.getVcsService();
+        vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(),
+                              new AsyncCallback<Void>() {
+                                  @Override
+                                  public void onSuccess(final Void result) {
+                                      workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
+                                      workflow.setStep(generateReviewFactoryStep);
+                                      workflow.executeStep();
+                                  }
 
-                                              workflow.setStep(generateReviewFactoryStep);
-                                              workflow.executeStep();
-                                          }
-
-                                          @Override
-                                          public void onFailure(final Throwable exception) {
-                                              workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK);
-
-                                              final String errorMessage =
-                                                      messages.stepPushBranchErrorPushingBranch(exception.getMessage());
-                                              notificationHelper
-                                                      .finishNotificationWithError(PushBranchOnForkStep.class, errorMessage,
-                                                                                   notification);
-                                          }
-                                      });
+                                  @Override
+                                  public void onFailure(final Throwable exception) {
+                                      final String errorMessage = messages.stepPushBranchErrorPushingBranch(exception.getMessage());
+                                      workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, errorMessage);
+                                  }
+                              });
     }
 }

@@ -95,7 +95,7 @@ public class ContributorWorkflow {
      * @param step
      *         the successfully done step.
      */
-    void fireStepDoneEvent(StepEvent.Step step) {
+    void fireStepDoneEvent(@Nonnull final StepEvent.Step step) {
         eventBus.fireEvent(new StepEvent(step, true));
     }
 
@@ -105,7 +105,19 @@ public class ContributorWorkflow {
      * @param step
      *         the step in error.
      */
-    void fireStepErrorEvent(StepEvent.Step step) {
-        eventBus.fireEvent(new StepEvent(step, false));
+    void fireStepErrorEvent(@Nonnull final StepEvent.Step step) {
+        fireStepErrorEvent(step, null);
+    }
+
+    /**
+     * Fires a {@link com.codenvy.plugin.contribution.client.steps.events.StepEvent} indicating that the given step is in error.
+     *
+     * @param step
+     *         the step in error.
+     * @param errorMessage
+     *         the error message.
+     */
+    void fireStepErrorEvent(@Nonnull final StepEvent.Step step, final String errorMessage) {
+        eventBus.fireEvent(new StepEvent(step, false, errorMessage));
     }
 }
