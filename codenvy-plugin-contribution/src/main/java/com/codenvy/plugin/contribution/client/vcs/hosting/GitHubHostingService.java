@@ -26,6 +26,7 @@ import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequestHead;
 import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -185,7 +186,10 @@ public class GitHubHostingService implements VcsHostingService {
     @Nonnull
     @Override
     public String formatReviewFactoryUrl(@Nonnull final String reviewFactoryUrl) {
-        return gitHubTemplates.formattedReviewFactoryUrlTemplate(reviewFactoryUrl);
+        final String protocol = Window.Location.getProtocol();
+        final String host = Window.Location.getHost();
+
+        return gitHubTemplates.formattedReviewFactoryUrlTemplate(protocol, host, reviewFactoryUrl);
     }
 
     @Override

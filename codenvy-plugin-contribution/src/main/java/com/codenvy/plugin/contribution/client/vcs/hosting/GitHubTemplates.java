@@ -59,11 +59,14 @@ public interface GitHubTemplates extends Messages {
     /**
      * The formatted version of the review factory url using the GitHub markup language (markdown).
      *
+     * @param protocol
+     *         the protocol used http or https
+     * @param host
+     *         the host.
      * @param reviewFactoryUrl
      *         the review factory url.
      * @return the formatted version of the review factory url
      */
-    @DefaultMessage(
-            "[![Review](https://rawgit.com/kevinpollet/2ced2ffddf1636f9116c/raw/85408e7a0233f54d4b3fda1fd5c98afb2bdeb3e8/codenvy-review.svg)]({0})")
-    String formattedReviewFactoryUrlTemplate(String reviewFactoryUrl);
+    @DefaultMessage("[![Review]({0}//{1}/factory/resources/codenvy-review.svg)]({2})")
+    String formattedReviewFactoryUrlTemplate(String protocol, String host, String reviewFactoryUrl);
 }
