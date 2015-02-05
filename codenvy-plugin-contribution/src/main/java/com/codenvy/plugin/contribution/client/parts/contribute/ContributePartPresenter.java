@@ -31,6 +31,7 @@ import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
+import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
@@ -65,6 +66,7 @@ public class ContributePartPresenter extends BasePresenter
     private final VcsService          vcsService;
     private final NotificationHelper  notificationHelper;
     private final DialogFactory       dialogFactory;
+    private final VcsServiceProvider  vcsServiceProvider;
     private       boolean             updateMode;
 
     @Inject
@@ -78,7 +80,8 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final VcsService vcsService,
                                    @Nonnull final NotificationHelper notificationHelper,
-                                   @Nonnull final DialogFactory dialogFactory) {
+                                   @Nonnull final DialogFactory dialogFactory,
+                                   @Nonnull final VcsServiceProvider vcsServiceProvider) {
         this.view = view;
         this.workspaceAgent = workspaceAgent;
         this.workflow = workflow;
@@ -89,6 +92,7 @@ public class ContributePartPresenter extends BasePresenter
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
         this.dialogFactory = dialogFactory;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.updateMode = false;
 
         this.view.setDelegate(this);
@@ -412,25 +416,43 @@ public class ContributePartPresenter extends BasePresenter
         public void accepted(final String branchName) {
             final Context context = workflow.getContext();
 
-            vcsService.checkoutBranch(context.getProject(), branchName, true, new AsyncCallback<String>() {
+            vcsService.isLocalBranchWithName(context.getProject(), branchName, new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.showError(ContributePartPresenter.class, exception);
                 }
 
                 @Override
-                public void onSuccess(final String notUsed) {
-                    refreshContributionBranchNameList(new AsyncCallback<Void>() {
-                        @Override
-                        public void onFailure(final Throwable exception) {
-                            notificationHelper.showError(ContributePartPresenter.class, exception);
-                        }
+                public void onSuccess(final Boolean branchExists) {
+                    if (branchExists) {
+                        view.setContributionBranchName(branchName);
+                        notificationHelper.showError(ContributePartPresenter.class,
+                                                     messages.contributePartConfigureContributionDialogNewBranchErrorBranchExists(
+                                                             branchName));
 
-                        @Override
-                        public void onSuccess(final Void notUsed) {
-                            view.setContributionBranchName(branchName);
-                        }
-                    });
+                    } else {
+                        vcsService.checkoutBranch(context.getProject(), branchName, true, new AsyncCallback<String>() {
+                            @Override
+                            public void onFailure(final Throwable exception) {
+
+                            }
+
+                            @Override
+                            public void onSuccess(final String notUsed) {
+                                refreshContributionBranchNameList(new AsyncCallback<Void>() {
+                                    @Override
+                                    public void onFailure(final Throwable exception) {
+                                        notificationHelper.showError(ContributePartPresenter.class, exception);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(final Void notUsed) {
+                                        view.setContributionBranchName(branchName);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
             });
         }

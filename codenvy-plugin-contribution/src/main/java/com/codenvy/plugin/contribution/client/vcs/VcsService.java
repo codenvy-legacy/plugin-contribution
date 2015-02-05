@@ -98,6 +98,18 @@ public interface VcsService {
     void hasUncommittedChanges(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<Boolean> callback);
 
     /**
+     * Returns if a local branch with the given name exists in the given project.
+     *
+     * @param project
+     *         the project descriptor.
+     * @param branchName
+     *         the branch name.
+     * @param callback
+     *         callback called when operation is done.
+     */
+    void isLocalBranchWithName(@Nonnull ProjectDescriptor project, @Nonnull String branchName, @Nonnull AsyncCallback<Boolean> callback);
+
+    /**
      * List the local branches.
      *
      * @param project

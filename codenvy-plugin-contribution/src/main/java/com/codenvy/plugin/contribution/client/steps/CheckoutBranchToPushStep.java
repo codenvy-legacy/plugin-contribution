@@ -12,14 +12,12 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.util.List;
 
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CHECKOUT_BRANCH_TO_PUSH;
 
@@ -56,7 +54,7 @@ public class CheckoutBranchToPushStep implements Step {
         final VcsService vcsService = vcsServiceProvider.getVcsService();
         final String contributionBranchName = workflow.getConfiguration().getContributionBranchName();
 
-        vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+        vcsService.isLocalBranchWithName(context.getProject(), contributionBranchName, new AsyncCallback<Boolean>() {
             @Override
             public void onFailure(final Throwable exception) {
                 workflow.fireStepErrorEvent(CHECKOUT_BRANCH_TO_PUSH);
@@ -64,21 +62,13 @@ public class CheckoutBranchToPushStep implements Step {
             }
 
             @Override
-            public void onSuccess(final List<Branch> branches) {
-                boolean branchExists = false;
-                for (final Branch oneBranch : branches) {
-                    if (oneBranch.getDisplayName().equals(contributionBranchName)) {
-                        branchExists = true;
-                        break;
-                    }
-                }
-
+            public void onSuccess(final Boolean branchExists) {
                 vcsService.checkoutBranch(context.getProject(), contributionBranchName, !branchExists, new AsyncCallback<String>() {
                     @Override
                     public void onFailure(final Throwable exception) {
                         workflow.fireStepErrorEvent(CHECKOUT_BRANCH_TO_PUSH);
-                        notificationHelper.showError(CheckoutBranchToPushStep.class,
-                                                     messages.stepCheckoutBranchToPushErrorCheckoutLocalBranch());
+                        notificationHelper
+                                .showError(CheckoutBranchToPushStep.class, messages.stepCheckoutBranchToPushErrorCheckoutLocalBranch());
                     }
 
                     @Override

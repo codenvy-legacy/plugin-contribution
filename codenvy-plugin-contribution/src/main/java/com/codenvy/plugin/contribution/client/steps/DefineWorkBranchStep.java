@@ -15,7 +15,6 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -24,7 +23,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.List;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
@@ -79,25 +77,16 @@ public class DefineWorkBranchStep implements Step {
             notificationHelper.showNotification(createWorkingBranchNotification);
 
             // the working branch is only created if it doesn't exist
-            vcsService.listLocalBranches(context.getProject(), new AsyncCallback<List<Branch>>() {
+            vcsService.isLocalBranchWithName(context.getProject(), workingBranchName, new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.finishNotificationWithError(DefineWorkBranchStep.class, exception, createWorkingBranchNotification);
                 }
 
                 @Override
-                public void onSuccess(final List<Branch> branches) {
-                    boolean workingBranchExists = false;
-
-                    for (final Branch oneBranch : branches) {
-                        if (workingBranchName.equals(oneBranch.getDisplayName())) {
-                            workingBranchExists = true;
-                            break;
-                        }
-                    }
-
+                public void onSuccess(final Boolean branchExists) {
                     // shorthand for create + checkout new temporary working branch -> checkout -b branchName
-                    vcsService.checkoutBranch(context.getProject(), workingBranchName, !workingBranchExists, new AsyncCallback<String>() {
+                    vcsService.checkoutBranch(context.getProject(), workingBranchName, !branchExists, new AsyncCallback<String>() {
                         @Override
                         public void onSuccess(final String result) {
                             context.setWorkBranchName(workingBranchName);
@@ -107,8 +96,8 @@ public class DefineWorkBranchStep implements Step {
 
                         @Override
                         public void onFailure(final Throwable exception) {
-                            notificationHelper.finishNotificationWithError(DefineWorkBranchStep.class, exception,
-                                                                           createWorkingBranchNotification);
+                            notificationHelper
+                                    .finishNotificationWithError(DefineWorkBranchStep.class, exception, createWorkingBranchNotification);
                         }
                     });
                 }

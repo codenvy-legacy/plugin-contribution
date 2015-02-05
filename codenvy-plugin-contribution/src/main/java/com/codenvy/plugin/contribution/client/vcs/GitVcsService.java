@@ -159,6 +159,29 @@ public class GitVcsService implements VcsService {
     }
 
     @Override
+    public void isLocalBranchWithName(@Nonnull final ProjectDescriptor project, @Nonnull final String branchName,
+                                      @Nonnull final AsyncCallback<Boolean> callback) {
+
+        listLocalBranches(project, new AsyncCallback<List<Branch>>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+
+            @Override
+            public void onSuccess(final List<Branch> branches) {
+                for (final Branch oneBranch : branches) {
+                    if (oneBranch.getDisplayName().equals(branchName)) {
+                        callback.onSuccess(true);
+                        return;
+                    }
+                }
+                callback.onSuccess(false);
+            }
+        });
+    }
+
+    @Override
     public void listLocalBranches(@Nonnull final ProjectDescriptor project, @Nonnull final AsyncCallback<List<Branch>> callback) {
         listBranches(project, null, callback);
     }

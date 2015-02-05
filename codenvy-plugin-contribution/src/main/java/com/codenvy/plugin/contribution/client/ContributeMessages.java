@@ -103,6 +103,9 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.configure.contribution.dialog.new.branch.label")
     String contributePartConfigureContributionDialogNewBranchLabel();
 
+    @Key("contribute.part.configure.contribution.dialog.new.branch.error.branch.exists")
+    String contributePartConfigureContributionDialogNewBranchErrorBranchExists(String branchName);
+
     /*
      * Commit dialog
      */
