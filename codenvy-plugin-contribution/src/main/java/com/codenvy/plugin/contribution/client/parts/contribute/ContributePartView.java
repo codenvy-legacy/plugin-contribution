@@ -111,7 +111,7 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
      * @param enabled
      *         true to enable, false to disable
      */
-    void setContributeEnabled(boolean enabled);
+    void setContributeButtonEnabled(boolean enabled);
 
     /**
      * Sets the text displayed into the "Contribute" button.

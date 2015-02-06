@@ -18,6 +18,10 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Objects;
 
+import static com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent.ContextProperty.CLONED_BRANCH_NAME;
+import static com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent.ContextProperty.PROJECT;
+import static com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent.ContextProperty.WORK_BRANCH_NAME;
+
 /**
  * Context used to share information between the steps in the contribution workflow.
  *
@@ -76,7 +80,7 @@ public class Context {
         final ProjectDescriptor oldValue = this.project;
         this.project = project;
 
-        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.PROJECT, oldValue, project);
+        fireContextPropertyChange(PROJECT, oldValue, project);
     }
 
     public String getClonedBranchName() {
@@ -87,7 +91,7 @@ public class Context {
         final String oldValue = this.clonedBranchName;
         this.clonedBranchName = clonedBranchName;
 
-        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.CLONED_BRANCH_NAME, oldValue, clonedBranchName);
+        fireContextPropertyChange(CLONED_BRANCH_NAME, oldValue, clonedBranchName);
     }
 
     public String getWorkBranchName() {
@@ -98,7 +102,7 @@ public class Context {
         final String oldValue = this.workBranchName;
         this.workBranchName = workBranchName;
 
-        fireContextPropertyChange(ContextPropertyChangeEvent.ContextProperty.WORK_BRANCH_NAME, oldValue, workBranchName);
+        fireContextPropertyChange(WORK_BRANCH_NAME, oldValue, workBranchName);
     }
 
     public String getHostUserLogin() {

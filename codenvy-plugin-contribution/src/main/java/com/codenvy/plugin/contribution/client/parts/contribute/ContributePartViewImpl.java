@@ -240,7 +240,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void setContributeEnabled(final boolean enabled) {
+    public void setContributeButtonEnabled(final boolean enabled) {
         contributeButton.setEnabled(enabled);
     }
 

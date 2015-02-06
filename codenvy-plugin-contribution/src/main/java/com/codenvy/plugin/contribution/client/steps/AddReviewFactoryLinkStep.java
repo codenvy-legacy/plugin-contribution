@@ -45,7 +45,6 @@ public class AddReviewFactoryLinkStep implements Step {
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final String reviewFactoryUrl = workflow.getContext().getReviewFactoryUrl();
         if (reviewFactoryUrl == null) {
-            workflow.fireStepErrorEvent(ADD_REVIEW_FACTORY_LINK);
             notificationHelper.showWarning(messages.stepAddReviewFactoryLinkErrorAddingReviewFactoryLink());
 
         } else {

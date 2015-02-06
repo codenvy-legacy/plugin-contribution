@@ -107,14 +107,10 @@ public class GenerateReviewFactoryStep implements Step {
             @Override
             public void onSuccess(final Factory factory) {
                 // find factory URL inside factory
-                final String createProjectUrl = FactoryHelper.getCreateProjectRelUrl(factory);
-
-                if (createProjectUrl != null) {
-                    workflow.getContext().setReviewFactoryUrl(createProjectUrl);
-                    workflow.fireStepDoneEvent(GENERATE_REVIEW_FACTORY);
-                    workflow.setStep(addReviewFactoryLinkStep);
-                    workflow.executeStep();
-                }
+                workflow.getContext().setReviewFactoryUrl(FactoryHelper.getCreateProjectRelUrl(factory));
+                workflow.fireStepDoneEvent(GENERATE_REVIEW_FACTORY);
+                workflow.setStep(addReviewFactoryLinkStep);
+                workflow.executeStep();
             }
 
             @Override
@@ -161,8 +157,8 @@ public class GenerateReviewFactoryStep implements Step {
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                callback.onFailure(caught);
+            public void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
             }
         });
     }

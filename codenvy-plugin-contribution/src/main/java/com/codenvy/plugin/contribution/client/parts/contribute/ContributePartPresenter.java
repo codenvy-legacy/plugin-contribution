@@ -133,7 +133,7 @@ public class ContributePartPresenter extends BasePresenter
         }
 
         view.hideStatusSectionMessage();
-        view.setContributeEnabled(false);
+        view.setContributeButtonEnabled(false);
         view.setContributionProgressState(true);
 
         // resume the contribution workflow and execute the commit tree step
@@ -222,7 +222,7 @@ public class ContributePartPresenter extends BasePresenter
             isValid = false;
         }
 
-        view.setContributeEnabled(isValid);
+        view.setContributeButtonEnabled(isValid);
     }
 
     @Override
@@ -271,7 +271,7 @@ public class ContributePartPresenter extends BasePresenter
             case ISSUE_PULL_REQUEST: {
                 updateMode = true;
                 view.setCurrentStatusStepStatus(true);
-                view.setContributeEnabled(true);
+                view.setContributeButtonEnabled(true);
                 view.setContributionProgressState(false);
                 view.showStatusSectionMessage(updateMode ? messages.contributePartStatusSectionContributionUpdatedMessage()
                                                          : messages.contributePartStatusSectionContributionCreatedMessage(), false);
@@ -309,7 +309,7 @@ public class ContributePartPresenter extends BasePresenter
             break;
         }
 
-        view.setContributeEnabled(true);
+        view.setContributeButtonEnabled(true);
         view.setContributionProgressState(false);
     }
 
@@ -333,7 +333,6 @@ public class ContributePartPresenter extends BasePresenter
                     @Override
                     public void onSuccess(final Void notUsed) {
                         view.setContributionBranchName(context.getWorkBranchName());
-                        updateControls();
                     }
                 });
             }
