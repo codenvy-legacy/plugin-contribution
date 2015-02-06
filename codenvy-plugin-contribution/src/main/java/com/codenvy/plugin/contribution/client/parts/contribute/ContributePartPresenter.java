@@ -31,7 +31,6 @@ import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.client.vcs.Branch;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
@@ -66,7 +65,6 @@ public class ContributePartPresenter extends BasePresenter
     private final VcsService          vcsService;
     private final NotificationHelper  notificationHelper;
     private final DialogFactory       dialogFactory;
-    private final VcsServiceProvider  vcsServiceProvider;
     private       boolean             updateMode;
 
     @Inject
@@ -80,8 +78,7 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final VcsService vcsService,
                                    @Nonnull final NotificationHelper notificationHelper,
-                                   @Nonnull final DialogFactory dialogFactory,
-                                   @Nonnull final VcsServiceProvider vcsServiceProvider) {
+                                   @Nonnull final DialogFactory dialogFactory) {
         this.view = view;
         this.workspaceAgent = workspaceAgent;
         this.workflow = workflow;
@@ -92,7 +89,6 @@ public class ContributePartPresenter extends BasePresenter
         this.vcsService = vcsService;
         this.notificationHelper = notificationHelper;
         this.dialogFactory = dialogFactory;
-        this.vcsServiceProvider = vcsServiceProvider;
         this.updateMode = false;
 
         this.view.setDelegate(this);
@@ -189,7 +185,7 @@ public class ContributePartPresenter extends BasePresenter
                     view.hideStatusSectionMessage();
                     view.hideNewContributionSection();
 
-                    updateMode = true;
+                    updateMode = false;
                     updateControls();
 
                     notificationHelper
