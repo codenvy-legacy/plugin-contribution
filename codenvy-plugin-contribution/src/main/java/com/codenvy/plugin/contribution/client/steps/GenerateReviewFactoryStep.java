@@ -13,6 +13,7 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
+import com.codenvy.api.project.shared.dto.RunnerSource;
 import com.codenvy.api.project.shared.dto.Source;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
@@ -39,6 +40,7 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
 import static com.codenvy.ide.MimeType.APPLICATION_JSON;
@@ -191,6 +193,7 @@ public class GenerateReviewFactoryStep implements Step {
     }
 
     private Source getSource(final Context context) {
+        final Source source = dtoFactory.createDto(Source.class);
         final ImportSourceDescriptor importSourceDescriptor = dtoFactory.createDto(ImportSourceDescriptor.class);
 
         final String forkRepoUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
@@ -199,14 +202,30 @@ public class GenerateReviewFactoryStep implements Step {
         final String vcsType = context.getProject().getAttributes().get(VCS_PROVIDER_NAME).get(0);
         importSourceDescriptor.setType(vcsType);
 
-
         importSourceDescriptor.setParameters(new HashMap<String, String>());
+
+        // keep some origin factory settings
+        if (appContext.getFactory() != null) {
+            final Factory originFactory = appContext.getFactory();
+
+            final String keepDirectory = originFactory.getSource().getProject().getParameters().get("keepDirectory");
+            if (keepDirectory != null) {
+                importSourceDescriptor.getParameters().put("keepDirectory", keepDirectory);
+            }
+
+            final Map<String, RunnerSource> runners = originFactory.getSource().getRunners();
+            if (runners != null && !runners.isEmpty()) {
+                source.setRunners(runners);
+            }
+        }
+
         // keep VCS information
         importSourceDescriptor.getParameters().put("keepVcs", "true");
+
         // Use the contribution branch
         importSourceDescriptor.getParameters().put("branch", context.getWorkBranchName());
 
-        return dtoFactory.createDto(Source.class).withProject(importSourceDescriptor);
+        return source.withProject(importSourceDescriptor);
     }
 
     private void saveFactory(final FormData formData, final AsyncCallback<Factory> callback) {
