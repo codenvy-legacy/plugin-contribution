@@ -33,6 +33,8 @@ import java.util.List;
  * Git backed implementation for {@link VcsService}.
  */
 public class GitVcsService implements VcsService {
+    private static final String BRANCH_UP_TO_DATE_ERROR_MESSAGE = "Everything up-to-date";
+
     private final GitServiceClient       service;
     private final DtoFactory             dtoFactory;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
@@ -219,7 +221,12 @@ public class GitVcsService implements VcsService {
 
             @Override
             protected void onFailure(final Throwable exception) {
-                callback.onFailure(exception);
+                if (BRANCH_UP_TO_DATE_ERROR_MESSAGE.equalsIgnoreCase(exception.getMessage())) {
+                    callback.onFailure(new BranchUpToDateException(localBranchName));
+
+                } else {
+                    callback.onFailure(exception);
+                }
             }
         });
     }

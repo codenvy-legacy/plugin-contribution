@@ -14,6 +14,7 @@ import com.codenvy.ide.ui.dialogs.CancelCallback;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.vcs.BranchUpToDateException;
 import com.codenvy.plugin.contribution.client.vcs.VcsService;
 import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.client.vcs.hosting.NoPullRequestException;
@@ -108,7 +109,13 @@ public class PushBranchOnForkStep implements Step {
 
                                   @Override
                                   public void onFailure(final Throwable exception) {
-                                      final String errorMessage = messages.stepPushBranchErrorPushingBranch(exception.getMessage());
+                                      final String errorMessage;
+                                      if (exception instanceof BranchUpToDateException) {
+                                          errorMessage = messages.stepPushBranchErrorBranchUpToDate();
+                                      } else {
+                                          errorMessage = messages.stepPushBranchErrorPushingBranch(exception.getMessage());
+                                      }
+
                                       workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, errorMessage);
                                   }
                               });

@@ -181,6 +181,9 @@ public interface ContributeMessages extends Messages {
     @Key("step.push.branch.error.pushing.branch")
     String stepPushBranchErrorPushingBranch(String cause);
 
+    @Key("step.push.branch.error.branch.up.to.date")
+    String stepPushBranchErrorBranchUpToDate();
+
     @Key("step.push.branch.canceling")
     String stepPushBranchCanceling();
 
