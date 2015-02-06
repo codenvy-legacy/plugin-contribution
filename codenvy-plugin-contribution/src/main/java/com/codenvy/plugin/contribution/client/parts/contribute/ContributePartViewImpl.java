@@ -444,10 +444,6 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
             status.add(getStatusImage(success));
         }
 
-        public void clearStatus() {
-            status.clear();
-        }
-
         private SVGImage getStatusImage(final boolean success) {
             final SVGImage image = new SVGImage(success ? resources.statusOkIcon() : resources.statusErrorIcon());
             image.getElement().getStyle().setWidth(15, PX);
