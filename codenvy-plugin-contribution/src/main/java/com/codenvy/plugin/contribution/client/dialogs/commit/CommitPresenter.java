@@ -14,6 +14,7 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.VcsService;
+import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
@@ -33,18 +34,18 @@ public class CommitPresenter implements CommitView.ActionDelegate {
 
     private final CommitView          view;
     private final AppContext          appContext;
-    private final VcsService          vcsService;
+    private final VcsServiceProvider  vcsServiceProvider;
     private final NotificationHelper  notificationHelper;
     private       CommitActionHandler handler;
 
     @Inject
     public CommitPresenter(@Nonnull final CommitView view,
                            @Nonnull final AppContext appContext,
-                           @Nonnull final VcsService vcsService,
+                           @Nonnull final VcsServiceProvider vcsServiceProvider,
                            @Nonnull final NotificationHelper notificationHelper) {
         this.view = view;
         this.appContext = appContext;
-        this.vcsService = vcsService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.notificationHelper = notificationHelper;
 
         this.view.setDelegate(this);
@@ -84,7 +85,7 @@ public class CommitPresenter implements CommitView.ActionDelegate {
             callback.onFailure(new IllegalStateException("Opened project is not has no Git repository"));
 
         } else {
-            vcsService.hasUncommittedChanges(project.getRootProject(), callback);
+            vcsServiceProvider.getVcsService().hasUncommittedChanges(project.getRootProject(), callback);
         }
     }
 
@@ -92,7 +93,8 @@ public class CommitPresenter implements CommitView.ActionDelegate {
     public void onOk() {
         final CurrentProject project = appContext.getCurrentProject();
         if (project != null) {
-            vcsService.commit(project.getRootProject(), view.isIncludeUntracked(), view.getCommitDescription(), new AsyncCallback<Void>() {
+            vcsServiceProvider.getVcsService().commit(project.getRootProject(), view.isIncludeUntracked(),
+                                                      view.getCommitDescription(), new AsyncCallback<Void>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.showError(CommitPresenter.class, exception);

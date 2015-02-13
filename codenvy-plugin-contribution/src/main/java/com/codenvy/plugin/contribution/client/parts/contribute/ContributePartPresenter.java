@@ -41,7 +41,7 @@ import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
 import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.Branch;
-import com.codenvy.plugin.contribution.vcs.VcsService;
+import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
@@ -63,7 +63,7 @@ public class ContributePartPresenter extends BasePresenter
     private final VcsHostingService   vcsHostingService;
     private final Step                commitWorkingTreeStep;
     private final AppContext          appContext;
-    private final VcsService          vcsService;
+    private final VcsServiceProvider vcsServiceProvider;
     private final NotificationHelper  notificationHelper;
     private final DialogFactory       dialogFactory;
     private       boolean             updateMode;
@@ -77,7 +77,7 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final VcsHostingService vcsHostingService,
                                    @Nonnull final CommitWorkingTreeStep commitWorkingTreeStep,
                                    @Nonnull final AppContext appContext,
-                                   @Nonnull final VcsService vcsService,
+                                   @Nonnull final VcsServiceProvider vcsServiceProvider,
                                    @Nonnull final NotificationHelper notificationHelper,
                                    @Nonnull final DialogFactory dialogFactory) {
         this.view = view;
@@ -87,7 +87,7 @@ public class ContributePartPresenter extends BasePresenter
         this.messages = messages;
         this.commitWorkingTreeStep = commitWorkingTreeStep;
         this.appContext = appContext;
-        this.vcsService = vcsService;
+        this.vcsServiceProvider = vcsServiceProvider;
         this.notificationHelper = notificationHelper;
         this.dialogFactory = dialogFactory;
         this.updateMode = false;
@@ -167,7 +167,8 @@ public class ContributePartPresenter extends BasePresenter
 
         } else {
             final Context context = workflow.getContext();
-            vcsService.checkoutBranch(context.getProject(), context.getClonedBranchName(), false, new AsyncCallback<String>() {
+            vcsServiceProvider.getVcsService().checkoutBranch(context.getProject(), context.getClonedBranchName(),
+                                                              false, new AsyncCallback<String>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.showError(ContributePartPresenter.class, exception);
@@ -381,7 +382,7 @@ public class ContributePartPresenter extends BasePresenter
     }
 
     private void refreshContributionBranchNameList(final AsyncCallback<Void> callback) {
-        vcsService.listLocalBranches(workflow.getContext().getProject(), new AsyncCallback<List<Branch>>() {
+        vcsServiceProvider.getVcsService().listLocalBranches(workflow.getContext().getProject(), new AsyncCallback<List<Branch>>() {
             @Override
             public void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
@@ -421,7 +422,7 @@ public class ContributePartPresenter extends BasePresenter
         public void accepted(final String branchName) {
             final Context context = workflow.getContext();
 
-            vcsService.isLocalBranchWithName(context.getProject(), branchName, new AsyncCallback<Boolean>() {
+            vcsServiceProvider.getVcsService().isLocalBranchWithName(context.getProject(), branchName, new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.showError(ContributePartPresenter.class, exception);
@@ -436,7 +437,8 @@ public class ContributePartPresenter extends BasePresenter
                                                              branchName));
 
                     } else {
-                        vcsService.checkoutBranch(context.getProject(), branchName, true, new AsyncCallback<String>() {
+                        vcsServiceProvider.getVcsService().checkoutBranch(context.getProject(), branchName, true,
+                                                                          new AsyncCallback<String>() {
                             @Override
                             public void onFailure(final Throwable exception) {
 
