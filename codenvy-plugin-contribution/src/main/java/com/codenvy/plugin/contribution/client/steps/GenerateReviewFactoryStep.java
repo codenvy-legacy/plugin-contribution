@@ -10,6 +10,20 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
+import static com.codenvy.ide.MimeType.APPLICATION_JSON;
+import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
+import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_REVIEW_KEY;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
@@ -36,17 +50,6 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
-import static com.codenvy.ide.MimeType.APPLICATION_JSON;
-import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
 /**
  * Generates a factory for the contribution reviewer.
@@ -152,7 +155,11 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().setVisibility("public");
 
                 // the new factory is not a 'contribute workflow factory'
-                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
+                final List<String> contributeFlag = factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
+
+                // the new factory is a 'review workflow factory'
+                factory.getProject().getAttributes().put(ATTRIBUTE_REVIEW_KEY, contributeFlag);
+
                 callback.onSuccess(factory);
             }
 

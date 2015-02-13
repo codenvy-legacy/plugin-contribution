@@ -24,6 +24,11 @@ public final class ContributeConstants {
     public static final String ATTRIBUTE_CONTRIBUTE_KEY = "contribute";
 
     /**
+     * The factory and project attribute for the review workflow.
+     */
+    public static final String ATTRIBUTE_REVIEW_KEY = "review";
+
+    /**
      * github flow contribute value for the contribute attribute.
      */
     public static final String GITHUB_CONTRIBUTE_FLAG = "github";
