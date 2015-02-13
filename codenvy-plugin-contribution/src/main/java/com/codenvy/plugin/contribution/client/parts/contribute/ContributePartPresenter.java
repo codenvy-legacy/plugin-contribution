@@ -10,6 +10,17 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
+import static com.codenvy.ide.api.constraints.Constraints.LAST;
+import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.parts.WorkspaceAgent;
@@ -37,16 +48,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static com.codenvy.ide.api.constraints.Constraints.LAST;
-import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
 
 /**
  * Part for the contribution configuration.
@@ -282,6 +283,9 @@ public class ContributePartPresenter extends BasePresenter
                 view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
             }
             break;
+
+            default:
+                break;
         }
     }
 
@@ -307,6 +311,9 @@ public class ContributePartPresenter extends BasePresenter
                 view.showStatusSectionMessage(event.getMessage(), true);
             }
             break;
+
+            default:
+                break;
         }
 
         view.setContributeButtonEnabled(true);
@@ -353,6 +360,9 @@ public class ContributePartPresenter extends BasePresenter
                 refreshContributionBranchNameList();
             }
             break;
+
+            default:
+                break;
         }
     }
 
