@@ -8,20 +8,18 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs;
+package com.codenvy.plugin.review.client.inject;
 
-import com.codenvy.dto.shared.DTO;
+import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.google.gwt.inject.client.AbstractGinModule;
 
 /**
- * Info about remote configuration.
+ * Gin module definition for the review extension.
  */
-@DTO
-public interface Remote {
-    String getName();
+@ExtensionGinModule
+public class ReviewGinModule extends AbstractGinModule {
 
-    Remote withName(String name);
-
-    String getUrl();
-
-    Remote withUrl(String url);
+    @Override
+    protected void configure() {
+    }
 }

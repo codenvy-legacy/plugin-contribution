@@ -8,18 +8,23 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.client;
 
 import javax.annotation.Nonnull;
 
-public class NoPullRequestException extends Exception {
+/**
+ * Exception raised when the branch pushed is up to date.
+ *
+ * @author Kevin Pollet
+ */
+public class BranchUpToDateException extends Exception {
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.hosting.NoPullRequestException}.
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.BranchUpToDateException}.
      *
      * @param branchName
      *         the branch name.
      */
-    public NoPullRequestException(@Nonnull final String branchName) {
-        super("No Pull Request for branch " + branchName);
+    public BranchUpToDateException(@Nonnull final String branchName) {
+        super("Branch '" + branchName + "' is up-to-date");
     }
 }

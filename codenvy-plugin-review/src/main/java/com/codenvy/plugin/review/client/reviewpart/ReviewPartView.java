@@ -8,21 +8,19 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting;
+package com.codenvy.plugin.review.client.reviewpart;
 
-import javax.annotation.Nonnull;
+import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 
 /**
- * Exception raised when trying to get a fork of a repository for a user and no fork being found.
+ * Interface for the reviewer panel view.
  */
-public class NoUserForkException extends Exception {
+public interface ReviewPartView extends View<ReviewPartView.ActionDelegate> {
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.hosting.NoUserForkException}.
-     *
-     * @param user
-     *         the user.
+     * Action delegate interface for the reviewer panel.
      */
-    public NoUserForkException(@Nonnull final String user) {
-        super("No fork for user: " + user);
+    interface ActionDelegate extends BaseActionDelegate {
+
     }
 }

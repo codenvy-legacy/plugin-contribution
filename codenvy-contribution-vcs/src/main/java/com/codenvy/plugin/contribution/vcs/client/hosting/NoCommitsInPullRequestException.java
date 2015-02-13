@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.client.hosting;
 
 import javax.annotation.Nonnull;
 
@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  */
 public class NoCommitsInPullRequestException extends Exception {
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.hosting.NoCommitsInPullRequestException}.
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.NoCommitsInPullRequestException}.
      *
      * @param headBranch
      *         the head branch name.

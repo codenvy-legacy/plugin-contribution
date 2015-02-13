@@ -8,33 +8,21 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting.dto;
+package com.codenvy.plugin.contribution.vcs.client.hosting.dto;
 
 import com.codenvy.dto.shared.DTO;
 
 @DTO
-public interface PullRequest {
-    String getId();
+public interface PullRequestHead {
+    String getLabel();
 
-    PullRequest withId(String id);
+    PullRequestHead withLabel(String label);
 
-    String getUrl();
+    String getRef();
 
-    PullRequest withUrl(String url);
+    PullRequestHead withRef(String ref);
 
-    String getHtmlUrl();
+    String getSha();
 
-    PullRequest withHtmlUrl(String htmlUrl);
-
-    String getNumber();
-
-    PullRequest withNumber(String number);
-
-    String getState();
-
-    PullRequest withState(String state);
-
-    PullRequestHead getHead();
-
-    PullRequest withHead(PullRequestHead head);
+    PullRequestHead withSha(String sha);
 }

@@ -8,12 +8,12 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.inject;
+package com.codenvy.plugin.contribution.vcs.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
-import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
-import com.codenvy.plugin.contribution.vcs.hosting.GitHubHostingService;
-import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.client.hosting.GitHubHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.google.gwt.inject.client.AbstractGinModule;
 
 /**

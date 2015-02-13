@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs;
+package com.codenvy.plugin.contribution.vcs.client;
 
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.app.CurrentProject;
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 
 /**
- * Provider for the {@link com.codenvy.plugin.contribution.vcs.VcsService}.
+ * Provider for the {@link com.codenvy.plugin.contribution.vcs.client.VcsService}.
  *
  * @author Kevin Pollet
  */
@@ -34,9 +34,9 @@ public class VcsServiceProvider {
     }
 
     /**
-     * Returns the {@link com.codenvy.plugin.contribution.vcs.VcsService} implementation corresponding to the current project VCS.
+     * Returns the {@link com.codenvy.plugin.contribution.vcs.client.VcsService} implementation corresponding to the current project VCS.
      *
-     * @return the {@link com.codenvy.plugin.contribution.vcs.VcsService} implementation or {@code null} if not supported or not
+     * @return the {@link com.codenvy.plugin.contribution.vcs.client.VcsService} implementation or {@code null} if not supported or not
      * initialized.
      */
     public VcsService getVcsService() {

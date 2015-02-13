@@ -8,17 +8,29 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client;
+package com.codenvy.plugin.contribution.vcs.client.hosting.dto;
 
-import com.google.gwt.i18n.client.Messages;
+import com.codenvy.dto.shared.DTO;
 
+@DTO
+public interface Repository {
+    String getName();
 
-/**
- * Internationalizable messages for the contributor plugin.
- */
-public interface ReviewMessages extends Messages {
+    Repository withName(String name);
 
-    @Key("review.part.title")
-    String reviewPartTitle();
+    String getCloneUrl();
 
+    Repository withCloneUrl(String cloneUrl);
+
+    boolean isFork();
+
+    Repository withFork(boolean isFork);
+
+    boolean isPrivateRepo();
+
+    Repository withPrivateRepo(boolean isPrivateRepo);
+
+    Repository getParent();
+
+    Repository withParent(Repository parent);
 }
