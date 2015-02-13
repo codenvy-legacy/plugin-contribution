@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.Repository;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.assistedinject.Assisted;

@@ -12,10 +12,10 @@ package com.codenvy.plugin.contribution.client.steps;
 
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.vcs.hosting.NoCommitsInPullRequestException;
-import com.codenvy.plugin.contribution.vcs.hosting.PullRequestAlreadyExistsException;
-import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.vcs.client.hosting.NoCommitsInPullRequestException;
+import com.codenvy.plugin.contribution.vcs.client.hosting.PullRequestAlreadyExistsException;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;

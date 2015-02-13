@@ -8,15 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.client.hosting;
 
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.codenvy.plugin.contribution.vcs.hosting.dto.HostUser;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequest;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.Repository;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**

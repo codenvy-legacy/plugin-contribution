@@ -14,12 +14,12 @@ import com.codenvy.ide.ui.dialogs.CancelCallback;
 import com.codenvy.ide.ui.dialogs.ConfirmCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.vcs.BranchUpToDateException;
-import com.codenvy.plugin.contribution.vcs.VcsService;
-import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
-import com.codenvy.plugin.contribution.vcs.hosting.NoPullRequestException;
-import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.vcs.client.BranchUpToDateException;
+import com.codenvy.plugin.contribution.vcs.client.VcsService;
+import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.client.hosting.NoPullRequestException;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;

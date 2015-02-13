@@ -8,21 +8,18 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.client.hosting;
 
 import javax.annotation.Nonnull;
 
-/**
- * Exception raised when trying to get a fork of a repository for a user and no fork being found.
- */
-public class NoUserForkException extends Exception {
+public class NoPullRequestException extends Exception {
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.hosting.NoUserForkException}.
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.NoPullRequestException}.
      *
-     * @param user
-     *         the user.
+     * @param branchName
+     *         the branch name.
      */
-    public NoUserForkException(@Nonnull final String user) {
-        super("No fork for user: " + user);
+    public NoPullRequestException(@Nonnull final String branchName) {
+        super("No Pull Request for branch " + branchName);
     }
 }

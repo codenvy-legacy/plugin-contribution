@@ -8,21 +8,20 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting.dto;
+package com.codenvy.plugin.contribution.vcs.client;
 
 import com.codenvy.dto.shared.DTO;
 
+/**
+ * Info about remote configuration.
+ */
 @DTO
-public interface PullRequestHead {
-    String getLabel();
+public interface Remote {
+    String getName();
 
-    PullRequestHead withLabel(String label);
+    Remote withName(String name);
 
-    String getRef();
+    String getUrl();
 
-    PullRequestHead withRef(String ref);
-
-    String getSha();
-
-    PullRequestHead withSha(String sha);
+    Remote withUrl(String url);
 }

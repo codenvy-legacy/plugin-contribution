@@ -25,10 +25,10 @@ import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.vcs.Remote;
-import com.codenvy.plugin.contribution.vcs.VcsService;
-import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
-import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.Remote;
+import com.codenvy.plugin.contribution.vcs.client.VcsService;
+import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
 

@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.client.hosting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +27,10 @@ import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.HostUser;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequest;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequestHead;
-import com.codenvy.plugin.contribution.vcs.hosting.dto.Repository;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequestHead;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -363,11 +363,11 @@ public class GitHubHostingService implements VcsHostingService {
 
     /**
      * Converts an instance of {@link com.codenvy.ide.ext.github.shared.GitHubRepository} into a {@link
-     * com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository}.
+     * com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.Repository}.
      *
      * @param gitHubRepository
      *         the GitHub repository to convert.
-     * @return the corresponding {@link com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository} instance.
+     * @return the corresponding {@link com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.Repository} instance.
      */
     private Repository valueOf(final GitHubRepository gitHubRepository) {
         final GitHubRepository gitHubRepositoryParent = gitHubRepository.getParent();
@@ -389,11 +389,11 @@ public class GitHubHostingService implements VcsHostingService {
 
     /**
      * Converts an instance of {@link com.codenvy.ide.ext.github.shared.GitHubPullRequest} into a {@link
-     * com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest}.
+     * com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.PullRequest}.
      *
      * @param gitHubPullRequest
      *         the GitHub pull request to convert.
-     * @return the corresponding {@link com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest} instance.
+     * @return the corresponding {@link com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.PullRequest} instance.
      */
     private PullRequest valueOf(final GitHubPullRequest gitHubPullRequest) {
         final PullRequestHead pullRequestHead = dtoFactory.createDto(PullRequestHead.class)

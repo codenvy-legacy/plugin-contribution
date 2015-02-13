@@ -15,8 +15,8 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.vcs.VcsService;
-import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.client.VcsService;
+import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

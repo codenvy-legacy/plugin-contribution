@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.vcs.hosting.dto;
+package com.codenvy.plugin.contribution.vcs.client.hosting.dto;
 
 import com.codenvy.dto.shared.DTO;
 
