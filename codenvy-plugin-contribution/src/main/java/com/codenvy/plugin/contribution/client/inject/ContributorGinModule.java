@@ -29,8 +29,6 @@ import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowContextSte
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
-import com.codenvy.plugin.contribution.vcs.GitVcsService;
-import com.codenvy.plugin.contribution.vcs.VcsService;
 import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.hosting.GitHubHostingService;
 import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
@@ -48,7 +46,6 @@ public class ContributorGinModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind(VcsServiceProvider.class);
-        bind(VcsService.class).to(GitVcsService.class);
         bind(VcsHostingService.class).to(GitHubHostingService.class);
 
         // bind the commit dialog view
