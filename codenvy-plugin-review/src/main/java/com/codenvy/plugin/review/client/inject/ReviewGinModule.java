@@ -11,6 +11,9 @@
 package com.codenvy.plugin.review.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.codenvy.plugin.review.client.reviewpart.ReviewPartPresenter;
+import com.codenvy.plugin.review.client.reviewpart.ReviewPartView;
+import com.codenvy.plugin.review.client.reviewpart.ReviewPartViewImpl;
 import com.google.gwt.inject.client.AbstractGinModule;
 
 /**
@@ -21,5 +24,8 @@ public class ReviewGinModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+        // bind the part view
+        bind(ReviewPartView.class).to(ReviewPartViewImpl.class);
+        bind(ReviewPartPresenter.class);
     }
 }
