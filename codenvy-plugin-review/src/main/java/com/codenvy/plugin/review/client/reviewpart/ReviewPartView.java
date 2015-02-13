@@ -8,17 +8,19 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client;
+package com.codenvy.plugin.review.client.reviewpart;
 
-import com.google.gwt.i18n.client.Messages;
-
+import com.codenvy.ide.api.mvp.View;
+import com.codenvy.ide.api.parts.base.BaseActionDelegate;
 
 /**
- * Internationalizable messages for the contributor plugin.
+ * Interface for the reviewer panel view.
  */
-public interface ReviewMessages extends Messages {
+public interface ReviewPartView extends View<ReviewPartView.ActionDelegate> {
+    /**
+     * Action delegate interface for the reviewer panel.
+     */
+    interface ActionDelegate extends BaseActionDelegate {
 
-    @Key("review.part.title")
-    String reviewPartTitle();
-
+    }
 }

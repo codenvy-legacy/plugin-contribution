@@ -8,17 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client;
+package com.codenvy.plugin.review.client.reviewpart;
 
-import com.google.gwt.i18n.client.Messages;
-
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Internationalizable messages for the contributor plugin.
+ * {@link com.google.gwt.uibinder.client.UiBinder} interface for the configure contribution dialog.
  */
-public interface ReviewMessages extends Messages {
-
-    @Key("review.part.title")
-    String reviewPartTitle();
-
+@UiTemplate("com.codenvy.plugin.review.client.reviewpart.ReviewPartViewImpl.ui.xml")
+public interface ReviewPartViewUiBinder extends UiBinder<Widget, ReviewPartViewImpl> {
 }
