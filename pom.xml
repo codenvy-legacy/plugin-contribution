@@ -33,6 +33,7 @@
     </licenses>
     <modules>
         <module>codenvy-plugin-contribution</module>
+        <module>codenvy-plugin-review</module>
     </modules>
     <scm>
         <connection>scm:git:git@github.com:codenvy/plugin-contribution.git</connection>
