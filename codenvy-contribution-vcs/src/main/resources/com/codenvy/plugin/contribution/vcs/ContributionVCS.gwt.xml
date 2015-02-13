@@ -20,4 +20,6 @@
 
     <inherits name='com.codenvy.ide.ext.git.Git'/>
     <inherits name='com.codenvy.ide.ext.github.GitHub'/>
+
+    <source path=""/>
 </module>

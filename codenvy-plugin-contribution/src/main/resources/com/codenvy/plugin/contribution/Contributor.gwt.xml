@@ -23,4 +23,5 @@
     <inherits name="com.codenvy.security.OAuth"/>
 
     <inherits name="com.codenvy.plugin.contribution.vcs.ContributionVCS"/>
+    <source path="client"/>
 </module>

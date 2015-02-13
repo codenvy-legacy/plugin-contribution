@@ -21,4 +21,5 @@
     <inherits name='com.codenvy.ide.Api'/>
 
     <inherits name="com.codenvy.plugin.contribution.vcs.ContributionVCS"/>
+    <source path="client"/>
 </module>
