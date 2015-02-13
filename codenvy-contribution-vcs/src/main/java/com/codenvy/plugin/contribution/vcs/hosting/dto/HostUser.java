@@ -8,29 +8,25 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs.hosting.dto;
+package com.codenvy.plugin.contribution.vcs.hosting.dto;
 
 import com.codenvy.dto.shared.DTO;
 
 @DTO
-public interface Repository {
+public interface HostUser {
+    String getId();
+
+    HostUser withId(String id);
+
     String getName();
 
-    Repository withName(String name);
+    HostUser withName(String name);
 
-    String getCloneUrl();
+    String getLogin();
 
-    Repository withCloneUrl(String cloneUrl);
+    HostUser withLogin(String login);
 
-    boolean isFork();
+    String getUrl();
 
-    Repository withFork(boolean isFork);
-
-    boolean isPrivateRepo();
-
-    Repository withPrivateRepo(boolean isPrivateRepo);
-
-    Repository getParent();
-
-    Repository withParent(Repository parent);
+    HostUser withUrl(String url);
 }

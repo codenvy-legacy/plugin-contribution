@@ -8,21 +8,23 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs;
 
 import javax.annotation.Nonnull;
 
 /**
- * Exception raised when trying to get a fork of a repository for a user and no fork being found.
+ * Exception raised when the branch pushed is up to date.
+ *
+ * @author Kevin Pollet
  */
-public class NoUserForkException extends Exception {
+public class BranchUpToDateException extends Exception {
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException}.
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.BranchUpToDateException}.
      *
-     * @param user
-     *         the user.
+     * @param branchName
+     *         the branch name.
      */
-    public NoUserForkException(@Nonnull final String user) {
-        super("No fork for user: " + user);
+    public BranchUpToDateException(@Nonnull final String branchName) {
+        super("Branch '" + branchName + "' is up-to-date");
     }
 }

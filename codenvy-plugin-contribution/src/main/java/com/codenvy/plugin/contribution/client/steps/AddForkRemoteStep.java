@@ -13,13 +13,14 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.client.vcs.Remote;
-import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
-import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.Remote;
+import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.List;
 
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ADD_FORK_REMOTE;

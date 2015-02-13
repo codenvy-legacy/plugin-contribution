@@ -12,8 +12,8 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.VcsService;
+import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;

@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs;
+package com.codenvy.plugin.contribution.vcs;
 
 import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.collections.Array;
@@ -263,7 +263,7 @@ public class GitVcsService implements VcsService {
     }
 
     /**
-     * Converts a git branch DTO to an abstracted {@link com.codenvy.plugin.contribution.client.vcs.Branch} object.
+     * Converts a git branch DTO to an abstracted {@link com.codenvy.plugin.contribution.vcs.Branch} object.
      *
      * @param gitBranch
      *         the object to convert.
@@ -277,7 +277,7 @@ public class GitVcsService implements VcsService {
     }
 
     /**
-     * Converts a git remote DTO to an abstracted {@link com.codenvy.plugin.contribution.client.vcs.Remote} object.
+     * Converts a git remote DTO to an abstracted {@link com.codenvy.plugin.contribution.vcs.Remote} object.
      *
      * @param gitRemote
      *         the object to convert.

@@ -8,20 +8,21 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs;
+package com.codenvy.plugin.contribution.vcs.hosting;
 
-import com.codenvy.dto.shared.DTO;
+import javax.annotation.Nonnull;
 
 /**
- * Info about remote configuration.
+ * Exception raised when trying to get a fork of a repository for a user and no fork being found.
  */
-@DTO
-public interface Remote {
-    String getName();
-
-    Remote withName(String name);
-
-    String getUrl();
-
-    Remote withUrl(String url);
+public class NoUserForkException extends Exception {
+    /**
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.hosting.NoUserForkException}.
+     *
+     * @param user
+     *         the user.
+     */
+    public NoUserForkException(@Nonnull final String user) {
+        super("No fork for user: " + user);
+    }
 }

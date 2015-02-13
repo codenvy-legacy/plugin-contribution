@@ -21,4 +21,6 @@
     <inherits name='com.codenvy.api.Workspace'/>
     <inherits name="com.codenvy.api.Project"/>
     <inherits name="com.codenvy.security.OAuth"/>
+
+    <inherits name="com.codenvy.plugin.contribution.vcs.ContributionVCS"/>
 </module>

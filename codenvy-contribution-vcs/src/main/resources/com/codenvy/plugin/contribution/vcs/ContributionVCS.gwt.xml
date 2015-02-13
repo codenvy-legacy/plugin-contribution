@@ -18,7 +18,6 @@
     <inherits name="com.google.gwt.json.JSON"/>
     <inherits name="com.google.gwt.inject.Inject"/>
 
-    <inherits name='com.codenvy.ide.Api'/>
-
-    <inherits name="com.codenvy.plugin.contribution.vcs.ContributionVCS"/>
+    <inherits name='com.codenvy.ide.ext.git.Git'/>
+    <inherits name='com.codenvy.ide.ext.github.GitHub'/>
 </module>

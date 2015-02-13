@@ -8,23 +8,18 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.hosting;
 
 import javax.annotation.Nonnull;
 
-/**
- * Exception raised when a pull request already exists for a branch.
- *
- * @author Kevin Pollet
- */
-public class PullRequestAlreadyExistsException extends Exception {
+public class NoPullRequestException extends Exception {
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.client.vcs.hosting.PullRequestAlreadyExistsException}.
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.hosting.NoPullRequestException}.
      *
-     * @param headBranch
-     *         the head branch name.
+     * @param branchName
+     *         the branch name.
      */
-    public PullRequestAlreadyExistsException(@Nonnull final String headBranch) {
-        super("A pull request for " + headBranch + " already exists");
+    public NoPullRequestException(@Nonnull final String branchName) {
+        super("No Pull Request for branch " + branchName);
     }
 }

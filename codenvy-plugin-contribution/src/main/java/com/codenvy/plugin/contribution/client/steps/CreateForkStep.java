@@ -11,9 +11,9 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.vcs.hosting.NoUserForkException;
-import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
+import com.codenvy.plugin.contribution.vcs.hosting.NoUserForkException;
+import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;

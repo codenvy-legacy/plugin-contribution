@@ -8,7 +8,13 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.vcs.hosting;
+package com.codenvy.plugin.contribution.vcs.hosting;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
@@ -21,18 +27,13 @@ import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.HostUser;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequest;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.PullRequestHead;
-import com.codenvy.plugin.contribution.client.vcs.hosting.dto.Repository;
+import com.codenvy.plugin.contribution.vcs.hosting.dto.HostUser;
+import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.vcs.hosting.dto.PullRequestHead;
+import com.codenvy.plugin.contribution.vcs.hosting.dto.Repository;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link VcsHostingService} implementation for GitHub.

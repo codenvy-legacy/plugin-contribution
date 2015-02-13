@@ -29,11 +29,11 @@ import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowContextSte
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
-import com.codenvy.plugin.contribution.client.vcs.GitVcsService;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
-import com.codenvy.plugin.contribution.client.vcs.hosting.GitHubHostingService;
-import com.codenvy.plugin.contribution.client.vcs.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.GitVcsService;
+import com.codenvy.plugin.contribution.vcs.VcsService;
+import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.hosting.GitHubHostingService;
+import com.codenvy.plugin.contribution.vcs.hosting.VcsHostingService;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 

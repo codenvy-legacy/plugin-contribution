@@ -15,13 +15,14 @@ import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.client.vcs.VcsService;
-import com.codenvy.plugin.contribution.client.vcs.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.VcsService;
+import com.codenvy.plugin.contribution.vcs.VcsServiceProvider;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.Date;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
