@@ -8,28 +8,23 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client;
+package com.codenvy.plugin.contribution.shared.client;
 
 /**
  * Shared constants for the contribution plugin.
  */
-public final class ContributeConstants {
+public final class SharedConstants {
 
-    private ContributeConstants() {
+    private SharedConstants() {
     }
 
     /**
-     * The factory and project attribute for the contribution workflow.
+     * The factory and project attribute for the review workflow.
      */
-    public static final String ATTRIBUTE_CONTRIBUTE_KEY = "contribute";
+    public static final String ATTRIBUTE_REVIEW_KEY = "review";
 
     /**
-     * github flow contribute value for the contribute attribute.
+     * The factory and project attribute for the reviewed pull request id.
      */
-    public static final String GITHUB_CONTRIBUTE_FLAG = "github";
-
-    /**
-     * Project attribute key for the branch initially cloned.
-     */
-    public static final String ATTRIBUTE_CONTRIBUTE_BRANCH = "contribute_branch";
+    public static final String ATTRIBUTE_REVIEW_PULLREQUEST_ID = "pullRequestId";
 }

@@ -16,8 +16,9 @@ import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -36,13 +37,13 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPMethod;
-import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
 import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
+import com.codenvy.plugin.contribution.shared.client.SharedConstants;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.google.gwt.http.client.Header;
 import com.google.gwt.http.client.Response;
@@ -154,14 +155,18 @@ public class GenerateReviewFactoryStep implements Step {
                 // project must be public to be shared
                 factory.getProject().setVisibility("public");
 
-                // the new factory is not a 'contribute workflow factory'
-                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
-
                 // remember the related pull request id
-                // the new factory is not a 'contribute workflow factory'
-                // TODO get the value of the review attribute: from VCSprovider
-                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, Arrays.asList("github"));
+                factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID,
+                                                         Collections.singletonList(context.getPullRequestId()));
 
+                // the new factory is not a 'contribute workflow factory'
+                final List<String> contributeFlag = factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
+
+               // TODO get the value of the review attribute: from VCSprovider
+                if (contributeFlag != null) {
+                    // if the contribute flag was set, use it to trigger the same auth.
+                    factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_KEY, contributeFlag);
+                }
                 callback.onSuccess(factory);
             }
 
