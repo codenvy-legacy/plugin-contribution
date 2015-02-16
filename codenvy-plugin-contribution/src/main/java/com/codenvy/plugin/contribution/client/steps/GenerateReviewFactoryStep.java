@@ -14,11 +14,9 @@ import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
 import static com.codenvy.ide.MimeType.APPLICATION_JSON;
 import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_REVIEW_KEY;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -155,10 +153,7 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().setVisibility("public");
 
                 // the new factory is not a 'contribute workflow factory'
-                final List<String> contributeFlag = factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
-
-                // the new factory is a 'review workflow factory'
-                factory.getProject().getAttributes().put(ATTRIBUTE_REVIEW_KEY, contributeFlag);
+                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
 
                 callback.onSuccess(factory);
             }
