@@ -55,6 +55,7 @@ public class IssuePullRequestStep implements Step {
                     @Override
                     public void onSuccess(final PullRequest pullRequest) {
                         context.setPullRequestIssueNumber(pullRequest.getNumber());
+                        context.setPullRequestId(pullRequest.getId());
                         workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
                     }
 
@@ -66,6 +67,7 @@ public class IssuePullRequestStep implements Step {
                                                                  @Override
                                                                  public void onSuccess(final PullRequest pullRequest) {
                                                                      context.setPullRequestIssueNumber(pullRequest.getNumber());
+                                                                     context.setPullRequestId(pullRequest.getId());
                                                                      workflow.fireStepDoneEvent(ISSUE_PULL_REQUEST);
                                                                  }
 
