@@ -35,6 +35,7 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPMethod;
+import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
@@ -154,6 +155,9 @@ public class GenerateReviewFactoryStep implements Step {
 
                 // the new factory is not a 'contribute workflow factory'
                 factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
+
+                // remember the related pull request id
+                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, contributeFlag);
 
                 callback.onSuccess(factory);
             }

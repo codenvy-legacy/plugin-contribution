@@ -29,6 +29,11 @@ public final class ContributeConstants {
     public static final String ATTRIBUTE_REVIEW_KEY = "review";
 
     /**
+     * The factory and project attribute for the reviewed pull request id.
+     */
+    public static final String ATTRIBUTE_REVIEW_PULLREQUEST_ID = "pullRequestId";
+
+    /**
      * github flow contribute value for the contribute attribute.
      */
     public static final String GITHUB_CONTRIBUTE_FLAG = "github";
