@@ -37,6 +37,7 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPMethod;
+import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
@@ -159,6 +160,9 @@ public class GenerateReviewFactoryStep implements Step {
 
                 // the new factory is a 'review workflow factory'
                 factory.getProject().getAttributes().put(ATTRIBUTE_REVIEW_KEY, contributeFlag);
+
+                // remember the related pull request id
+                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, contributeFlag);
 
                 callback.onSuccess(factory);
             }
