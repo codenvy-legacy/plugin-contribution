@@ -35,6 +35,7 @@
         <module>codenvy-plugin-contribution</module>
         <module>codenvy-plugin-review</module>
         <module>codenvy-contribution-vcs</module>
+        <module>codenvy-contribution-shared</module>
     </modules>
     <scm>
         <connection>scm:git:git@github.com:codenvy/plugin-contribution.git</connection>
