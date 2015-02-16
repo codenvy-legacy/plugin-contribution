@@ -10,13 +10,14 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client;
 
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.app.CurrentProject;
+import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
+import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import com.codenvy.ide.api.app.AppContext;
+import com.codenvy.ide.api.app.CurrentProject;
 
 /**
  * Provider for the {@link com.codenvy.plugin.contribution.vcs.client.VcsService}.
@@ -24,7 +25,7 @@ import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepos
  * @author Kevin Pollet
  */
 public class VcsServiceProvider {
-    private final AppContext    appContext;
+    private final AppContext appContext;
     private final GitVcsService gitVcsService;
 
     @Inject
@@ -37,15 +38,27 @@ public class VcsServiceProvider {
      * Returns the {@link com.codenvy.plugin.contribution.vcs.client.VcsService} implementation corresponding to the current project VCS.
      *
      * @return the {@link com.codenvy.plugin.contribution.vcs.client.VcsService} implementation or {@code null} if not supported or not
-     * initialized.
+     *         initialized.
      */
     public VcsService getVcsService() {
         final CurrentProject currentProject = appContext.getCurrentProject();
         if (currentProject != null) {
-            if (isGitRepository(currentProject.getRootProject())) {
-                return gitVcsService;
-            }
+            return getVcsService(currentProject.getProjectDescription());
         }
         return null;
+    }
+
+    /**
+     * Returns the {@link com.codenvy.plugin.contribution.vcs.client.VcsService} implementation corresponding to the given project VCS.
+     *
+     * @return the {@link com.codenvy.plugin.contribution.vcs.client.VcsService} implementation or {@code null} if not supported or not
+     *         initialized.
+     */
+    public VcsService getVcsService(@Nonnull final ProjectDescriptor project) {
+        if (isGitRepository(project)) {
+            return gitVcsService;
+        } else {
+            return null;
+        }
     }
 }
