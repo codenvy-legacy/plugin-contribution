@@ -61,6 +61,11 @@ public class PushBranchOnForkStep implements Step {
         final String upstreamRepositoryName = context.getUpstreamRepositoryName();
         final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
 
+        /*
+         * Check if a Pull Request with given base and head branches already exists.
+         * If there is none, push the contribution branch.
+         * If there is one, propose to update the pull request.
+         */
         vcsHostingService.getPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, headBranch, new AsyncCallback<PullRequest>() {
             @Override
             public void onSuccess(final PullRequest pullRequest) {
