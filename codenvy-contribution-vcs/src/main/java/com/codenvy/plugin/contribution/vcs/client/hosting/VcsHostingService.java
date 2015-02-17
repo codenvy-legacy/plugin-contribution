@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.codenvy.ide.api.app.CurrentUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
@@ -192,4 +193,12 @@ public interface VcsHostingService {
      */
     @Nonnull
     String formatReviewFactoryUrl(@Nonnull String reviewFactoryUrl);
+
+    /**
+     * Authenticate on the hosting service.
+     * 
+     * @param user the user to authenticate
+     * @param callback what to do once authentication is done
+     */
+    void authenticate(CurrentUser user, AsyncCallback<HostUser> callback);
 }
