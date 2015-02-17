@@ -19,5 +19,6 @@ public enum AbortReviewCause {
     NO_UPSTREAM_REMOTE,
 
     /** The upstream remote soesn't have an URL that matches the VCS hosting service. */
-    REMOTE_URL_HOSTING_MISMATCH
+    REMOTE_URL_HOSTING_MISMATCH,
+    NO_AUTH
 }
