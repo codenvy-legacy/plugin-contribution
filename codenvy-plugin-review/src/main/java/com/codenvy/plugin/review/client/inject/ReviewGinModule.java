@@ -11,7 +11,9 @@
 package com.codenvy.plugin.review.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.codenvy.plugin.review.client.ReviewState;
 import com.google.gwt.inject.client.AbstractGinModule;
+import com.google.inject.Singleton;
 
 /**
  * Gin module definition for the review extension.
@@ -21,5 +23,7 @@ public class ReviewGinModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+
+        bind(ReviewState.class).in(Singleton.class);
     }
 }
