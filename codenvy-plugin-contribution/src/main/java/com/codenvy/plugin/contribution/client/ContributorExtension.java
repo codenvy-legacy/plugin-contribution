@@ -206,5 +206,6 @@ public class ContributorExtension implements ProjectActionHandler {
         projectUpdate.setRunners(projectDescriptor.getRunners());
         projectUpdate.setMixinTypes(projectDescriptor.getMixins());
         projectUpdate.setBuilders(projectDescriptor.getBuilders());
+        projectUpdate.setVisibility(projectDescriptor.getVisibility());
     }
 }
