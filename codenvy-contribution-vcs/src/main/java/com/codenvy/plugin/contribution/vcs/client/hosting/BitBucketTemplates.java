@@ -15,14 +15,14 @@ package com.codenvy.plugin.contribution.vcs.client.hosting;
  *
  * @author Kevin Pollet
  */
-public interface GitHubTemplates extends HostingServiceTemplates {
-    @DefaultMessage("git@github.com:{0}/{1}.git")
+public interface BitBucketTemplates extends HostingServiceTemplates {
+    @DefaultMessage("git@bitbucket.org:{0}/{1}.git")
     String sshUrlTemplate(String username, String repository);
 
-    @DefaultMessage("https://github.com/{0}/{1}.git")
+    @DefaultMessage("https://{0}@bitbucket.org/{0}/{1}.git")
     String httpUrlTemplate(String username, String repository);
 
-    @DefaultMessage("https://github.com/{0}/{1}/pull/{2}")
+    @DefaultMessage("https://bitbucket.org/{0}/{1}/pull-request/{2}")
     String pullRequestUrlTemplate(String username, String repository, String pullRequestNumber);
 
     @DefaultMessage("[![Review]({0}//{1}/factory/resources/codenvy-review.svg)]({2})")

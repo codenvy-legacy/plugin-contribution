@@ -10,26 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import static org.eclipse.che.ide.api.constraints.Constraints.LAST;
-import static org.eclipse.che.ide.api.parts.PartStackType.TOOLING;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-
-import org.eclipse.che.api.factory.dto.Factory;
-import org.eclipse.che.ide.api.app.AppContext;
-import org.eclipse.che.ide.api.parts.WorkspaceAgent;
-import org.eclipse.che.ide.api.parts.base.BasePresenter;
-import org.eclipse.che.ide.ui.dialogs.CancelCallback;
-import org.eclipse.che.ide.ui.dialogs.DialogFactory;
-import org.eclipse.che.ide.ui.dialogs.InputCallback;
-import org.eclipse.che.ide.ui.dialogs.input.InputValidator;
-import org.eclipse.che.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.Context;
@@ -44,11 +24,32 @@ import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.Branch;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.google.web.bindery.event.shared.EventBus;
+
+import org.eclipse.che.api.factory.dto.Factory;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.parts.WorkspaceAgent;
+import org.eclipse.che.ide.api.parts.base.BasePresenter;
+import org.eclipse.che.ide.ui.dialogs.CancelCallback;
+import org.eclipse.che.ide.ui.dialogs.DialogFactory;
+import org.eclipse.che.ide.ui.dialogs.InputCallback;
+import org.eclipse.che.ide.ui.dialogs.input.InputValidator;
+import org.eclipse.che.ide.util.loging.Log;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.eclipse.che.ide.api.constraints.Constraints.LAST;
+import static org.eclipse.che.ide.api.parts.PartStackType.TOOLING;
 
 /**
  * Part for the contribution configuration.
@@ -57,17 +58,17 @@ import com.google.web.bindery.event.shared.EventBus;
  */
 public class ContributePartPresenter extends BasePresenter
         implements ContributePartView.ActionDelegate, StepHandler, ContextPropertyChangeHandler {
-    private final ContributePartView  view;
-    private final WorkspaceAgent      workspaceAgent;
-    private final ContributeMessages  messages;
-    private final ContributorWorkflow workflow;
-    private final VcsHostingService   vcsHostingService;
-    private final Step                commitWorkingTreeStep;
-    private final AppContext          appContext;
-    private final VcsServiceProvider vcsServiceProvider;
-    private final NotificationHelper  notificationHelper;
-    private final DialogFactory       dialogFactory;
-    private       boolean             updateMode;
+    private final ContributePartView        view;
+    private final WorkspaceAgent            workspaceAgent;
+    private final ContributeMessages        messages;
+    private final ContributorWorkflow       workflow;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
+    private final Step                      commitWorkingTreeStep;
+    private final AppContext                appContext;
+    private final VcsServiceProvider        vcsServiceProvider;
+    private final NotificationHelper        notificationHelper;
+    private final DialogFactory             dialogFactory;
+    private       boolean                   updateMode;
 
     @Inject
     public ContributePartPresenter(@Nonnull final ContributePartView view,
@@ -75,7 +76,7 @@ public class ContributePartPresenter extends BasePresenter
                                    @Nonnull final WorkspaceAgent workspaceAgent,
                                    @Nonnull final EventBus eventBus,
                                    @Nonnull final ContributorWorkflow workflow,
-                                   @Nonnull final VcsHostingService vcsHostingService,
+                                   @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                                    @Nonnull final CommitWorkingTreeStep commitWorkingTreeStep,
                                    @Nonnull final AppContext appContext,
                                    @Nonnull final VcsServiceProvider vcsServiceProvider,
@@ -84,7 +85,7 @@ public class ContributePartPresenter extends BasePresenter
         this.view = view;
         this.workspaceAgent = workspaceAgent;
         this.workflow = workflow;
-        this.vcsHostingService = vcsHostingService;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.messages = messages;
         this.commitWorkingTreeStep = commitWorkingTreeStep;
         this.appContext = appContext;
@@ -150,11 +151,21 @@ public class ContributePartPresenter extends BasePresenter
 
 
     @Override
-    public void onOpenOnRepositoryHost() {
+    public void onOpenPullRequestOnVcsHost() {
         final Context context = workflow.getContext();
 
-        Window.open(vcsHostingService.makePullRequestUrl(context.getUpstreamRepositoryOwner(), context.getUpstreamRepositoryName(),
-                                                         context.getPullRequestIssueNumber()), "", "");
+        vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                notificationHelper.showError(ContributePartPresenter.class, exception);
+            }
+
+            @Override
+            public void onSuccess(final VcsHostingService vcsHostingService) {
+                Window.open(vcsHostingService.makePullRequestUrl(context.getUpstreamRepositoryOwner(), context.getUpstreamRepositoryName(),
+                                                                 context.getPullRequestIssueNumber()), "", "");
+            }
+        });
     }
 
     @Override
@@ -170,31 +181,31 @@ public class ContributePartPresenter extends BasePresenter
             final Context context = workflow.getContext();
             vcsServiceProvider.getVcsService().checkoutBranch(context.getProject(), context.getClonedBranchName(),
                                                               false, new AsyncCallback<String>() {
-                @Override
-                public void onFailure(final Throwable exception) {
-                    notificationHelper.showError(ContributePartPresenter.class, exception);
-                }
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            notificationHelper.showError(ContributePartPresenter.class, exception);
+                        }
 
-                @Override
-                public void onSuccess(final String branchName) {
-                    view.setContributionBranchName(context.getClonedBranchName());
-                    view.setContributionBranchNameEnabled(true);
-                    view.setContributionTitle("");
-                    view.setContributionTitleEnabled(true);
-                    view.setContributionComment("");
-                    view.setContributionCommentEnabled(true);
-                    view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
-                    view.hideStatusSection();
-                    view.hideStatusSectionMessage();
-                    view.hideNewContributionSection();
+                        @Override
+                        public void onSuccess(final String branchName) {
+                            view.setContributionBranchName(context.getClonedBranchName());
+                            view.setContributionBranchNameEnabled(true);
+                            view.setContributionTitle("");
+                            view.setContributionTitleEnabled(true);
+                            view.setContributionComment("");
+                            view.setContributionCommentEnabled(true);
+                            view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeText());
+                            view.hideStatusSection();
+                            view.hideStatusSectionMessage();
+                            view.hideNewContributionSection();
 
-                    updateMode = false;
-                    updateControls();
+                            updateMode = false;
+                            updateControls();
 
-                    notificationHelper
-                            .showInfo(messages.contributePartNewContributionBranchClonedCheckedOut(context.getClonedBranchName()));
-                }
-            });
+                            notificationHelper
+                                    .showInfo(messages.contributePartNewContributionBranchClonedCheckedOut(context.getClonedBranchName()));
+                        }
+                    });
         }
     }
 
@@ -272,17 +283,28 @@ public class ContributePartPresenter extends BasePresenter
             break;
 
             case ISSUE_PULL_REQUEST: {
-                updateMode = true;
                 view.setCurrentStatusStepStatus(true);
                 view.setContributeButtonEnabled(true);
                 view.setContributionProgressState(false);
                 view.showStatusSectionMessage(updateMode ? messages.contributePartStatusSectionContributionUpdatedMessage()
                                                          : messages.contributePartStatusSectionContributionCreatedMessage(), false);
-                view.showNewContributionSection();
                 view.setContributionBranchNameEnabled(false);
                 view.setContributionTitleEnabled(false);
                 view.setContributionCommentEnabled(false);
                 view.setContributeButtonText(messages.contributePartConfigureContributionSectionButtonContributeUpdateText());
+                updateMode = true;
+
+                vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        notificationHelper.showError(ContributePartPresenter.class, exception);
+                    }
+
+                    @Override
+                    public void onSuccess(final VcsHostingService vcsHostingService) {
+                        view.showNewContributionSection(vcsHostingService.getName());
+                    }
+                });
             }
             break;
 
@@ -354,7 +376,17 @@ public class ContributePartPresenter extends BasePresenter
                 final String originRepositoryOwner = context.getOriginRepositoryOwner();
 
                 if (originRepositoryName != null && originRepositoryOwner != null) {
-                    view.setRepositoryUrl(vcsHostingService.makeHttpRemoteUrl(originRepositoryOwner, originRepositoryName));
+                    vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            notificationHelper.showError(ContributePartPresenter.class, exception);
+                        }
+
+                        @Override
+                        public void onSuccess(final VcsHostingService vcsHostingService) {
+                            view.setRepositoryUrl(vcsHostingService.makeHttpRemoteUrl(originRepositoryOwner, originRepositoryName));
+                        }
+                    });
                 }
             }
             break;
@@ -441,26 +473,31 @@ public class ContributePartPresenter extends BasePresenter
                     } else {
                         vcsServiceProvider.getVcsService().checkoutBranch(context.getProject(), branchName, true,
                                                                           new AsyncCallback<String>() {
-                            @Override
-                            public void onFailure(final Throwable exception) {
+                                                                              @Override
+                                                                              public void onFailure(final Throwable exception) {
 
-                            }
+                                                                              }
 
-                            @Override
-                            public void onSuccess(final String notUsed) {
-                                refreshContributionBranchNameList(new AsyncCallback<Void>() {
-                                    @Override
-                                    public void onFailure(final Throwable exception) {
-                                        notificationHelper.showError(ContributePartPresenter.class, exception);
-                                    }
+                                                                              @Override
+                                                                              public void onSuccess(final String notUsed) {
+                                                                                  refreshContributionBranchNameList(
+                                                                                          new AsyncCallback<Void>() {
+                                                                                              @Override
+                                                                                              public void onFailure(
+                                                                                                      final Throwable exception) {
+                                                                                                  notificationHelper.showError(
+                                                                                                          ContributePartPresenter.class,
+                                                                                                          exception);
+                                                                                              }
 
-                                    @Override
-                                    public void onSuccess(final Void notUsed) {
-                                        view.setContributionBranchName(branchName);
-                                    }
-                                });
-                            }
-                        });
+                                                                                              @Override
+                                                                                              public void onSuccess(final Void notUsed) {
+                                                                                                  view.setContributionBranchName(
+                                                                                                          branchName);
+                                                                                              }
+                                                                                          });
+                                                                              }
+                                                                          });
                     }
                 }
             });

@@ -10,42 +10,56 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client.hosting;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.eclipse.che.ide.api.app.CurrentUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.eclipse.che.ide.api.app.CurrentUser;
+
+import javax.annotation.Nonnull;
+
 /**
  * Represents a repository host
+ *
+ * @author Kevin Pollet
  */
 public interface VcsHostingService {
     /**
-     * Checks if the given remote URL is hosted by this hosting service.
+     * Returns the VCS Host name.
+     *
+     * @return the VCS Host name never {@code null}.
+     */
+    @Nonnull
+    String getName();
+
+    /**
+     * Checks if the given remote URL is hosted by this service.
      *
      * @param remoteUrl
      *         the remote url to check.
      * @return {@code true} if the given remote url is hosted by this service, {@code false} otherwise.
      */
-    boolean isVcsHostRemoteUrl(@Nonnull String remoteUrl);
+    boolean isHostRemoteUrl(@Nonnull String remoteUrl);
 
     /**
      * Get a pull request by qualified name.
      *
      * @param owner
-     *         the owner.
+     *         the repository owner.
      * @param repository
      *         the repository name.
-     * @param headBranch
-     *         qualified name of pull request
+     * @param username
+     *         the user name.
+     * @param branchName
+     *         pull request branch name.
      * @param callback
      *         callback called when operation is done.
      */
-    void getPullRequest(@Nonnull String owner, @Nonnull String repository, @Nonnull String headBranch,
+    void getPullRequest(@Nonnull String owner,
+                        @Nonnull String repository,
+                        @Nonnull String username,
+                        @Nonnull String branchName,
                         @Nonnull AsyncCallback<PullRequest> callback);
 
     /**
@@ -55,12 +69,16 @@ public interface VcsHostingService {
      *         the repository owner.
      * @param repository
      *         the repository name.
+     * @param username
+     *         the user name.
+     * @param headRepository
+     *         the repository containing the head branch.
+     * @param headBranchName
+     *         the head branch name.
+     * @param baseBranchName
+     *         the base branch name.
      * @param title
      *         the pull request title.
-     * @param headBranch
-     *         the head branch.
-     * @param baseBranch
-     *         the base branch.
      * @param body
      *         the pull request body.
      * @param callback
@@ -68,9 +86,11 @@ public interface VcsHostingService {
      */
     void createPullRequest(@Nonnull String owner,
                            @Nonnull String repository,
+                           @Nonnull String username,
+                           @Nonnull String headRepository,
+                           @Nonnull String headBranchName,
+                           @Nonnull String baseBranchName,
                            @Nonnull String title,
-                           @Nonnull String headBranch,
-                           @Nonnull String baseBranch,
                            @Nonnull String body,
                            @Nonnull AsyncCallback<PullRequest> callback);
 
@@ -95,14 +115,6 @@ public interface VcsHostingService {
      *         the repository name.
      */
     void getRepository(@Nonnull String owner, @Nonnull String repository, @Nonnull AsyncCallback<Repository> callback);
-
-    /**
-     * Returns the user repositories on the repository host.
-     *
-     * @param callback
-     *         callback called when operation is done.
-     */
-    void getRepositories(@Nonnull AsyncCallback<List<Repository>> callback);
 
     /**
      * Returns the repository name from the given url.
@@ -196,9 +208,11 @@ public interface VcsHostingService {
 
     /**
      * Authenticate on the hosting service.
-     * 
-     * @param user the user to authenticate
-     * @param callback what to do once authentication is done
+     *
+     * @param user
+     *         the user to authenticate
+     * @param callback
+     *         what to do once authentication is done
      */
-    void authenticate(CurrentUser user, AsyncCallback<HostUser> callback);
+    void authenticate(@Nonnull CurrentUser user, @Nonnull AsyncCallback<HostUser> callback);
 }

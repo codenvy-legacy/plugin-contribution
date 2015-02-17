@@ -82,8 +82,8 @@ public interface ContributeMessages extends Messages {
     @Key("contribute.part.status.section.contribution.updated.message")
     String contributePartStatusSectionContributionUpdatedMessage();
 
-    @Key("contribute.part.new.contribution.section.button.open.on.github.text")
-    String contributePartNewContributionSectionButtonOpenOnGithubText();
+    @Key("contribute.part.new.contribution.section.button.open.pull.request.on.vcs.host.text")
+    String contributePartNewContributionSectionButtonOpenPullRequestOnVcsHostText(String vcsHostName);
 
     @Key("contribute.part.new.contribution.section.button.new.text")
     String contributePartNewContributionSectionButtonNewText();

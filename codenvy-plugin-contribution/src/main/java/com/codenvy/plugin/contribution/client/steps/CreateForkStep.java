@@ -13,6 +13,7 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.vcs.client.hosting.NoUserForkException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -25,15 +26,15 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  * Create a fork of the contributed project (upstream) to push the user's contribution.
  */
 public class CreateForkStep implements Step {
-    private final VcsHostingService  vcsHostingService;
-    private final ContributeMessages messages;
-    private final Step               checkoutBranchToPushStep;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
+    private final ContributeMessages        messages;
+    private final Step                      checkoutBranchToPushStep;
 
     @Inject
-    public CreateForkStep(@Nonnull final VcsHostingService vcsHostingService,
+    public CreateForkStep(@Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                           @Nonnull final ContributeMessages messages,
                           @Nonnull final CheckoutBranchToPushStep checkoutBranchToPushStep) {
-        this.vcsHostingService = vcsHostingService;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.messages = messages;
         this.checkoutBranchToPushStep = checkoutBranchToPushStep;
     }
@@ -49,23 +50,34 @@ public class CreateForkStep implements Step {
         // the upstream repository has been cloned a fork must be created
         if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) &&
             originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
-            vcsHostingService.getUserFork(context.getHostUserLogin(), upstreamRepositoryOwner, upstreamRepositoryName,
-                                          new AsyncCallback<Repository>() {
-                                              @Override
-                                              public void onSuccess(final Repository fork) {
-                                                  proceed(fork.getName(), workflow);
-                                              }
 
-                                              @Override
-                                              public void onFailure(final Throwable exception) {
-                                                  if (exception instanceof NoUserForkException) {
-                                                      createFork(workflow, upstreamRepositoryOwner, upstreamRepositoryName);
-                                                      return;
-                                                  }
+            vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    workflow.fireStepErrorEvent(CREATE_FORK, exception.getMessage());
+                }
 
-                                                  workflow.fireStepErrorEvent(CREATE_FORK, exception.getMessage());
-                                              }
-                                          });
+                @Override
+                public void onSuccess(final VcsHostingService vcsHostingService) {
+                    vcsHostingService.getUserFork(context.getHostUserLogin(), upstreamRepositoryOwner, upstreamRepositoryName,
+                                                  new AsyncCallback<Repository>() {
+                                                      @Override
+                                                      public void onSuccess(final Repository fork) {
+                                                          proceed(fork.getName(), workflow);
+                                                      }
+
+                                                      @Override
+                                                      public void onFailure(final Throwable exception) {
+                                                          if (exception instanceof NoUserForkException) {
+                                                              createFork(workflow, upstreamRepositoryOwner, upstreamRepositoryName);
+                                                              return;
+                                                          }
+
+                                                          workflow.fireStepErrorEvent(CREATE_FORK, exception.getMessage());
+                                                      }
+                                                  });
+                }
+            });
 
         } else {
             // user fork has been cloned
@@ -74,19 +86,29 @@ public class CreateForkStep implements Step {
     }
 
     private void createFork(final ContributorWorkflow workflow, final String upstreamRepositoryOwner, final String upstreamRepositoryName) {
-        vcsHostingService.fork(upstreamRepositoryOwner, upstreamRepositoryName, new AsyncCallback<Repository>() {
+        vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
             @Override
-            public void onSuccess(final Repository result) {
-                proceed(result.getName(), workflow);
+            public void onFailure(final Throwable exception) {
+                workflow.fireStepErrorEvent(CREATE_FORK, exception.getMessage());
             }
 
             @Override
-            public void onFailure(final Throwable exception) {
-                final String errorMessage = messages.stepCreateForkErrorCreatingFork(upstreamRepositoryOwner,
-                                                                                     upstreamRepositoryName,
-                                                                                     exception.getMessage());
+            public void onSuccess(final VcsHostingService vcsHostingService) {
+                vcsHostingService.fork(upstreamRepositoryOwner, upstreamRepositoryName, new AsyncCallback<Repository>() {
+                    @Override
+                    public void onSuccess(final Repository result) {
+                        proceed(result.getName(), workflow);
+                    }
 
-                workflow.fireStepErrorEvent(CREATE_FORK, errorMessage);
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        final String errorMessage = messages.stepCreateForkErrorCreatingFork(upstreamRepositoryOwner,
+                                                                                             upstreamRepositoryName,
+                                                                                             exception.getMessage());
+
+                        workflow.fireStepErrorEvent(CREATE_FORK, errorMessage);
+                    }
+                });
             }
         });
     }

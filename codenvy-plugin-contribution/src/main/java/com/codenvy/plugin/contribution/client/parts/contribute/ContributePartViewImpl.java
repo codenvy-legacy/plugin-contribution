@@ -10,13 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import org.eclipse.che.ide.api.parts.PartStackUIResources;
-import org.eclipse.che.ide.api.parts.base.BaseView;
-import org.eclipse.che.ide.ui.buttonLoader.ButtonLoaderResources;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -33,6 +29,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
+import org.eclipse.che.ide.api.parts.PartStackUIResources;
+import org.eclipse.che.ide.api.parts.base.BaseView;
+import org.eclipse.che.ide.ui.buttonLoader.ButtonLoaderResources;
 import org.vectomatic.dom.svg.ui.SVGImage;
 import org.vectomatic.dom.svg.ui.SVGPushButton;
 
@@ -100,7 +99,7 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
 
     /** Open on repository host button. */
     @UiField
-    Button openOnRepositoryHostButton;
+    Button openPullRequestOnVcsHostButton;
 
     /** The start new contribution section. */
     @UiField
@@ -297,7 +296,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @Override
-    public void showNewContributionSection() {
+    public void showNewContributionSection(final String vcsHostName) {
+        openPullRequestOnVcsHostButton
+                .setText(messages.contributePartNewContributionSectionButtonOpenPullRequestOnVcsHostText(vcsHostName));
         newContributionSection.setVisible(true);
     }
 
@@ -334,9 +335,9 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     }
 
     @SuppressWarnings("UnusedParameters")
-    @UiHandler("openOnRepositoryHostButton")
-    protected void openOnRepositoryHostClick(final ClickEvent event) {
-        delegate.onOpenOnRepositoryHost();
+    @UiHandler("openPullRequestOnVcsHostButton")
+    protected void openPullRequestOnVcsHostClick(final ClickEvent event) {
+        delegate.onOpenPullRequestOnVcsHost();
     }
 
     @SuppressWarnings("UnusedParameters")

@@ -10,11 +10,12 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.utils;
 
+import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.google.inject.Inject;
+
 import org.eclipse.che.ide.api.notification.Notification;
 import org.eclipse.che.ide.api.notification.NotificationManager;
 import org.eclipse.che.ide.util.loging.Log;
-import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 

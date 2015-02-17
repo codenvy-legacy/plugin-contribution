@@ -10,9 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent;
 import com.google.web.bindery.event.shared.EventBus;
+
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;

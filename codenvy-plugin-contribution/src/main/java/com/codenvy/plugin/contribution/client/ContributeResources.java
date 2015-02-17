@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import org.eclipse.che.ide.ui.Styles;
 import com.google.gwt.resources.client.ClientBundle;
 
+import org.eclipse.che.ide.ui.Styles;
 import org.vectomatic.dom.svg.ui.SVGResource;
 
 /**

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.commit;
 
-import org.eclipse.che.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,6 +22,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.inject.Inject;
+
+import org.eclipse.che.ide.ui.window.Window;
 
 import javax.annotation.Nonnull;
 

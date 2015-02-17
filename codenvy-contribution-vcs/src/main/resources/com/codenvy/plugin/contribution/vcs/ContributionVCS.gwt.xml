@@ -20,4 +20,5 @@
 
     <inherits name='org.eclipse.che.ide.ext.git.Git'/>
     <inherits name='org.eclipse.che.ide.ext.github.GitHub'/>
+    <inherits name='org.eclipse.che.ide.ext.bitbucket.Bitbucket'/>
 </module>

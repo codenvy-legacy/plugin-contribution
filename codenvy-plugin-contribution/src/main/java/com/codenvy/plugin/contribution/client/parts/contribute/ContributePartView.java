@@ -154,8 +154,11 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
 
     /**
      * Show the new contribution section.
+     *
+     * @param vcsHostName
+     *         the VCS host name.
      */
-    void showNewContributionSection();
+    void showNewContributionSection(String vcsHostName);
 
     /**
      * Hide the new contribution section.
@@ -177,8 +180,8 @@ public interface ContributePartView extends View<ContributePartView.ActionDelega
         /** Performs any actions appropriate in response to the user having pressed the Contribute button. */
         void onContribute();
 
-        /** Performs any action appropriate in response to the user having pressed the open on repository host button. */
-        void onOpenOnRepositoryHost();
+        /** Performs any action appropriate in response to the user having pressed the open pull request on vcs host button. */
+        void onOpenPullRequestOnVcsHost();
 
         /** Performs any action appropriate in response to the user having pressed the start new contribution button. */
         void onNewContribution();

@@ -11,6 +11,7 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -19,18 +20,17 @@ import com.google.inject.assistedinject.AssistedInject;
 
 import javax.annotation.Nonnull;
 
-import java.util.List;
-
 public class WaitForkOnRemoteStep implements Step {
     private static final int POLL_FREQUENCY_MS = 1000;
 
-    private final VcsHostingService vcsHostingService;
-    private final Step              nextStep;
-    private       Timer             timer;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
+    private final Step                      nextStep;
+    private       Timer                     timer;
 
     @AssistedInject
-    public WaitForkOnRemoteStep(@Nonnull final VcsHostingService host, @Nonnull final @Assisted Step nextStep) {
-        this.vcsHostingService = host;
+    public WaitForkOnRemoteStep(@Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
+                                @Nonnull final @Assisted Step nextStep) {
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.nextStep = nextStep;
     }
 
@@ -60,22 +60,26 @@ public class WaitForkOnRemoteStep implements Step {
     }
 
     private void checkRepository(final Context context, final AsyncCallback<Void> callback) {
-        vcsHostingService.getRepositories(new AsyncCallback<List<Repository>>() {
-
-            @Override
-            public void onSuccess(final List<Repository> repositories) {
-                for (final Repository oneRepository : repositories) {
-                    if (oneRepository.getName().equals(context.getForkedRepositoryName())) {
-                        callback.onSuccess(null);
-                        return;
-                    }
-                }
-                callback.onFailure(null);
-            }
-
+        vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
             @Override
             public void onFailure(final Throwable exception) {
                 callback.onFailure(exception);
+            }
+
+            @Override
+            public void onSuccess(final VcsHostingService vcsHostingService) {
+                vcsHostingService
+                        .getRepository(context.getHostUserLogin(), context.getForkedRepositoryName(), new AsyncCallback<Repository>() {
+                            @Override
+                            public void onFailure(final Throwable exception) {
+                                callback.onFailure(exception);
+                            }
+
+                            @Override
+                            public void onSuccess(final Repository repository) {
+                                callback.onSuccess(null);
+                            }
+                        });
             }
         });
     }

@@ -12,15 +12,14 @@ package com.codenvy.plugin.contribution.client.steps;
 
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.Remote;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-
 import java.util.List;
 
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ADD_FORK_REMOTE;
@@ -32,23 +31,20 @@ public class AddForkRemoteStep implements Step {
     private final static String ORIGIN_REMOTE_NAME = "origin";
     private final static String FORK_REMOTE_NAME   = "fork";
 
-    private final VcsServiceProvider vcsServiceProvider;
-    private final Step               pushBranchOnForkStep;
-    private final ContributeMessages messages;
-    private final VcsHostingService  vcsHostingService;
-    private final NotificationHelper notificationHelper;
+    private final VcsServiceProvider        vcsServiceProvider;
+    private final Step                      pushBranchOnForkStep;
+    private final ContributeMessages        messages;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
 
     @Inject
     public AddForkRemoteStep(@Nonnull final VcsServiceProvider vcsServiceProvider,
-                             @Nonnull final VcsHostingService vcsHostingService,
+                             @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                              @Nonnull final PushBranchOnForkStep pushBranchOnForkStep,
-                             @Nonnull final ContributeMessages messages,
-                             @Nonnull final NotificationHelper notificationHelper) {
+                             @Nonnull final ContributeMessages messages) {
         this.vcsServiceProvider = vcsServiceProvider;
-        this.vcsHostingService = vcsHostingService;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.pushBranchOnForkStep = pushBranchOnForkStep;
         this.messages = messages;
-        this.notificationHelper = notificationHelper;
     }
 
     @Override
@@ -62,8 +58,20 @@ public class AddForkRemoteStep implements Step {
         // the fork remote has to be added only if we cloned the upstream else it's origin
         if (originRepositoryOwner.equalsIgnoreCase(upstreamRepositoryOwner) &&
             originRepositoryName.equalsIgnoreCase(upstreamRepositoryName)) {
-            final String remoteUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
-            checkRemotePresent(workflow, remoteUrl);
+
+            vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    workflow.fireStepErrorEvent(ADD_FORK_REMOTE, exception.getMessage());
+                }
+
+                @Override
+                public void onSuccess(final VcsHostingService vcsHostingService) {
+                    final String remoteUrl =
+                            vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+                    checkRemotePresent(workflow, remoteUrl);
+                }
+            });
 
         } else {
             context.setForkedRemoteName(ORIGIN_REMOTE_NAME);
@@ -97,8 +105,7 @@ public class AddForkRemoteStep implements Step {
 
                               @Override
                               public void onFailure(final Throwable exception) {
-                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
-                                  notificationHelper.showWarning(messages.stepAddForkRemoteErrorCheckRemote());
+                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE, messages.stepAddForkRemoteErrorCheckRemote());
                               }
                           });
     }
@@ -125,8 +132,7 @@ public class AddForkRemoteStep implements Step {
 
                               @Override
                               public void onFailure(final Throwable exception) {
-                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
-                                  notificationHelper.showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorAddFork());
+                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE, messages.stepAddForkRemoteErrorAddFork());
                               }
                           });
     }
@@ -151,9 +157,7 @@ public class AddForkRemoteStep implements Step {
 
                               @Override
                               public void onFailure(final Throwable caught) {
-                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE);
-                                  notificationHelper
-                                          .showError(AddForkRemoteStep.class, messages.stepAddForkRemoteErrorSetForkedRepositoryRemote());
+                                  workflow.fireStepErrorEvent(ADD_FORK_REMOTE, messages.stepAddForkRemoteErrorSetForkedRepositoryRemote());
                               }
                           });
     }

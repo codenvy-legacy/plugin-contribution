@@ -10,9 +10,10 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import org.eclipse.che.ide.dto.DtoFactory;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.google.web.bindery.event.shared.EventBus;
+
+import org.eclipse.che.ide.dto.DtoFactory;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;

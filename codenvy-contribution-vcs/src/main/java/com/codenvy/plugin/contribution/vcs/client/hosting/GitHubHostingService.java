@@ -10,12 +10,14 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client.hosting;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequestHead;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
+import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.eclipse.che.ide.api.app.CurrentUser;
 import org.eclipse.che.ide.dto.DtoFactory;
@@ -30,16 +32,17 @@ import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.util.Config;
-import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
-import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
-import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequestHead;
-import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import org.eclipse.che.security.oauth.JsOAuthWindow;
 import org.eclipse.che.security.oauth.OAuthCallback;
 import org.eclipse.che.security.oauth.OAuthStatus;
-import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.eclipse.che.ide.util.StringUtils.containsIgnoreCase;
 
 /**
  * {@link VcsHostingService} implementation for GitHub.
@@ -53,22 +56,22 @@ public class GitHubHostingService implements VcsHostingService {
     private static final String NO_COMMITS_IN_PULL_REQUEST_ERROR_MESSAGE  = "No commits between";
     private static final String PULL_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE = "A pull request already exists for ";
 
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private final DtoFactory             dtoFactory;
-    private final GitHubClientService    gitHubClientService;
-    private final GitHubTemplates        gitHubTemplates;
-    private final String                 baseUrl;
+    private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
+    private final DtoFactory              dtoFactory;
+    private final GitHubClientService     gitHubClientService;
+    private final HostingServiceTemplates templates;
+    private final String                  baseUrl;
 
     @Inject
     public GitHubHostingService(@Nonnull @Named("restContext") final String baseUrl,
                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final DtoFactory dtoFactory,
                                 @Nonnull final GitHubClientService gitHubClientService,
-                                @Nonnull final GitHubTemplates gitHubTemplates) {
+                                @Nonnull final GitHubTemplates templates) {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
-        this.gitHubTemplates = gitHubTemplates;
+        this.templates = templates;
         this.baseUrl = baseUrl;
     }
 
@@ -111,26 +114,6 @@ public class GitHubHostingService implements VcsHostingService {
                 callback.onFailure(exception);
             }
         });
-    }
-
-    @Override
-    public void getRepositories(@Nonnull final AsyncCallback<List<Repository>> callback) {
-        gitHubClientService.getRepositoriesList(
-                new AsyncRequestCallback<GitHubRepositoryList>(dtoUnmarshallerFactory.newUnmarshaller(GitHubRepositoryList.class)) {
-                    @Override
-                    protected void onSuccess(final GitHubRepositoryList gitHubRepositoryList) {
-                        final List<Repository> repositories = new ArrayList<>();
-                        for (final GitHubRepository oneGitHubRepository : gitHubRepositoryList.getRepositories()) {
-                            repositories.add(valueOf(oneGitHubRepository));
-                        }
-                        callback.onSuccess(repositories);
-                    }
-
-                    @Override
-                    protected void onFailure(final Throwable exception) {
-                        callback.onFailure(exception);
-                    }
-                });
     }
 
     @Nonnull
@@ -177,20 +160,20 @@ public class GitHubHostingService implements VcsHostingService {
     @Nonnull
     @Override
     public String makeSSHRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
-        return gitHubTemplates.sshUrlTemplate(username, repository);
+        return templates.sshUrlTemplate(username, repository);
     }
 
     @Nonnull
     @Override
     public String makeHttpRemoteUrl(@Nonnull final String username, @Nonnull final String repository) {
-        return gitHubTemplates.httpUrlTemplate(username, repository);
+        return templates.httpUrlTemplate(username, repository);
     }
 
     @Nonnull
     @Override
     public String makePullRequestUrl(@Nonnull final String username, @Nonnull final String repository,
                                      @Nonnull final String pullRequestNumber) {
-        return gitHubTemplates.pullRequestUrlTemplate(username, repository, pullRequestNumber);
+        return templates.pullRequestUrlTemplate(username, repository, pullRequestNumber);
     }
 
     @Nonnull
@@ -199,26 +182,38 @@ public class GitHubHostingService implements VcsHostingService {
         final String protocol = Window.Location.getProtocol();
         final String host = Window.Location.getHost();
 
-        return gitHubTemplates.formattedReviewFactoryUrlTemplate(protocol, host, reviewFactoryUrl);
+        return templates.formattedReviewFactoryUrlTemplate(protocol, host, reviewFactoryUrl);
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "GitHub";
     }
 
     @Override
-    public boolean isVcsHostRemoteUrl(@Nonnull final String remoteUrl) {
+    public boolean isHostRemoteUrl(@Nonnull final String remoteUrl) {
         return remoteUrl.startsWith(SSH_URL_PREFIX) || remoteUrl.startsWith(HTTPS_URL_PREFIX);
     }
 
     @Override
-    public void getPullRequest(@Nonnull final String owner, @Nonnull final String repository, @Nonnull final String headBranch,
+    public void getPullRequest(@Nonnull final String owner,
+                               @Nonnull final String repository,
+                               @Nonnull final String username,
+                               @Nonnull final String branchName,
                                @Nonnull final AsyncCallback<PullRequest> callback) {
+
+        final String qualifiedBranchName = username + ":" + branchName;
+
         getPullRequests(owner, repository, new AsyncCallback<List<PullRequest>>() {
             @Override
             public void onSuccess(final List<PullRequest> pullRequests) {
-                final PullRequest pullRequest = getPullRequestByBranch(headBranch, pullRequests);
+                final PullRequest pullRequest = getPullRequestByBranch(qualifiedBranchName, pullRequests);
                 if (pullRequest != null) {
                     callback.onSuccess(pullRequest);
 
                 } else {
-                    callback.onFailure(new NoPullRequestException(headBranch));
+                    callback.onFailure(new NoPullRequestException(qualifiedBranchName));
                 }
             }
 
@@ -239,8 +234,10 @@ public class GitHubHostingService implements VcsHostingService {
      * @param callback
      *         callback called when operation is done.
      */
-    private void getPullRequests(@Nonnull final String owner, @Nonnull final String repository,
+    private void getPullRequests(@Nonnull final String owner,
+                                 @Nonnull final String repository,
                                  @Nonnull final AsyncCallback<List<PullRequest>> callback) {
+
         gitHubClientService.getPullRequests(owner, repository, new AsyncRequestCallback<GitHubPullRequestList>(
                 dtoUnmarshallerFactory.newUnmarshaller(GitHubPullRequestList.class)) {
             @Override
@@ -271,16 +268,19 @@ public class GitHubHostingService implements VcsHostingService {
     @Override
     public void createPullRequest(@Nonnull final String owner,
                                   @Nonnull final String repository,
+                                  @Nonnull final String username,
+                                  @Nonnull final String headRepository,
+                                  @Nonnull final String headBranchName,
+                                  @Nonnull final String baseBranchName,
                                   @Nonnull final String title,
-                                  @Nonnull final String headBranch,
-                                  @Nonnull final String baseBranch,
                                   @Nonnull final String body,
                                   @Nonnull final AsyncCallback<PullRequest> callback) {
 
+        final String qualifiedHeadBranchName = username + ":" + headBranchName;
         final GitHubPullRequestCreationInput input = dtoFactory.createDto(GitHubPullRequestCreationInput.class)
                                                                .withTitle(title)
-                                                               .withHead(headBranch)
-                                                               .withBase(baseBranch)
+                                                               .withHead(qualifiedHeadBranchName)
+                                                               .withBase(baseBranchName)
                                                                .withBody(body);
 
         final Unmarshallable<GitHubPullRequest> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(GitHubPullRequest.class);
@@ -293,11 +293,15 @@ public class GitHubHostingService implements VcsHostingService {
             @Override
             protected void onFailure(final Throwable exception) {
                 final String exceptionMessage = exception.getMessage();
-                if (exceptionMessage != null && exceptionMessage.contains(NO_COMMITS_IN_PULL_REQUEST_ERROR_MESSAGE)) {
-                    callback.onFailure(new NoCommitsInPullRequestException(headBranch, baseBranch));
+                if (exceptionMessage != null
+                    && containsIgnoreCase(exceptionMessage, NO_COMMITS_IN_PULL_REQUEST_ERROR_MESSAGE)) {
 
-                } else if (exceptionMessage != null && exceptionMessage.contains(PULL_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE)) {
-                    callback.onFailure(new PullRequestAlreadyExistsException(headBranch));
+                    callback.onFailure(new NoCommitsInPullRequestException(qualifiedHeadBranchName, baseBranchName));
+
+                } else if (exceptionMessage != null
+                           && containsIgnoreCase(exceptionMessage, PULL_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE)) {
+
+                    callback.onFailure(new PullRequestAlreadyExistsException(qualifiedHeadBranchName));
 
                 } else {
                     callback.onFailure(exception);
@@ -307,8 +311,11 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     @Override
-    public void getUserFork(@Nonnull final String user, @Nonnull String owner, @Nonnull final String repository,
+    public void getUserFork(@Nonnull final String user,
+                            @Nonnull final String owner,
+                            @Nonnull final String repository,
                             @Nonnull final AsyncCallback<Repository> callback) {
+
         getForks(owner, repository, new AsyncCallback<List<Repository>>() {
 
             @Override
@@ -339,7 +346,8 @@ public class GitHubHostingService implements VcsHostingService {
      * @param callback
      *         callback called when operation is done.
      */
-    private void getForks(@Nonnull final String owner, @Nonnull final String repository,
+    private void getForks(@Nonnull final String owner,
+                          @Nonnull final String repository,
                           @Nonnull final AsyncCallback<List<Repository>> callback) {
 
         gitHubClientService.getForks(owner, repository, new AsyncRequestCallback<GitHubRepositoryList>(
@@ -363,7 +371,7 @@ public class GitHubHostingService implements VcsHostingService {
     private Repository getUserFork(final String login, final List<Repository> forks) {
         for (final Repository oneRepository : forks) {
             final String repositoryUrl = oneRepository.getCloneUrl();
-            if (repositoryUrl.toLowerCase().contains("/" + login.toLowerCase() + "/")) {
+            if (repositoryUrl != null && containsIgnoreCase(repositoryUrl, "/" + login + "/")) {
                 return oneRepository;
             }
         }
@@ -372,13 +380,19 @@ public class GitHubHostingService implements VcsHostingService {
 
     /**
      * Converts an instance of {@link org.eclipse.che.ide.ext.github.shared.GitHubRepository} into a {@link
-     * com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.Repository}.
+     * com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository}.
      *
      * @param gitHubRepository
      *         the GitHub repository to convert.
-     * @return the corresponding {@link com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.Repository} instance.
+     * @return the corresponding {@link com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository} instance or {@code null} if
+     * given
+     * gitHubRepository is {@code null}.
      */
     private Repository valueOf(final GitHubRepository gitHubRepository) {
+        if (gitHubRepository == null) {
+            return null;
+        }
+
         final GitHubRepository gitHubRepositoryParent = gitHubRepository.getParent();
         final Repository parent = gitHubRepositoryParent == null ? null :
                                   dtoFactory.createDto(Repository.class)
@@ -398,13 +412,18 @@ public class GitHubHostingService implements VcsHostingService {
 
     /**
      * Converts an instance of {@link org.eclipse.che.ide.ext.github.shared.GitHubPullRequest} into a {@link
-     * com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.PullRequest}.
+     * com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest}.
      *
      * @param gitHubPullRequest
      *         the GitHub pull request to convert.
-     * @return the corresponding {@link com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.PullRequest} instance.
+     * @return the corresponding {@link com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest} instance or {@code null} if
+     * given gitHubPullRequest is {@code null}.
      */
     private PullRequest valueOf(final GitHubPullRequest gitHubPullRequest) {
+        if (gitHubPullRequest == null) {
+            return null;
+        }
+
         final PullRequestHead pullRequestHead = dtoFactory.createDto(PullRequestHead.class)
                                                           .withLabel(gitHubPullRequest.getHead().getLabel())
                                                           .withRef(gitHubPullRequest.getHead().getRef())
@@ -420,7 +439,7 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     @Override
-    public void authenticate(final CurrentUser currentUser, final AsyncCallback<HostUser> callback) {
+    public void authenticate(@Nonnull final CurrentUser currentUser, @Nonnull final AsyncCallback<HostUser> callback) {
         final String authUrl = baseUrl
                                + "/oauth/authenticate?oauth_provider=github&userId=" + currentUser.getProfile().getId()
                                + "&scope=user,repo,write:public_key&redirect_after_login="

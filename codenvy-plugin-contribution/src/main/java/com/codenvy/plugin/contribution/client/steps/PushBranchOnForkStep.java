@@ -10,17 +10,19 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import org.eclipse.che.ide.ui.dialogs.CancelCallback;
-import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
-import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.vcs.client.BranchUpToDateException;
 import com.codenvy.plugin.contribution.vcs.client.VcsService;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.NoPullRequestException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+
+import org.eclipse.che.ide.ui.dialogs.CancelCallback;
+import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
+import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -35,21 +37,21 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  */
 public class PushBranchOnForkStep implements Step {
 
-    private final Step               generateReviewFactoryStep;
-    private final VcsServiceProvider vcsServiceProvider;
-    private final VcsHostingService  vcsHostingService;
-    private final ContributeMessages messages;
-    private final DialogFactory      dialogFactory;
+    private final Step                      generateReviewFactoryStep;
+    private final VcsServiceProvider        vcsServiceProvider;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
+    private final ContributeMessages        messages;
+    private final DialogFactory             dialogFactory;
 
     @Inject
     public PushBranchOnForkStep(@Nonnull final GenerateReviewFactoryStep generateReviewFactoryStep,
                                 @Nonnull final VcsServiceProvider vcsServiceProvider,
-                                @Nonnull final VcsHostingService vcsHostingService,
+                                @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                                 @NotNull final ContributeMessages messages,
                                 @NotNull final DialogFactory dialogFactory) {
         this.generateReviewFactoryStep = generateReviewFactoryStep;
         this.vcsServiceProvider = vcsServiceProvider;
-        this.vcsHostingService = vcsHostingService;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.messages = messages;
         this.dialogFactory = dialogFactory;
     }
@@ -59,44 +61,59 @@ public class PushBranchOnForkStep implements Step {
         final Context context = workflow.getContext();
         final String upstreamRepositoryOwner = context.getUpstreamRepositoryOwner();
         final String upstreamRepositoryName = context.getUpstreamRepositoryName();
-        final String headBranch = context.getHostUserLogin() + ":" + context.getWorkBranchName();
 
         /*
          * Check if a Pull Request with given base and head branches already exists.
          * If there is none, push the contribution branch.
          * If there is one, propose to update the pull request.
          */
-        vcsHostingService.getPullRequest(upstreamRepositoryOwner, upstreamRepositoryName, headBranch, new AsyncCallback<PullRequest>() {
+        vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
             @Override
-            public void onSuccess(final PullRequest pullRequest) {
-                final ConfirmCallback okCallback = new ConfirmCallback() {
-                    @Override
-                    public void accepted() {
-                        pushBranch(workflow, context);
-                    }
-                };
-                final CancelCallback cancelCallback = new CancelCallback() {
-                    @Override
-                    public void cancelled() {
-                        workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, messages.stepPushBranchCanceling());
-                    }
-                };
-
-                dialogFactory.createConfirmDialog(messages.contributePartConfigureContributionDialogUpdateTitle(),
-                                                  messages.contributePartConfigureContributionDialogUpdateText(
-                                                          pullRequest.getHead().getLabel()),
-                                                  okCallback,
-                                                  cancelCallback).show();
+            public void onFailure(final Throwable exception) {
+                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, exception.getMessage());
             }
 
             @Override
-            public void onFailure(final Throwable exception) {
-                if (exception instanceof NoPullRequestException) {
-                    pushBranch(workflow, context);
-                    return;
-                }
+            public void onSuccess(final VcsHostingService vcsHostingService) {
+                vcsHostingService.getPullRequest(upstreamRepositoryOwner,
+                                                 upstreamRepositoryName,
+                                                 context.getHostUserLogin(),
+                                                 context.getWorkBranchName(),
+                                                 new AsyncCallback<PullRequest>() {
+                                                     @Override
+                                                     public void onSuccess(final PullRequest pullRequest) {
+                                                         final ConfirmCallback okCallback = new ConfirmCallback() {
+                                                             @Override
+                                                             public void accepted() {
+                                                                 pushBranch(workflow, context);
+                                                             }
+                                                         };
+                                                         final CancelCallback cancelCallback = new CancelCallback() {
+                                                             @Override
+                                                             public void cancelled() {
+                                                                 workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK,
+                                                                                             messages.stepPushBranchCanceling());
+                                                             }
+                                                         };
 
-                workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, exception.getMessage());
+                                                         dialogFactory.createConfirmDialog(
+                                                                 messages.contributePartConfigureContributionDialogUpdateTitle(),
+                                                                 messages.contributePartConfigureContributionDialogUpdateText(
+                                                                         pullRequest.getHead().getLabel()),
+                                                                 okCallback,
+                                                                 cancelCallback).show();
+                                                     }
+
+                                                     @Override
+                                                     public void onFailure(final Throwable exception) {
+                                                         if (exception instanceof NoPullRequestException) {
+                                                             pushBranch(workflow, context);
+                                                             return;
+                                                         }
+
+                                                         workflow.fireStepErrorEvent(PUSH_BRANCH_ON_FORK, exception.getMessage());
+                                                     }
+                                                 });
             }
         });
     }

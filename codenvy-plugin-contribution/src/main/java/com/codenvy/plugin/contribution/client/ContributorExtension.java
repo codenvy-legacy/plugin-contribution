@@ -10,6 +10,16 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
+import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
+import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
+import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
+import com.codenvy.plugin.contribution.vcs.client.VcsService;
+import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.web.bindery.event.shared.EventBus;
+
 import org.eclipse.che.api.factory.dto.Factory;
 import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
 import org.eclipse.che.api.project.shared.dto.ImportSourceDescriptor;
@@ -23,15 +33,6 @@ import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
-import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
-import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.vcs.client.Remote;
-import com.codenvy.plugin.contribution.vcs.client.VcsService;
-import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
-import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.web.bindery.event.shared.EventBus;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -52,16 +53,16 @@ import static java.util.Arrays.asList;
 @Singleton
 @Extension(title = "Contributor", version = "1.0.0")
 public class ContributorExtension implements ProjectActionHandler {
-    private final ContributeMessages      messages;
-    private final AppContext              appContext;
-    private final NotificationHelper      notificationHelper;
-    private final ContributePartPresenter contributePartPresenter;
-    private final ProjectServiceClient    projectService;
-    private final DtoFactory              dtoFactory;
-    private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
-    private final ContributorWorkflow     workflow;
-    private final VcsHostingService       vcsHostingService;
-    private final VcsServiceProvider      vcsServiceProvider;
+    private final ContributeMessages        messages;
+    private final AppContext                appContext;
+    private final NotificationHelper        notificationHelper;
+    private final ContributePartPresenter   contributePartPresenter;
+    private final ProjectServiceClient      projectService;
+    private final DtoFactory                dtoFactory;
+    private final DtoUnmarshallerFactory    dtoUnmarshallerFactory;
+    private final ContributorWorkflow       workflow;
+    private final VcsServiceProvider        vcsServiceProvider;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
 
     @Inject
     public ContributorExtension(@Nonnull final EventBus eventBus,
@@ -74,8 +75,8 @@ public class ContributorExtension implements ProjectActionHandler {
                                 @Nonnull final DtoFactory dtoFactory,
                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final ContributorWorkflow workflow,
-                                @Nonnull final VcsHostingService vcsHostingService,
-                                @Nonnull final VcsServiceProvider vcsServiceProvider) {
+                                @Nonnull final VcsServiceProvider vcsServiceProvider,
+                                @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider) {
         this.messages = messages;
         this.workflow = workflow;
         this.appContext = appContext;
@@ -84,8 +85,8 @@ public class ContributorExtension implements ProjectActionHandler {
         this.projectService = projectService;
         this.dtoFactory = dtoFactory;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
-        this.vcsHostingService = vcsHostingService;
         this.vcsServiceProvider = vcsServiceProvider;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
 
         resources.contributeCss().ensureInjected();
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
@@ -106,38 +107,29 @@ public class ContributorExtension implements ProjectActionHandler {
         final List<String> projectPermissions = project.getPermissions();
 
         if (vcsService != null && projectPermissions != null && projectPermissions.contains("write")) {
-            vcsService.listRemotes(project, new AsyncCallback<List<Remote>>() {
+            vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
                 @Override
                 public void onFailure(final Throwable exception) {
                     notificationHelper.showError(ContributorExtension.class, exception);
                 }
 
                 @Override
-                public void onSuccess(final List<Remote> remotes) {
-                    for (final Remote oneRemote : remotes) {
-
-                        final String remoteUrl = oneRemote.getUrl();
-                        if (remoteUrl != null && vcsHostingService.isVcsHostRemoteUrl(remoteUrl)) {
-
-                            addContributionMixin(project, vcsService, new AsyncCallback<ProjectDescriptor>() {
-                                @Override
-                                public void onFailure(final Throwable exception) {
-                                    notificationHelper
-                                            .showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
-                                                    exception.getMessage()), exception);
-                                }
-
-                                @Override
-                                public void onSuccess(final ProjectDescriptor project) {
-                                    contributePartPresenter.open();
-                                    workflow.init();
-                                    workflow.executeStep();
-                                }
-                            });
-
-                            break;
+                public void onSuccess(final VcsHostingService vcsHostingService) {
+                    addContributionMixin(project, vcsService, new AsyncCallback<ProjectDescriptor>() {
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            notificationHelper.showError(ContributorExtension.class,
+                                                         messages.contributorExtensionErrorUpdatingContributionAttributes(
+                                                                 exception.getMessage()), exception);
                         }
-                    }
+
+                        @Override
+                        public void onSuccess(final ProjectDescriptor project) {
+                            contributePartPresenter.open();
+                            workflow.init();
+                            workflow.executeStep();
+                        }
+                    });
                 }
             });
         }

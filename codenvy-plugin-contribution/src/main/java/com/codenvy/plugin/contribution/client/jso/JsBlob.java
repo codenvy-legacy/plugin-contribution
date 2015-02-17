@@ -52,7 +52,7 @@ public class JsBlob extends JavaScriptObject implements Blob {
      * @return a Blob
      */
     public static final native JsBlob create(JsArray<?> blobParts, String mediaType) /*-{
-        return new Blob(blobParts, { "type": mediaType });
+        return new Blob(blobParts, {"type": mediaType});
     }-*/;
 
     /**
@@ -63,7 +63,7 @@ public class JsBlob extends JavaScriptObject implements Blob {
      * @return a Blob
      */
     public static final native JsBlob create(String blobPart) /*-{
-        return new Blob([ blobPart ]);
+        return new Blob([blobPart]);
     }-*/;
 
     /**
@@ -74,7 +74,7 @@ public class JsBlob extends JavaScriptObject implements Blob {
      * @return a Blob
      */
     public static final native JsBlob create(String blobPart, String mediaType) /*-{
-        return new Blob([ blobPart ], { "type": mediaType });
+        return new Blob([blobPart], {"type": mediaType});
     }-*/;
 
     @Override

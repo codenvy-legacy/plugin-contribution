@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.inject;
 
-import org.eclipse.che.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitView;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitViewImpl;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
@@ -31,6 +30,8 @@ import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
+
+import org.eclipse.che.ide.api.extension.ExtensionGinModule;
 
 import javax.inject.Singleton;
 

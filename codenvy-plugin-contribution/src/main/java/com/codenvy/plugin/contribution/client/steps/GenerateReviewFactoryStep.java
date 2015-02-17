@@ -10,6 +10,21 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
+import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.jso.Blob;
+import com.codenvy.plugin.contribution.client.jso.FormData;
+import com.codenvy.plugin.contribution.client.jso.JsBlob;
+import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
+import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
+import com.google.gwt.http.client.Header;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.xhr.client.ReadyStateChangeHandler;
+import com.google.gwt.xhr.client.XMLHttpRequest;
+
 import org.eclipse.che.api.core.rest.shared.dto.ServiceError;
 import org.eclipse.che.api.factory.dto.Factory;
 import org.eclipse.che.api.project.shared.dto.ImportSourceDescriptor;
@@ -23,47 +38,34 @@ import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.AsyncRequestFactory;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.HTTPMethod;
-import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.jso.Blob;
-import com.codenvy.plugin.contribution.client.jso.FormData;
-import com.codenvy.plugin.contribution.client.jso.JsBlob;
-import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
-import com.google.gwt.http.client.Header;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.xhr.client.ReadyStateChangeHandler;
-import com.google.gwt.xhr.client.XMLHttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.eclipse.che.api.project.shared.Constants.VCS_PROVIDER_NAME;
-import static org.eclipse.che.ide.MimeType.APPLICATION_JSON;
-import static org.eclipse.che.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_MODE_VARIABLE_NAME;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.PULL_REQUEST_ID_VARIABLE_NAME;
 import static java.util.Arrays.asList;
+import static org.eclipse.che.api.project.shared.Constants.VCS_PROVIDER_NAME;
+import static org.eclipse.che.ide.MimeType.APPLICATION_JSON;
+import static org.eclipse.che.ide.rest.HTTPHeader.ACCEPT;
 
 /**
  * Generates a factory for the contribution reviewer.
  */
 public class GenerateReviewFactoryStep implements Step {
-    private final Step                   addReviewFactoryLinkStep;
-    private final ContributeMessages     messages;
-    private final ApiUrlTemplate         apiTemplate;
-    private final DtoFactory             dtoFactory;
-    private final AsyncRequestFactory    asyncRequestFactory;
-    private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
-    private final AppContext             appContext;
-    private final VcsHostingService      vcsHostingService;
-    private final NotificationHelper     notificationHelper;
+    private final Step                      addReviewFactoryLinkStep;
+    private final ContributeMessages        messages;
+    private final ApiUrlTemplate            apiTemplate;
+    private final DtoFactory                dtoFactory;
+    private final AsyncRequestFactory       asyncRequestFactory;
+    private final DtoUnmarshallerFactory    dtoUnmarshallerFactory;
+    private final AppContext                appContext;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
+    private final NotificationHelper        notificationHelper;
 
     @Inject
     public GenerateReviewFactoryStep(@Nonnull final AddReviewFactoryLinkStep addReviewFactoryLinkStep,
@@ -73,7 +75,7 @@ public class GenerateReviewFactoryStep implements Step {
                                      @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                      @Nonnull final AsyncRequestFactory asyncRequestFactory,
                                      @Nonnull final AppContext appContext,
-                                     @Nonnull final VcsHostingService vcsHostingService,
+                                     @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                                      @Nonnull final NotificationHelper notificationHelper) {
         this.addReviewFactoryLinkStep = addReviewFactoryLinkStep;
         this.apiTemplate = apiUrlTemplate;
@@ -82,7 +84,7 @@ public class GenerateReviewFactoryStep implements Step {
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.appContext = appContext;
-        this.vcsHostingService = vcsHostingService;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.notificationHelper = notificationHelper;
     }
 
@@ -93,7 +95,7 @@ public class GenerateReviewFactoryStep implements Step {
      *         the request
      * @param formData
      *         the form data
-     * @return true iff the request was sent correctly - Note: doesn't mean the request will be succesful
+     * @return true if the request was sent correctly - Note: doesn't mean the request will be successful
      */
     private static native boolean sendFormData(XMLHttpRequest xhr, FormData formData) /*-{
         try {
@@ -117,9 +119,11 @@ public class GenerateReviewFactoryStep implements Step {
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                workflow.fireStepErrorEvent(GENERATE_REVIEW_FACTORY);
+            public void onFailure(final Throwable exception) {
                 notificationHelper.showWarning(messages.stepGenerateReviewFactoryErrorCreateFactory());
+                workflow.fireStepDoneEvent(GENERATE_REVIEW_FACTORY);
+                workflow.setStep(addReviewFactoryLinkStep);
+                workflow.executeStep();
             }
         });
     }
@@ -137,8 +141,8 @@ public class GenerateReviewFactoryStep implements Step {
             }
 
             @Override
-            public void onFailure(final Throwable caught) {
-                callback.onFailure(caught);
+            public void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
             }
         });
     }
@@ -147,21 +151,31 @@ public class GenerateReviewFactoryStep implements Step {
         exportProject(new AsyncCallback<Factory>() {
             @Override
             public void onSuccess(final Factory factory) {
-                factory.setSource(getSource(context));
+                getSource(context, new AsyncCallback<Source>() {
+                    @Override
+                    public void onFailure(final Throwable exception) {
+                        callback.onFailure(exception);
+                    }
 
-                // project must be public to be shared
-                factory.getProject().setVisibility("public");
+                    @Override
+                    public void onSuccess(final Source source) {
+                        factory.setSource(source);
 
-                // new factory is not a 'contribute workflow factory'
-                factory.getProject().getAttributes().remove(CONTRIBUTE_VARIABLE_NAME);
+                        // project must be public to be shared
+                        factory.getProject().setVisibility("public");
 
-                // new factory is in a review mode
-                factory.getProject().getAttributes().put(CONTRIBUTE_MODE_VARIABLE_NAME, asList("review"));
+                        // new factory is not a 'contribute workflow factory'
+                        factory.getProject().getAttributes().remove(CONTRIBUTE_VARIABLE_NAME);
 
-                // remember the related pull request id
-                factory.getProject().getAttributes().put(PULL_REQUEST_ID_VARIABLE_NAME, asList("notUsed"));
+                        // new factory is in a review mode
+                        factory.getProject().getAttributes().put(CONTRIBUTE_MODE_VARIABLE_NAME, asList("review"));
 
-                callback.onSuccess(factory);
+                        // remember the related pull request id
+                        factory.getProject().getAttributes().put(PULL_REQUEST_ID_VARIABLE_NAME, asList("notUsed"));
+
+                        callback.onSuccess(factory);
+                    }
+                });
             }
 
             @Override
@@ -196,40 +210,51 @@ public class GenerateReviewFactoryStep implements Step {
         }
     }
 
-    private Source getSource(final Context context) {
-        final Source source = dtoFactory.createDto(Source.class);
-        final ImportSourceDescriptor importSourceDescriptor = dtoFactory.createDto(ImportSourceDescriptor.class);
-
-        final String forkRepoUrl = vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
-        importSourceDescriptor.setLocation(forkRepoUrl);
-
-        final String vcsType = context.getProject().getAttributes().get(VCS_PROVIDER_NAME).get(0);
-        importSourceDescriptor.setType(vcsType);
-
-        importSourceDescriptor.setParameters(new HashMap<String, String>());
-
-        // keep some origin factory settings
-        if (appContext.getFactory() != null) {
-            final Factory originFactory = appContext.getFactory();
-
-            final String keepDirectory = originFactory.getSource().getProject().getParameters().get("keepDirectory");
-            if (keepDirectory != null) {
-                importSourceDescriptor.getParameters().put("keepDirectory", keepDirectory);
+    private void getSource(final Context context, final AsyncCallback<Source> callback) {
+        vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+            @Override
+            public void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
             }
 
-            final Map<String, RunnerSource> runners = originFactory.getSource().getRunners();
-            if (runners != null && !runners.isEmpty()) {
-                source.setRunners(runners);
+            @Override
+            public void onSuccess(final VcsHostingService vcsHostingService) {
+                final Source source = dtoFactory.createDto(Source.class);
+                final ImportSourceDescriptor importSourceDescriptor = dtoFactory.createDto(ImportSourceDescriptor.class);
+
+                final String forkRepoUrl =
+                        vcsHostingService.makeSSHRemoteUrl(context.getHostUserLogin(), context.getForkedRepositoryName());
+                importSourceDescriptor.setLocation(forkRepoUrl);
+
+                final String vcsType = context.getProject().getAttributes().get(VCS_PROVIDER_NAME).get(0);
+                importSourceDescriptor.setType(vcsType);
+
+                importSourceDescriptor.setParameters(new HashMap<String, String>());
+
+                // keep some origin factory settings
+                if (appContext.getFactory() != null) {
+                    final Factory originFactory = appContext.getFactory();
+
+                    final String keepDirectory = originFactory.getSource().getProject().getParameters().get("keepDirectory");
+                    if (keepDirectory != null) {
+                        importSourceDescriptor.getParameters().put("keepDirectory", keepDirectory);
+                    }
+
+                    final Map<String, RunnerSource> runners = originFactory.getSource().getRunners();
+                    if (runners != null && !runners.isEmpty()) {
+                        source.setRunners(runners);
+                    }
+                }
+
+                // keep VCS information
+                importSourceDescriptor.getParameters().put("keepVcs", "true");
+
+                // Use the contribution branch
+                importSourceDescriptor.getParameters().put("branch", context.getWorkBranchName());
+
+                callback.onSuccess(source.withProject(importSourceDescriptor));
             }
-        }
-
-        // keep VCS information
-        importSourceDescriptor.getParameters().put("keepVcs", "true");
-
-        // Use the contribution branch
-        importSourceDescriptor.getParameters().put("branch", context.getWorkBranchName());
-
-        return source.withProject(importSourceDescriptor);
+        });
     }
 
     private void saveFactory(final FormData formData, final AsyncCallback<Factory> callback) {

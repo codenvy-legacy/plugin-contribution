@@ -10,19 +10,20 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.commit;
 
-import org.eclipse.che.ide.api.app.AppContext;
-import org.eclipse.che.ide.api.app.CurrentProject;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
+
 import javax.annotation.Nonnull;
 
-import static org.eclipse.che.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CANCEL;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CONTINUE;
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.OK;
+import static org.eclipse.che.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 
 /**
  * This presenter provides base functionality to commit project changes or not before cloning or generating a factory url.
@@ -94,20 +95,20 @@ public class CommitPresenter implements CommitView.ActionDelegate {
         if (project != null) {
             vcsServiceProvider.getVcsService().commit(project.getRootProject(), view.isIncludeUntracked(),
                                                       view.getCommitDescription(), new AsyncCallback<Void>() {
-                @Override
-                public void onFailure(final Throwable exception) {
-                    notificationHelper.showError(CommitPresenter.class, exception);
-                }
+                        @Override
+                        public void onFailure(final Throwable exception) {
+                            notificationHelper.showError(CommitPresenter.class, exception);
+                        }
 
-                @Override
-                public void onSuccess(final Void result) {
-                    view.close();
+                        @Override
+                        public void onSuccess(final Void result) {
+                            view.close();
 
-                    if (handler != null) {
-                        handler.onCommitAction(OK);
-                    }
-                }
-            });
+                            if (handler != null) {
+                                handler.onCommitAction(OK);
+                            }
+                        }
+                    });
         }
     }
 

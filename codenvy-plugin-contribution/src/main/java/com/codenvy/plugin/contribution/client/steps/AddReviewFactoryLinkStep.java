@@ -13,6 +13,8 @@ package com.codenvy.plugin.contribution.client.steps;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
+import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -25,20 +27,20 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  * @author Kevin Pollet
  */
 public class AddReviewFactoryLinkStep implements Step {
-    private final Step               issuePullRequestStep;
-    private final VcsHostingService  vcsHostingService;
-    private final ContributeMessages messages;
-    private final NotificationHelper notificationHelper;
+    private final Step                      issuePullRequestStep;
+    private final VcsHostingServiceProvider vcsHostingServiceProvider;
+    private final ContributeMessages        messages;
+    private final NotificationHelper        notificationHelper;
 
     @Inject
     public AddReviewFactoryLinkStep(@Nonnull final IssuePullRequestStep issuePullRequestStep,
-                                    @Nonnull final VcsHostingService vcsHostingService,
+                                    @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                                     @Nonnull final ContributeMessages messages,
                                     @Nonnull final NotificationHelper notificationHelper) {
         this.issuePullRequestStep = issuePullRequestStep;
         this.messages = messages;
         this.notificationHelper = notificationHelper;
-        this.vcsHostingService = vcsHostingService;
+        this.vcsHostingServiceProvider = vcsHostingServiceProvider;
     }
 
     @Override
@@ -46,30 +48,47 @@ public class AddReviewFactoryLinkStep implements Step {
         final String reviewFactoryUrl = workflow.getContext().getReviewFactoryUrl();
         if (reviewFactoryUrl == null) {
             notificationHelper.showWarning(messages.stepAddReviewFactoryLinkErrorAddingReviewFactoryLink());
+            proceed(workflow);
 
         } else {
-            addReviewFactoryUrlToContributionComment(workflow, reviewFactoryUrl);
-            workflow.fireStepDoneEvent(ADD_REVIEW_FACTORY_LINK);
-        }
+            vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    workflow.fireStepErrorEvent(ADD_REVIEW_FACTORY_LINK, exception.getMessage());
+                }
 
-        workflow.setStep(issuePullRequestStep);
-        workflow.executeStep();
+                @Override
+                public void onSuccess(final VcsHostingService vcsHostingService) {
+                    addReviewFactoryUrlToContributionComment(vcsHostingService, workflow, reviewFactoryUrl);
+                    proceed(workflow);
+                }
+            });
+        }
     }
 
     /**
      * Adds the review factory link to the beginning of the contribution comment.
      *
+     * @param vcsHostingService
+     *         the vcs hosting service.
      * @param workflow
      *         the contributor workflow.
      * @param reviewFactoryUrl
      *         the review factory url.
      */
-    private void addReviewFactoryUrlToContributionComment(final ContributorWorkflow workflow, final String reviewFactoryUrl) {
+    private void addReviewFactoryUrlToContributionComment(final VcsHostingService vcsHostingService, final ContributorWorkflow workflow,
+                                                          final String reviewFactoryUrl) {
         final Configuration contributionConfiguration = workflow.getConfiguration();
         final String formattedReviewFactoryUrl = vcsHostingService.formatReviewFactoryUrl(reviewFactoryUrl);
         final String contributionCommentWithReviewFactoryUrl =
                 formattedReviewFactoryUrl + "\n\n" + contributionConfiguration.getContributionComment();
 
         contributionConfiguration.withContributionComment(contributionCommentWithReviewFactoryUrl);
+    }
+
+    private void proceed(final ContributorWorkflow workflow) {
+        workflow.fireStepDoneEvent(ADD_REVIEW_FACTORY_LINK);
+        workflow.setStep(issuePullRequestStep);
+        workflow.executeStep();
     }
 }
