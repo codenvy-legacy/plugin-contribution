@@ -269,6 +269,22 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     @Override
+    public void getPullRequestById(final String owner, final String repository, final String pullRequestId,
+                                   final AsyncCallback<PullRequest> callback) {
+        final Unmarshallable<GitHubPullRequest> unmarshall = this.dtoUnmarshallerFactory.newUnmarshaller(GitHubPullRequest.class);
+        gitHubClientService.getPullRequest(owner, repository, pullRequestId, new AsyncRequestCallback<GitHubPullRequest>(unmarshall) {
+            @Override
+            protected void onSuccess(final GitHubPullRequest result) {
+                callback.onSuccess(valueOf(result));
+            }
+            @Override
+            protected void onFailure(final Throwable exception) {
+                callback.onFailure(exception);
+            }
+        });
+    }
+
+    @Override
     public void createPullRequest(@Nonnull final String owner,
                                   @Nonnull final String repository,
                                   @Nonnull final String title,

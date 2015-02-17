@@ -49,6 +49,21 @@ public interface VcsHostingService {
                         @Nonnull AsyncCallback<PullRequest> callback);
 
     /**
+     * Get a pull request by id.
+     *
+     * @param owner
+     *         the owner.
+     * @param repository
+     *         the repository name.
+     * @param pullRequestId
+     *         the id of the pull request
+     * @param callback
+     *         callback called when operation is done.
+     */
+    void getPullRequestById(@Nonnull String owner, @Nonnull String repository, @Nonnull String pullRequestId,
+                        @Nonnull AsyncCallback<PullRequest> callback);
+
+    /**
      * Creates a pull request.
      *
      * @param owner
