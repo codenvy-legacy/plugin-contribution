@@ -81,12 +81,7 @@ public class GitHubHostingService implements VcsHostingService {
                     callback.onFailure(new Exception("No user info"));
 
                 } else {
-                    final HostUser user = dtoFactory.createDto(HostUser.class)
-                                                    .withId(gitHubUser.getId())
-                                                    .withLogin(gitHubUser.getLogin())
-                                                    .withName(gitHubUser.getName())
-                                                    .withUrl(gitHubUser.getUrl());
-                    callback.onSuccess(user);
+                    callback.onSuccess(valueOf(gitHubUser));
                 }
             }
 
@@ -426,13 +421,34 @@ public class GitHubHostingService implements VcsHostingService {
                                                           .withRef(gitHubPullRequest.getHead().getRef())
                                                           .withSha(gitHubPullRequest.getHead().getSha());
 
-        return dtoFactory.createDto(PullRequest.class)
+        final PullRequest result = dtoFactory.createDto(PullRequest.class)
                          .withId(gitHubPullRequest.getId())
                          .withUrl(gitHubPullRequest.getUrl())
                          .withHtmlUrl(gitHubPullRequest.getHtmlUrl())
                          .withNumber(gitHubPullRequest.getNumber())
                          .withState(gitHubPullRequest.getState())
-                         .withHead(pullRequestHead);
+                         .withHead(pullRequestHead)
+                         .withMerged(gitHubPullRequest.getMerged())
+                                             .withMergeable(gitHubPullRequest.getMergeable());
+        if (gitHubPullRequest.getMergedBy() != null) {
+            result.withMergedBy(valueOf(gitHubPullRequest.getMergedBy()));
+        }
+        return result;
+    }
+
+    /**
+     * Converts an instance of {@link GitHubUser} to a {@link HostUser}.
+     * 
+     * @param gitHubUser the user to convert
+     * @return the result of the conversion
+     */
+    private HostUser valueOf(final GitHubUser gitHubUser) {
+        final HostUser user = dtoFactory.createDto(HostUser.class)
+                                            .withId(gitHubUser.getId())
+                                            .withLogin(gitHubUser.getLogin())
+                                            .withName(gitHubUser.getName())
+                                            .withUrl(gitHubUser.getUrl());
+        return user;
     }
 
     @Override

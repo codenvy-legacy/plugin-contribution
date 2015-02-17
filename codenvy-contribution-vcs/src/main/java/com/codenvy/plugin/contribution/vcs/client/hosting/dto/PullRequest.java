@@ -37,4 +37,31 @@ public interface PullRequest {
     PullRequestHead getHead();
 
     PullRequest withHead(PullRequestHead head);
+
+    /**
+     * Tells if the pull request is merged.
+     * 
+     * @return true iff the pull request is merged
+     */
+    boolean getMerged();
+
+    PullRequest withMerged(boolean merged);
+
+    /**
+     * Tells which user merged the pull request (if it was).
+     * 
+     * @return the user
+     */
+    HostUser getMergedBy();
+
+    PullRequest withMergedBy(HostUser user);
+
+    /**
+     * Tells if the pull request is mergeable.
+     * 
+     * @return true iff the merge can be done automatically
+     */
+    boolean getMergeable();
+
+    PullRequest withMergeable(boolean mergeable);
 }
