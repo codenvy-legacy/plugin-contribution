@@ -18,22 +18,18 @@ import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
-import com.codenvy.plugin.review.client.reviewpart.ReviewPartPresenter;
 import com.google.web.bindery.event.shared.EventBus;
 
 @Singleton
 @Extension(title = "Review", version = "1.0.0")
 public class ReviewExtension implements ProjectActionHandler {
     private final ReviewMessages messages;
-    private final ReviewPartPresenter reviewPartPresenter;
 
     @Inject
     public ReviewExtension(@Nonnull final EventBus eventBus,
                            @Nonnull final ReviewMessages messages,
-                           @Nonnull final ReviewResources resources,
-                           @Nonnull final ReviewPartPresenter reviewPartPresenter) {
+                           @Nonnull final ReviewResources resources) {
         this.messages = messages;
-        this.reviewPartPresenter = reviewPartPresenter;
 
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
     }
@@ -45,10 +41,8 @@ public class ReviewExtension implements ProjectActionHandler {
 
     @Override
     public void onProjectClosed(final ProjectActionEvent event) {
-        this.reviewPartPresenter.remove();
     }
 
     private void initializeReviewExtension(final ProjectDescriptor project) {
-        this.reviewPartPresenter.open();
     }
 }
