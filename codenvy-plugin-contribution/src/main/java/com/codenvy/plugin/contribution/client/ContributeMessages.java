@@ -209,12 +209,6 @@ public interface ContributeMessages extends Messages {
     String stepIssuePullRequestErrorCreatePullRequestWithoutCommits();
 
     /*
-     * Authorize Codenvy on VCS Host step
-     */
-    @Key("step.authorize.codenvy.on.vcs.host.error.cannot.access.vcs.host")
-    String stepAuthorizeCodenvyOnVCSHostErrorCannotAccessVCSHost();
-
-    /*
      * Contributor extension
      */
     @Key("contributor.extension.error.updating.contribution.attributes")

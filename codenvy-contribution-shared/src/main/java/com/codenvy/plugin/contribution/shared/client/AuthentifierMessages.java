@@ -22,4 +22,10 @@ public interface AuthentifierMessages extends Messages {
      */
     @Key("notification.message.prefix")
     String notificationMessagePrefix(String notificationMessage);
+
+    /*
+     * Authorize Codenvy on VCS Host step
+     */
+    @Key("error.cannot.access.vcs.host")
+    String errorCannotAccessVCSHost();
 }

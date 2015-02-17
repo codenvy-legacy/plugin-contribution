@@ -12,5 +12,5 @@
 
 -->
 <module>
-
+    <inherits name="com.codenvy.ide.Api" />
 </module>

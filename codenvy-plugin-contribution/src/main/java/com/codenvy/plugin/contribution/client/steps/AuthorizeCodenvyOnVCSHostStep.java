@@ -10,18 +10,14 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.app.CurrentUser;
-import com.codenvy.plugin.contribution.client.ContributeMessages;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
-import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
-import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.AUTHORIZE_CODENVY_ON_VCS_HOST;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.AUTHORIZE_CODENVY_ON_VCS_HOST;
+import com.codenvy.plugin.contribution.shared.client.Authentifier;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This step authorizes Codenvy on the VCS Host.
@@ -29,63 +25,25 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  * @author Kevin Pollet
  */
 public class AuthorizeCodenvyOnVCSHostStep implements Step {
-    private static final String BAD_CREDENTIALS_EXCEPTION_MESSAGE = "Bad credentials";
 
-    private final Step               initializeWorkflowContextStep;
-    private final NotificationHelper notificationHelper;
-    private final VcsHostingService  vcsHostingService;
-    private final AppContext         appContext;
-    private final ContributeMessages messages;
+    private final Step         initializeWorkflowContextStep;
+
+    private final Authentifier authentifier;
 
     @Inject
     public AuthorizeCodenvyOnVCSHostStep(@Nonnull final InitializeWorkflowContextStep initializeWorkflowContextStep,
-                                         @Nonnull final NotificationHelper notificationHelper,
-                                         @Nonnull final VcsHostingService vcsHostingService,
-                                         @Nonnull final AppContext appContext,
-                                         @Nonnull final ContributeMessages messages) {
+                                         @Nonnull final Authentifier authentifier) {
         this.initializeWorkflowContextStep = initializeWorkflowContextStep;
-        this.notificationHelper = notificationHelper;
-        this.vcsHostingService = vcsHostingService;
-        this.appContext = appContext;
-        this.messages = messages;
+        this.authentifier = authentifier;
     }
 
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
-        vcsHostingService.getUserInfo(new AsyncCallback<HostUser>() {
+        this.authentifier.authenticate(new AsyncCallback<HostUser>() {
             @Override
-            public void onFailure(final Throwable exception) {
-                final String exceptionMessage = exception.getMessage();
-
-                if (exceptionMessage != null && exceptionMessage.contains(BAD_CREDENTIALS_EXCEPTION_MESSAGE)) {
-                    final CurrentUser currentUser = appContext.getCurrentUser();
-                    vcsHostingService.authenticate(currentUser, new AsyncCallback<HostUser>() {
-                        @Override
-                        public void onFailure(final Throwable exception) {
-                            workflow.fireStepErrorEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
-
-                            final String exceptionMessage = exception.getMessage();
-                            if (exceptionMessage != null && exceptionMessage.contains(BAD_CREDENTIALS_EXCEPTION_MESSAGE)) {
-                                notificationHelper
-                                        .showError(AuthorizeCodenvyOnVCSHostStep.class,
-                                                   messages.stepAuthorizeCodenvyOnVCSHostErrorCannotAccessVCSHost());
-
-                            } else {
-                                notificationHelper.showError(AuthorizeCodenvyOnVCSHostStep.class, exception);
-                            }
-                        }
-
-                        @Override
-                        public void onSuccess(final HostUser user) {
-                            onVCSHostUserAuthenticated(workflow, user);
-                        }
-                    });
-                } else {
-                    workflow.fireStepErrorEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
-                    notificationHelper.showError(AuthorizeCodenvyOnVCSHostStep.class, exception);
-                }
+            public void onFailure(final Throwable caught) {
+                workflow.fireStepErrorEvent(AUTHORIZE_CODENVY_ON_VCS_HOST);
             }
-
             @Override
             public void onSuccess(final HostUser user) {
                 onVCSHostUserAuthenticated(workflow, user);
