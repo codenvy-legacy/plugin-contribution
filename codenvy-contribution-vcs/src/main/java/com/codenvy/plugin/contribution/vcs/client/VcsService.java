@@ -130,6 +130,16 @@ public interface VcsService {
     void listRemotes(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<List<Remote>> callback);
 
     /**
+     * Gives the upstream remote.
+     *
+     * @param project
+     *         the project descriptor.
+     * @param callback
+     *         what to do with the remote
+     */
+    void getUpstreamRemote(@Nonnull ProjectDescriptor project, @Nonnull AsyncCallback<Remote> callback);
+
+    /**
      * Push a local branch to the given remote.
      *
      * @param project

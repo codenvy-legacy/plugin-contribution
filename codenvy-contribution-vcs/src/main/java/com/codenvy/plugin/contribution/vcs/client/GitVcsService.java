@@ -35,6 +35,11 @@ import java.util.List;
 public class GitVcsService implements VcsService {
     private static final String BRANCH_UP_TO_DATE_ERROR_MESSAGE = "Everything up-to-date";
 
+    /**
+     * The standard name for the upstream branch.
+     */
+    private static final String UPSTREAM_BRANCH_NAME = "origin";
+
     private final GitServiceClient       service;
     private final DtoFactory             dtoFactory;
     private final DtoUnmarshallerFactory dtoUnmarshallerFactory;
@@ -208,6 +213,26 @@ public class GitVcsService implements VcsService {
                                    callback.onFailure(exception);
                                }
                            });
+    }
+
+    @Override
+    public void getUpstreamRemote(final ProjectDescriptor project, final AsyncCallback<Remote> callback) {
+        listRemotes(project, new AsyncCallback<List<Remote>>() {
+            @Override
+            public void onSuccess(final List<Remote> result) {
+                for (final Remote remote : result) {
+                    if (UPSTREAM_BRANCH_NAME.equals(remote.getName())) {
+                        callback.onSuccess(remote);
+                        break;
+                    }
+                }
+                callback.onFailure(new Exception("No upstream remote found"));
+            }
+            @Override
+            public void onFailure(final Throwable caught) {
+                callback.onFailure(caught);
+            }
+        });
     }
 
     @Override
