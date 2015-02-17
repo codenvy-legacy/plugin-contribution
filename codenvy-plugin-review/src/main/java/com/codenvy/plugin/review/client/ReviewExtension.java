@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.review.client;
 
+
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -21,42 +22,47 @@ import com.codenvy.ide.api.event.ProjectActionEvent;
 import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.util.loging.Log;
+import com.codenvy.plugin.contribution.shared.client.Authentifier;
 import com.codenvy.plugin.contribution.shared.client.SharedConstants;
 import com.codenvy.plugin.contribution.vcs.client.Remote;
 import com.codenvy.plugin.contribution.vcs.client.VcsService;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
-import com.codenvy.plugin.review.client.promises.Function;
-import com.codenvy.plugin.review.client.promises.FunctionException;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
+import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.codenvy.plugin.review.client.promises.Operation;
 import com.codenvy.plugin.review.client.promises.OperationException;
 import com.codenvy.plugin.review.client.promises.Promise;
 import com.codenvy.plugin.review.client.promises.PromiseError;
 import com.codenvy.plugin.review.client.promises.internal.AsyncPromiseHelper;
 import com.codenvy.plugin.review.client.promises.internal.AsyncPromiseHelper.RequestCall;
+import com.codenvy.plugin.review.client.promises.js.Promises;
+import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Provider;
 import com.google.web.bindery.event.shared.EventBus;
 
 @Singleton
 @Extension(title = "Review", version = "1.0.0")
 public class ReviewExtension implements ProjectActionHandler {
+    private final Authentifier        authentifier;
     private final ReviewMessages      messages;
     private final VcsHostingService   vcsHostingService;
     private final VcsServiceProvider  vcsServiceProvider;
-    private final Provider<Context> contextProvider;
+    private final ReviewState reviewState;
 
     @Inject
-    public ReviewExtension(@Nonnull final EventBus eventBus,
+    public ReviewExtension(@Nonnull final Authentifier authentifier,
+                           @Nonnull final EventBus eventBus,
                            @Nonnull final ReviewMessages messages,
                            @Nonnull final ReviewResources resources,
-                           @Nonnull final Provider<Context> contextProvider,
+                           @Nonnull final ReviewState reviewState,
                            @Nonnull final VcsHostingService vcsHostingService,
                            @Nonnull final VcsServiceProvider vcsServiceProvider) {
+        this.authentifier = authentifier;
         this.messages = messages;
         this.vcsHostingService = vcsHostingService;
         this.vcsServiceProvider = vcsServiceProvider;
-        this.contextProvider = contextProvider;
+        this.reviewState = reviewState;
 
         eventBus.addHandler(ProjectActionEvent.TYPE, this);
     }
@@ -80,36 +86,61 @@ public class ReviewExtension implements ProjectActionHandler {
                 && projectPermissions != null && projectPermissions.contains("write")
                 && !(reviewAttr.isEmpty())
                 && !(pullRequestIdAttr.isEmpty())) {
-            Promise<Remote> remotePromise = retrieveUpstreamRemote(project);
+
+            this.reviewState.init();
+
+            final Promise<Remote> remotePromise = retrieveUpstreamRemote(project);
 
             // if error handling needed, it's here - for the moment jsut bail out, nothing has started
             remotePromise.catchError(new Operation<PromiseError>() {
                 @Override
-                public void apply(final PromiseError error) {
+                public void apply(final PromiseError error) throws OperationException {
                     Log.info(ReviewExtension.class, "Review flag set, pull request id present but no upstream remote found");
                     Log.debug(ReviewExtension.class, error.toString());
                     onError(AbortReviewCause.NO_UPSTREAM_REMOTE);
+                    throw new OperationException();
                 }
             });
 
-            Promise<Context> repositoryPromise = remotePromise.then(new Function<Remote, Context>() {
+            // find owner and repository
+            final Promise<Remote> repositoryPromise = remotePromise.then(new Operation<Remote>() {
                 @Override
-                public Context apply(final Remote remote) throws FunctionException {
-                    final Context context = setupUserAndRepository(remote);
-                    if (context == null) {
-                        throw new FunctionException("The remote URL doesn't match the VCS host");
-                    } else {
-                        return context;
-                    }
+                public void apply(final Remote remote) throws OperationException {
+                    setupUserAndRepository(remote);
                 }
             });
             repositoryPromise.catchError(new Operation<PromiseError>() {
                 @Override
                 public void apply(final PromiseError arg) throws OperationException {
                     onError(AbortReviewCause.REMOTE_URL_HOSTING_MISMATCH);
+                    throw new OperationException();
                 }
             });
+
+            // get pull request info
+            final String pullRequestId = pullRequestIdAttr.get(0);
+            final Promise<PullRequest> prPromise = repositoryPromise.then(getPullRequest(pullRequestId));
+
+
+            // auth
+            final Promise<HostUser> authPromise = authenticate();
+
+            // join auth and PR
+            final Promise<JsArrayMixed> authAndPR = Promises.all(prPromise, authPromise);
         }
+    }
+
+    private Promise<PullRequest> getPullRequest(final String pullRequestId) {
+        return AsyncPromiseHelper.createFromAsyncRequest(new RequestCall<PullRequest>() {
+            @Override
+            public void makeCall(final AsyncCallback<PullRequest> callback) {
+                final Context context = reviewState.getContext();
+                vcsHostingService.getPullRequestById(context.getOriginRepositoryOwner(),
+                                                     context.getOriginRepositoryName(),
+                                                     pullRequestId,
+                                                     callback);
+            }
+        });
     }
 
     private Promise<Remote> retrieveUpstreamRemote(final ProjectDescriptor project) {
@@ -123,21 +154,39 @@ public class ReviewExtension implements ProjectActionHandler {
         return AsyncPromiseHelper.createFromAsyncRequest(getUpstreamRemoteCall);
     }
 
-    private Context setupUserAndRepository(final Remote remote) {
+    private void setupUserAndRepository(final Remote remote) throws OperationException {
         String url = remote.getUrl();
         if (this.vcsHostingService.isVcsHostRemoteUrl(url)) {
             final String repositoryName = this.vcsHostingService.getRepositoryNameFromUrl(url);
             final String owner = this.vcsHostingService.getRepositoryOwnerFromUrl(url);
-            final Context result = this.contextProvider.get();
-            result.setOriginRepositoryName(repositoryName);
-            result.setOriginRepositoryOwner(owner);
-            return result;
+            final Context context = this.reviewState.getContext();
+            context.setOriginRepositoryName(repositoryName);
+            context.setOriginRepositoryOwner(owner);
         } else {
-            return null;
+            throw new OperationException("The remote URL doesn't match the VCS host");
         }
     }
 
-    private void onError(final AbortReviewCause cause) {
+    private Promise<HostUser> authenticate() {
+        final RequestCall<HostUser> authenticateCall = new RequestCall<HostUser>() {
+            @Override
+            public void makeCall(final AsyncCallback<HostUser> callback) {
+                authentifier.authenticate(callback);
+            }
+        };
+        final Promise<HostUser> result = AsyncPromiseHelper.createFromAsyncRequest(authenticateCall);
+        result.catchError(new Operation<PromiseError>() {
+            @Override
+            public void apply(final PromiseError e) throws OperationException {
+                onError(AbortReviewCause.NO_AUTH);
+                throw new OperationException();
+            }
+        });
 
+        return result;
+    }
+
+    private void onError(final AbortReviewCause cause) {
+        Log.error(ReviewExtension.class, "Aborted review mode: " + cause);
     }
 }
