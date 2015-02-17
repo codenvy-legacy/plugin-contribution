@@ -40,7 +40,7 @@ import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChange
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.codenvy.plugin.contribution.client.steps.events.StepHandler;
 import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
-import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
+import com.codenvy.plugin.contribution.shared.client.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.Branch;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;

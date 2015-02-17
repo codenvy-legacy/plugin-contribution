@@ -8,12 +8,11 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.client.utils;
+package com.codenvy.plugin.contribution.shared.client;
 
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.util.loging.Log;
-import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
@@ -33,10 +32,10 @@ public final class NotificationHelper {
     private final NotificationManager notificationManager;
 
     /** The contribute messages. */
-    private final ContributeMessages messages;
+    private final AuthentifierMessages messages;
 
     @Inject
-    protected NotificationHelper(@Nonnull final NotificationManager notificationManager, @Nonnull final ContributeMessages messages) {
+    protected NotificationHelper(@Nonnull final NotificationManager notificationManager, @Nonnull final AuthentifierMessages messages) {
         this.notificationManager = notificationManager;
         this.messages = messages;
     }
@@ -44,8 +43,7 @@ public final class NotificationHelper {
     /**
      * Shows a warning notification.
      *
-     * @param message
-     *         the info message.
+     * @param message the info message.
      */
     public void showInfo(@Nonnull final String message) {
         showNotification(new Notification(message, INFO));
@@ -54,8 +52,7 @@ public final class NotificationHelper {
     /**
      * Shows a warning notification.
      *
-     * @param message
-     *         the warning message.
+     * @param message the warning message.
      */
     public void showWarning(@Nonnull final String message) {
         showNotification(new Notification(message, WARNING));
@@ -64,24 +61,20 @@ public final class NotificationHelper {
     /**
      * Shows an error notification.
      *
-     * @param cls
-     *         {@link java.lang.Class} where the exception is caught.
-     * @param message
-     *         the error message.
+     * @param cls {@link java.lang.Class} where the exception is caught.
+     * @param message the error message.
      */
-    public void showError(@Nonnull final Class<?> cls, @Nonnull final String message) {
+    public void showError(@Nonnull final Class< ? > cls, @Nonnull final String message) {
         showError(cls, new Exception(message));
     }
 
     /**
      * Handles an exception and display the error message in a notification.
      *
-     * @param cls
-     *         {@link java.lang.Class} where the exception is caught.
-     * @param exception
-     *         exception to handle.
+     * @param cls {@link java.lang.Class} where the exception is caught.
+     * @param exception exception to handle.
      */
-    public void showError(@Nonnull final Class<?> cls, @Nonnull final Throwable exception) {
+    public void showError(@Nonnull final Class< ? > cls, @Nonnull final Throwable exception) {
         showNotification(new Notification(exception.getMessage(), ERROR));
         Log.error(cls, exception);
     }
@@ -89,7 +82,7 @@ public final class NotificationHelper {
     /**
      * Log the exception, display the error message in the notification.
      */
-    public void showError(@Nonnull final Class<?> cls, @Nonnull final String errorMessage, @Nonnull final Throwable exception) {
+    public void showError(@Nonnull final Class< ? > cls, @Nonnull final String errorMessage, @Nonnull final Throwable exception) {
         showNotification(new Notification(errorMessage, ERROR));
         Log.error(cls, exception);
     }
@@ -97,8 +90,7 @@ public final class NotificationHelper {
     /**
      * Shows a notification.
      *
-     * @param notification
-     *         notification to display.
+     * @param notification notification to display.
      */
     public void showNotification(@Nonnull final Notification notification) {
         notification.setMessage(messages.notificationMessagePrefix(notification.getMessage()));
@@ -108,14 +100,11 @@ public final class NotificationHelper {
     /**
      * Finish a notification in progress with an error.
      *
-     * @param cls
-     *         the class where the exception is caught.
-     * @param message
-     *         the error message.
-     * @param notification
-     *         the notification to finish.
+     * @param cls the class where the exception is caught.
+     * @param message the error message.
+     * @param notification the notification to finish.
      */
-    public void finishNotificationWithError(@Nonnull final Class<?> cls,
+    public void finishNotificationWithError(@Nonnull final Class< ? > cls,
                                             @Nonnull final String message,
                                             @Nonnull final Notification notification) {
         finishNotificationWithError(cls, new Exception(message), notification);
@@ -124,14 +113,11 @@ public final class NotificationHelper {
     /**
      * Finish a notification in progress with an error.
      *
-     * @param cls
-     *         the class where the exception is caught.
-     * @param exception
-     *         the exception.
-     * @param notification
-     *         the notification to finish.
+     * @param cls the class where the exception is caught.
+     * @param exception the exception.
+     * @param notification the notification to finish.
      */
-    public void finishNotificationWithError(@Nonnull final Class<?> cls,
+    public void finishNotificationWithError(@Nonnull final Class< ? > cls,
                                             @Nonnull final Throwable exception,
                                             @Nonnull final Notification notification) {
         notification.setType(ERROR);
@@ -142,10 +128,8 @@ public final class NotificationHelper {
     /**
      * Finish a notification in progress with a warning.
      *
-     * @param message
-     *         the warning message.
-     * @param notification
-     *         the notification to finish.
+     * @param message the warning message.
+     * @param notification the notification to finish.
      */
     public void finishNotificationWithWarning(@Nonnull final String message, @Nonnull final Notification notification) {
         notification.setType(WARNING);
@@ -155,10 +139,8 @@ public final class NotificationHelper {
     /**
      * Finish a notification in progress.
      *
-     * @param message
-     *         the finish message.
-     * @param notification
-     *         the notification to finish.
+     * @param message the finish message.
+     * @param notification the notification to finish.
      */
     public void finishNotification(@Nonnull final String message, @Nonnull final Notification notification) {
         notification.setMessage(messages.notificationMessagePrefix(message));
