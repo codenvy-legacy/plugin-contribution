@@ -16,6 +16,7 @@ import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -157,7 +158,9 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
 
                 // remember the related pull request id
-                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, contributeFlag);
+                // the new factory is not a 'contribute workflow factory'
+                // TODO get the value of the review attribute: from VCSprovider
+                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, Arrays.asList("github"));
 
                 callback.onSuccess(factory);
             }
