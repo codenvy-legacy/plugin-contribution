@@ -51,9 +51,6 @@ import static com.google.gwt.dom.client.Style.Unit.PX;
  */
 public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDelegate> implements ContributePartView {
 
-    /** The uUI binder for this component. */
-    private static final ContributePartViewUiBinder UI_BINDER = GWT.create(ContributePartViewUiBinder.class);
-
     /** The status component. */
     private final StatusSteps statusSteps;
 
@@ -120,14 +117,15 @@ public class ContributePartViewImpl extends BaseView<ContributePartView.ActionDe
     public ContributePartViewImpl(@Nonnull final PartStackUIResources partStackUIResources,
                                   @Nonnull final ContributeMessages messages,
                                   @Nonnull final ContributeResources resources,
-                                  @Nonnull final ButtonLoaderResources buttonLoaderResources) {
+                                  @Nonnull final ButtonLoaderResources buttonLoaderResources,
+                                  @Nonnull final ContributePartViewUiBinder uiBinder) {
         super(partStackUIResources);
 
         this.messages = messages;
         this.resources = resources;
         this.statusSteps = new StatusSteps();
 
-        this.container.add(UI_BINDER.createAndBindUi(this));
+        setContentWidget(uiBinder.createAndBindUi(this));
 
         setTitle(messages.contributePartTitle());
 
