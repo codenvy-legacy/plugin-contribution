@@ -159,6 +159,12 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID,
                                                          Collections.singletonList(context.getPullRequestId()));
 
+                // remember the origin repository
+                factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_OWNER,
+                                                         Collections.singletonList(context.getOriginRepositoryOwner()));
+                factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_REPOSITORY,
+                                                         Collections.singletonList(context.getOriginRepositoryName()));
+
                 // the new factory is not a 'contribute workflow factory'
                 final List<String> contributeFlag = factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
 

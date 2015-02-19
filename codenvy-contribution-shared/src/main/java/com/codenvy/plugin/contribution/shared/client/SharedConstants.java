@@ -27,4 +27,14 @@ public final class SharedConstants {
      * The factory and project attribute for the reviewed pull request id.
      */
     public static final String ATTRIBUTE_REVIEW_PULLREQUEST_ID = "pullRequestId";
+
+    /**
+     * The key for the factory/project attribute for the owner of the upstream repository.
+     */
+    public static final String ATTRIBUTE_REVIEW_UPSTREAM_OWNER = "upstream_owner";
+
+    /**
+     * The key for the factory/project attribute for the upstream repository.
+     */
+    public static final String ATTRIBUTE_REVIEW_UPSTREAM_REPOSITORY = "upstream_repository";
 }
