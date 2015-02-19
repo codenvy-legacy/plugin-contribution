@@ -38,6 +38,7 @@ import com.codenvy.plugin.review.client.promises.internal.AsyncPromiseHelper;
 import com.codenvy.plugin.review.client.promises.internal.AsyncPromiseHelper.RequestCall;
 import com.codenvy.plugin.review.client.promises.js.Promises;
 import com.google.gwt.core.client.JsArrayMixed;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.EventBus;
 
@@ -81,13 +82,19 @@ public class ReviewExtension implements ProjectActionHandler {
         final List<String> projectPermissions = project.getPermissions();
         final List<String> reviewAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_KEY);
         final List<String> pullRequestIdAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID);
+        final List<String> upstreamOwnerAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_OWNER);
+        final List<String> upstreamRepositoryAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_REPOSITORY);
 
         if (vcsService != null
                 && projectPermissions != null && projectPermissions.contains("write")
-                && !(reviewAttr.isEmpty())
-                && !(pullRequestIdAttr.isEmpty())) {
+            && (reviewAttr != null) && !(reviewAttr.isEmpty())
+            && (pullRequestIdAttr != null) && !(pullRequestIdAttr.isEmpty())
+            && (upstreamOwnerAttr != null) && !(upstreamOwnerAttr.isEmpty())
+            && (upstreamRepositoryAttr != null) && !(upstreamRepositoryAttr.isEmpty())) {
 
             this.reviewState.init();
+            this.reviewState.getContext().setUpstreamRepositoryName(upstreamRepositoryAttr.get(0));
+            this.reviewState.getContext().setUpstreamRepositoryOwner(upstreamOwnerAttr.get(0));
 
             final Promise<Remote> remotePromise = retrieveUpstreamRemote(project);
 
@@ -102,7 +109,7 @@ public class ReviewExtension implements ProjectActionHandler {
                 }
             });
 
-            // find owner and repository
+            // find owner and repository of the fork
             final Promise<Remote> repositoryPromise = remotePromise.then(new Operation<Remote>() {
                 @Override
                 public void apply(final Remote remote) throws OperationException {
@@ -127,6 +134,12 @@ public class ReviewExtension implements ProjectActionHandler {
 
             // join auth and PR
             final Promise<JsArrayMixed> authAndPR = Promises.all(prPromise, authPromise);
+            authAndPR.then(new Operation<JsArrayMixed>() {
+                @Override
+                public void apply(final JsArrayMixed arg) throws OperationException {
+                    Window.alert("here!");
+                }
+            });
         }
     }
 
