@@ -21,10 +21,9 @@ import com.codenvy.ide.api.extension.Extension;
 import com.google.web.bindery.event.shared.EventBus;
 
 @Singleton
-@Extension(title = "Contributor", version = "1.0.0")
+@Extension(title = "Review", version = "1.0.0")
 public class ReviewExtension implements ProjectActionHandler {
     private final ReviewMessages messages;
-
 
     @Inject
     public ReviewExtension(@Nonnull final EventBus eventBus,
@@ -32,6 +31,7 @@ public class ReviewExtension implements ProjectActionHandler {
                            @Nonnull final ReviewResources resources) {
         this.messages = messages;
 
+        eventBus.addHandler(ProjectActionEvent.TYPE, this);
     }
 
     @Override

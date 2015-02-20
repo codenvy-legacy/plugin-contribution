@@ -15,7 +15,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import com.codenvy.ide.api.app.CurrentUser;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.ext.github.client.GitHubClientService;
 import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
@@ -27,10 +29,14 @@ import com.codenvy.ide.ext.github.shared.GitHubUser;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.Unmarshallable;
+import com.codenvy.ide.util.Config;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequestHead;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
+import com.codenvy.security.oauth.JsOAuthWindow;
+import com.codenvy.security.oauth.OAuthCallback;
+import com.codenvy.security.oauth.OAuthStatus;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -51,9 +57,11 @@ public class GitHubHostingService implements VcsHostingService {
     private final DtoFactory             dtoFactory;
     private final GitHubClientService    gitHubClientService;
     private final GitHubTemplates        gitHubTemplates;
+    private final String                 baseUrl;
 
     @Inject
-    public GitHubHostingService(@Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+    public GitHubHostingService(@Nonnull @Named("restContext") final String baseUrl,
+                                @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final DtoFactory dtoFactory,
                                 @Nonnull final GitHubClientService gitHubClientService,
                                 @Nonnull final GitHubTemplates gitHubTemplates) {
@@ -61,6 +69,7 @@ public class GitHubHostingService implements VcsHostingService {
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
         this.gitHubTemplates = gitHubTemplates;
+        this.baseUrl = baseUrl;
     }
 
     @Override
@@ -408,5 +417,23 @@ public class GitHubHostingService implements VcsHostingService {
                          .withNumber(gitHubPullRequest.getNumber())
                          .withState(gitHubPullRequest.getState())
                          .withHead(pullRequestHead);
+    }
+
+    @Override
+    public void authenticate(final CurrentUser currentUser, final AsyncCallback<HostUser> callback) {
+        final String authUrl = baseUrl
+                               + "/oauth/authenticate?oauth_provider=github&userId=" + currentUser.getProfile().getId()
+                               + "&scope=user,repo,write:public_key&redirect_after_login="
+                               + Window.Location.getProtocol() + "//"
+                               + Window.Location.getHost() + "/ws/"
+                               + Config.getWorkspaceName();
+
+        new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
+            @Override
+            public void onAuthenticated(final OAuthStatus authStatus) {
+                // maybe it's possible to avoid this request if authStatus contains the vcs host user.
+                getUserInfo(callback);
+            }
+        }).loginWithOAuth();
     }
 }

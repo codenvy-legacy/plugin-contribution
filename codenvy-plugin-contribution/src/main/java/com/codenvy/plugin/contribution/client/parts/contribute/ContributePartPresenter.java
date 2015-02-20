@@ -29,6 +29,7 @@ import com.codenvy.ide.ui.dialogs.CancelCallback;
 import com.codenvy.ide.ui.dialogs.DialogFactory;
 import com.codenvy.ide.ui.dialogs.InputCallback;
 import com.codenvy.ide.ui.dialogs.input.InputValidator;
+import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.Context;
@@ -314,6 +315,7 @@ public class ContributePartPresenter extends BasePresenter
             break;
 
             default:
+                Log.error(ContributePartPresenter.class, "Step error:", event.getMessage());
                 break;
         }
 

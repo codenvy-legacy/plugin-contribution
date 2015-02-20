@@ -55,6 +55,9 @@ public class Context {
     /** The name of the repository cloned on VCS. */
     private String originRepositoryName;
 
+    /** The identifier of the pull request on the hosting service. */
+    private String pullRequestId;
+
     /** The issue number of the pull request issued for the contribution. */
     private String pullRequestIssueNumber;
 
@@ -152,9 +155,28 @@ public class Context {
     }
 
     /**
-     * Return the issue number of the pull request issued for this contribution.
+     * Return the pull request id for this contribution.
      *
      * @return the pull request id
+     */
+    public String getPullRequestId() {
+        return pullRequestId;
+    }
+
+    /**
+     * Sets the pull request id for this contribution.
+     *
+     * @param pullRequestId
+     *         the new value
+     */
+    public void setPullRequestId(final String pullRequestId) {
+        this.pullRequestId = pullRequestId;
+    }
+
+    /**
+     * Return the issue number of the pull request issued for this contribution.
+     *
+     * @return the pull request issue id
      */
     public String getPullRequestIssueNumber() {
         return pullRequestIssueNumber;

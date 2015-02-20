@@ -14,11 +14,10 @@ import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
 import static com.codenvy.ide.MimeType.APPLICATION_JSON;
 import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_REVIEW_KEY;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -37,6 +36,7 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPMethod;
+import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
@@ -155,10 +155,12 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().setVisibility("public");
 
                 // the new factory is not a 'contribute workflow factory'
-                final List<String> contributeFlag = factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
+                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
 
-                // the new factory is a 'review workflow factory'
-                factory.getProject().getAttributes().put(ATTRIBUTE_REVIEW_KEY, contributeFlag);
+                // remember the related pull request id
+                // the new factory is not a 'contribute workflow factory'
+                // TODO get the value of the review attribute: from VCSprovider
+                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, Arrays.asList("github"));
 
                 callback.onSuccess(factory);
             }

@@ -18,4 +18,7 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface ReviewMessages extends Messages {
 
+    @Key("review.part.title")
+    String reviewPartTitle();
+
 }
