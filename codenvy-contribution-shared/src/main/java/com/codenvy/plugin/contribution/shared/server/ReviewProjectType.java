@@ -13,7 +13,7 @@ package com.codenvy.plugin.contribution.shared.server;
 import javax.inject.Inject;
 
 import com.codenvy.api.project.server.type.ProjectType;
-import com.codenvy.plugin.contribution.shared.client.SharedConstants;
+import com.codenvy.plugin.contribution.shared.shared.SharedConstants;
 
 /**
  * Mixin type for the contribution review factories.

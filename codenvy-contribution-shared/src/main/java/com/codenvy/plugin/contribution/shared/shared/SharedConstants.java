@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.contribution.shared.client;
+package com.codenvy.plugin.contribution.shared.shared;
 
 /**
  * Shared constants for the contribution plugin.

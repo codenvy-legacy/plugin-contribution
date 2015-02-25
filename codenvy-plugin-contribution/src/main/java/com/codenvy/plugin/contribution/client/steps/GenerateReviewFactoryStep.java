@@ -42,7 +42,7 @@ import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
 import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
 import com.codenvy.plugin.contribution.shared.client.NotificationHelper;
-import com.codenvy.plugin.contribution.shared.client.SharedConstants;
+import com.codenvy.plugin.contribution.shared.shared.SharedConstants;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.google.gwt.http.client.Header;
 import com.google.gwt.http.client.Response;

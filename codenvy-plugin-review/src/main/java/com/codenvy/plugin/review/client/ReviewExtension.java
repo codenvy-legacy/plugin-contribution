@@ -23,7 +23,7 @@ import com.codenvy.ide.api.event.ProjectActionHandler;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.shared.client.Authentifier;
-import com.codenvy.plugin.contribution.shared.client.SharedConstants;
+import com.codenvy.plugin.contribution.shared.shared.SharedConstants;
 import com.codenvy.plugin.contribution.vcs.client.Remote;
 import com.codenvy.plugin.contribution.vcs.client.VcsService;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;

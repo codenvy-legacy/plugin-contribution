@@ -13,4 +13,6 @@
 -->
 <module>
     <inherits name="com.codenvy.ide.Api" />
+    <source path="com.codenvy.plugin.contribution.shared.client" />
+    <source path="com.codenvy.plugin.contribution.shared.shared" />
 </module>
