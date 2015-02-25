@@ -13,7 +13,6 @@ package com.codenvy.plugin.contribution.client.steps;
 import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
 import static com.codenvy.ide.MimeType.APPLICATION_JSON;
 import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 
 import java.util.Collections;
@@ -155,6 +154,10 @@ public class GenerateReviewFactoryStep implements Step {
                 // project must be public to be shared
                 factory.getProject().setVisibility("public");
 
+                // add the 'review' project type
+                final List<String> mixins = factory.getProject().getMixinTypes();
+                mixins.add(SharedConstants.PROJECTTYPE_KEY_REVIEW);
+
                 // remember the related pull request id
                 factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID,
                                                          Collections.singletonList(context.getPullRequestId()));
@@ -165,14 +168,6 @@ public class GenerateReviewFactoryStep implements Step {
                 factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_REPOSITORY,
                                                          Collections.singletonList(context.getOriginRepositoryName()));
 
-                // the new factory is not a 'contribute workflow factory'
-                final List<String> contributeFlag = factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
-
-               // TODO get the value of the review attribute: from VCSprovider
-                if (contributeFlag != null) {
-                    // if the contribute flag was set, use it to trigger the same auth.
-                    factory.getProject().getAttributes().put(SharedConstants.ATTRIBUTE_REVIEW_KEY, contributeFlag);
-                }
                 callback.onSuccess(factory);
             }
 
