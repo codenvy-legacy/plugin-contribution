@@ -80,7 +80,7 @@ public class ReviewExtension implements ProjectActionHandler {
     private void initializeReviewExtension(final ProjectDescriptor project) {
         final VcsService vcsService = this.vcsServiceProvider.getVcsService(project);
         final List<String> projectPermissions = project.getPermissions();
-        final List<String> reviewAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_KEY);
+        final List<String> reviewAttr = project.getAttributes().get(SharedConstants.PROJECTTYPE_KEY_REVIEW);
         final List<String> pullRequestIdAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID);
         final List<String> upstreamOwnerAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_OWNER);
         final List<String> upstreamRepositoryAttr = project.getAttributes().get(SharedConstants.ATTRIBUTE_REVIEW_UPSTREAM_REPOSITORY);

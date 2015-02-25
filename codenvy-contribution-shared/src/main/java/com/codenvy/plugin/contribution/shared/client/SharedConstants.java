@@ -21,7 +21,7 @@ public final class SharedConstants {
     /**
      * The factory and project attribute for the review workflow.
      */
-    public static final String ATTRIBUTE_REVIEW_KEY = "review";
+    public static final String PROJECTTYPE_KEY_REVIEW = "review";
 
     /**
      * The factory and project attribute for the reviewed pull request id.
