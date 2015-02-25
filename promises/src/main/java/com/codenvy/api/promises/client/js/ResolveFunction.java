@@ -8,24 +8,16 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises;
+package com.codenvy.api.promises.client.js;
 
-public class FunctionException extends Exception {
+import com.google.gwt.core.client.JavaScriptObject;
 
-    private static final long serialVersionUID = 1L;
+public class ResolveFunction<V> extends JavaScriptObject {
 
-    public FunctionException() {
+    protected ResolveFunction() {
     }
 
-    public FunctionException(String message) {
-        super(message);
-    }
-
-    public FunctionException(Throwable cause) {
-        super(cause);
-    }
-
-    public FunctionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    public final native void apply(V arg) /*-{
+        this(arg);
+    }-*/;
 }

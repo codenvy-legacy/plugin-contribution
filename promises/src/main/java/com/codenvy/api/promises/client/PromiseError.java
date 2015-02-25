@@ -8,24 +8,9 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises;
+package com.codenvy.api.promises.client;
 
-public class OperationException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+public interface PromiseError {
 
-    public OperationException() {
-    }
-
-    public OperationException(final String message) {
-        super(message);
-    }
-
-    public OperationException(final Throwable cause) {
-        super(cause);
-    }
-
-    public OperationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
 }

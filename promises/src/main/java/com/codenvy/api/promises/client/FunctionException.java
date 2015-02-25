@@ -8,14 +8,24 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises;
+package com.codenvy.api.promises.client;
 
-/**
- * Interface for an 'operation', as a function without a return value, only side-effects, but without the burden of having a callback with
- * Void parameter.
- * 
- * @param <A> the type of the argument
- */
-public interface Operation<A> {
-    void apply(A arg) throws OperationException;
+public class FunctionException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+    public FunctionException() {
+    }
+
+    public FunctionException(String message) {
+        super(message);
+    }
+
+    public FunctionException(Throwable cause) {
+        super(cause);
+    }
+
+    public FunctionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

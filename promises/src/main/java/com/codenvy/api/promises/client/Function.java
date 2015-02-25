@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises;
+package com.codenvy.api.promises.client;
 
 /**
  * Function interface.

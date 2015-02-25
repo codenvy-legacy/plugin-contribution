@@ -8,9 +8,9 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises.js;
+package com.codenvy.api.promises.client.js;
 
-import com.codenvy.plugin.review.client.promises.PromiseError;
+import com.codenvy.api.promises.client.PromiseError;
 import com.google.gwt.core.client.JavaScriptObject;
 
 public class JsPromiseError extends JavaScriptObject implements PromiseError {
@@ -49,4 +49,12 @@ public class JsPromiseError extends JavaScriptObject implements PromiseError {
     private final void setStack(final StackTraceElement[] stack) {
         // TODO
     }
+
+    public final native String getMessage() /*-{
+        return this.message;
+    }-*/;
+
+    public final native String getName() /*-{
+        return this.name;
+    }-*/;
 }

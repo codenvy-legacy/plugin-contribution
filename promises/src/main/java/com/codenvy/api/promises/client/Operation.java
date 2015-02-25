@@ -8,13 +8,14 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises;
+package com.codenvy.api.promises.client;
 
 /**
- * An ES6 <em>thenable</em> object.
- * @param <A>
+ * Interface for an 'operation', as a function without a return value, only side-effects, but without the burden of having a callback with
+ * Void parameter.
+ * 
+ * @param <A> the type of the argument
  */
-public interface Thenable<A> {
-
-    <B> Thenable<B> then(A arg);
+public interface Operation<A> {
+    void apply(A arg) throws OperationException;
 }

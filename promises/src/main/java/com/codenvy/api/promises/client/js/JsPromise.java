@@ -8,13 +8,13 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises.js;
+package com.codenvy.api.promises.client.js;
 
-import com.codenvy.plugin.review.client.promises.Function;
-import com.codenvy.plugin.review.client.promises.Operation;
-import com.codenvy.plugin.review.client.promises.Promise;
-import com.codenvy.plugin.review.client.promises.PromiseError;
-import com.codenvy.plugin.review.client.promises.Thenable;
+import com.codenvy.api.promises.client.Function;
+import com.codenvy.api.promises.client.Operation;
+import com.codenvy.api.promises.client.Promise;
+import com.codenvy.api.promises.client.PromiseError;
+import com.codenvy.api.promises.client.Thenable;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
@@ -34,7 +34,7 @@ public class JsPromise<V> extends JavaScriptObject implements Promise<V> {
     @Override
     public final native <B> Promise<B> then(Function<V, B> onFullfilled) /*-{
         return this.then(function(value) {
-            return onFullfilled.@com.codenvy.plugin.review.client.promises.Function::apply(*)(value);
+            return onFullfilled.@com.codenvy.api.promises.client.Function::apply(*)(value);
         });
     }-*/;
 
@@ -49,28 +49,28 @@ public class JsPromise<V> extends JavaScriptObject implements Promise<V> {
 
     public final native <B> Promise<B> internalThen(Function<V, B> onFullfilled, Function<PromiseError, B> onRejected) /*-{
         return this.then(function(value) {
-            return onFullfilled.@com.codenvy.plugin.review.client.promises.Function::apply(*)(value);
+            return onFullfilled.@com.codenvy.api.promises.client.Function::apply(*)(value);
         }, function(reason) {
-            return onRejected.@com.codenvy.plugin.review.client.promises.Function::apply(*)(reason);
+            return onRejected.@com.codenvy.api.promises.client.Function::apply(*)(reason);
         });
     }-*/;
 
     @Override
     public final native <B> Promise<B> catchError(Function<PromiseError, B> onRejected) /*-{
         return this.then(undefined, function(reason) {
-            return onRejected.@com.codenvy.plugin.review.client.promises.Function::apply(*)(reason);
+            return onRejected.@com.codenvy.api.promises.client.Function::apply(*)(reason);
         });
     }-*/;
 
     @Override
     public final native Promise<V> then(Operation<V> onFullfilled) /*-{
         return this.then(function(value) {
-            onFullfilled.@com.codenvy.plugin.review.client.promises.Operation::apply(*)(value);
+            onFullfilled.@com.codenvy.api.promises.client.Operation::apply(*)(value);
         });
     }-*/;
 
     @Override
-    public Promise<V> then(Operation<V> onFullfilled, Function<PromiseError, V> onRejected) {
+    public final Promise<V> then(Operation<V> onFullfilled, Function<PromiseError, V> onRejected) {
         if (onFullfilled != null) {
             return this.internalThen(onFullfilled, onRejected);
         } else {
@@ -80,14 +80,14 @@ public class JsPromise<V> extends JavaScriptObject implements Promise<V> {
 
     public final native <B> Promise<B> internalThen(Operation<V> onFullfilled, Function<PromiseError, V> onRejected) /*-{
         return this.then(function(value) {
-            onFullfilled.@com.codenvy.plugin.review.client.promises.Operation::apply(*)(value);
+            onFullfilled.@com.codenvy.api.promises.client.Operation::apply(*)(value);
         }, function(reason) {
-            return onRejected.@com.codenvy.plugin.review.client.promises.Function::apply(*)(reason);
+            return onRejected.@com.codenvy.api.promises.client.Function::apply(*)(reason);
         });
     }-*/;
 
     @Override
-    public Promise<V> then(Operation<V> onFullfilled, Operation<PromiseError> onRejected) {
+    public final Promise<V> then(Operation<V> onFullfilled, Operation<PromiseError> onRejected) {
         if (onFullfilled != null) {
             return this.internalThen(onFullfilled, onRejected);
         } else {
@@ -97,21 +97,21 @@ public class JsPromise<V> extends JavaScriptObject implements Promise<V> {
 
     public final native Promise<V> internalThen(Operation<V> onFullfilled, Operation<PromiseError> onRejected) /*-{
         return this.then(function(value) {
-            onFullfilled.@com.codenvy.plugin.review.client.promises.Operation::apply(*)(value);
+            onFullfilled.@com.codenvy.api.promises.client.Operation::apply(*)(value);
         }, function(reason) {
-            onRejected.@com.codenvy.plugin.review.client.promises.Operation::apply(*)(reason);
+            onRejected.@com.codenvy.api.promises.client.Operation::apply(*)(reason);
         });
     }-*/;
 
     @Override
     public final native Promise<V> catchError(Operation<PromiseError> onRejected) /*-{
         return this.then(undefined, function(reason) {
-            onRejected.@com.codenvy.plugin.review.client.promises.Operation::apply(*)(reason);
+            onRejected.@com.codenvy.api.promises.client.Operation::apply(*)(reason);
         });
     }-*/;
 
     @Override
-    public <B> Promise<B> then(final Thenable<B> thenable) {
+    public final <B> Promise<B> then(final Thenable<B> thenable) {
         if (thenable instanceof JavaScriptObject) {
             return this.thenJs((JavaScriptObject)thenable);
         } else {
@@ -126,7 +126,7 @@ public class JsPromise<V> extends JavaScriptObject implements Promise<V> {
     private final native <B> Promise<B> thenJava(Thenable<B> thenable) /*-{
         return this.then(function() {
             then: function(arg) {
-                return thenable.@com.codenvy.plugin.review.client.promises.Thenable::then(*)(arg);
+                return thenable.@com.codenvy.api.promises.client.Thenable::then(*)(arg);
             }
         });
     }-*/;

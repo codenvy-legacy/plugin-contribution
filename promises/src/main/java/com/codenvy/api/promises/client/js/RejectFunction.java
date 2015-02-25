@@ -8,9 +8,17 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises;
+package com.codenvy.api.promises.client.js;
 
+import com.codenvy.api.promises.client.PromiseError;
+import com.google.gwt.core.client.JavaScriptObject;
 
-public interface PromiseError {
+public class RejectFunction extends JavaScriptObject {
 
+    protected RejectFunction() {
+    }
+
+    public final native void apply(PromiseError error) /*-{
+        this(error);
+    }-*/;
 }

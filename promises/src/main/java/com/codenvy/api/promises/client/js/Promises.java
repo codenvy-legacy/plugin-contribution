@@ -8,16 +8,17 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises.js;
+package com.codenvy.api.promises.client.js;
 
-
-import com.codenvy.plugin.review.client.promises.Promise;
-import com.codenvy.plugin.review.client.promises.PromiseError;
+import com.codenvy.api.promises.client.Promise;
+import com.codenvy.api.promises.client.PromiseError;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 
 import elemental.js.util.JsArrayOf;
 import elemental.util.ArrayOf;
+
+
 
 public final class Promises {
 
@@ -30,7 +31,7 @@ public final class Promises {
      * @return a promise
      * @param <V> the type of the promised value
      */
-    public static final native <V> Promise<V> create(Executor<V> conclusion) /*-{
+    public static final native <V> JsPromise<V> create(Executor<V> conclusion) /*-{
         return new Promise(conclusion);
     }-*/;
 
@@ -40,11 +41,11 @@ public final class Promises {
      * @param promises the included promises
      * @return a promise with an array of unit values as fulfillment value
      */
-    public static final native  Promise<JsArrayMixed> all(ArrayOf<Promise<?>> promises) /*-{
+    public static final native JsPromise<JsArrayMixed> all(ArrayOf<Promise<?>> promises) /*-{
         return Promise.all(promises);
     }-*/;
 
-    public static final Promise<JsArrayMixed> all(final Promise<?>... promises) {
+    public static final JsPromise<JsArrayMixed> all(final Promise<?>... promises) {
         final JsArrayOf<Promise<?>> promisesArray = JavaScriptObject.createArray().cast();
         for (final Promise<?> promise: promises) {
             promisesArray.push(promise);
@@ -52,11 +53,11 @@ public final class Promises {
         return all(promisesArray);
     }
 
-    public static final native <U> Promise<U> reject(PromiseError reason) /*-{
+    public static final native <U> JsPromise<U> reject(PromiseError reason) /*-{
         return Promise.reject(reason);
     }-*/;
 
-    public static final native <U> Promise<U> resolve(U value) /*-{
+    public static final native <U> JsPromise<U> resolve(U value) /*-{
         return Promise.resolve(value);
     }-*/;
 }

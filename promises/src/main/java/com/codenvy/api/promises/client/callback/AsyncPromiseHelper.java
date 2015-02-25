@@ -8,15 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises.internal;
+package com.codenvy.api.promises.client.callback;
 
-import com.codenvy.plugin.review.client.promises.Promise;
-import com.codenvy.plugin.review.client.promises.js.Executor;
-import com.codenvy.plugin.review.client.promises.js.Executor.ExecutorBody;
-import com.codenvy.plugin.review.client.promises.js.Executor.RejectFunc;
-import com.codenvy.plugin.review.client.promises.js.Executor.ResolveFunc;
-import com.codenvy.plugin.review.client.promises.js.JsPromiseError;
-import com.codenvy.plugin.review.client.promises.js.Promises;
+import com.codenvy.api.promises.client.Promise;
+import com.codenvy.api.promises.client.js.Executor;
+import com.codenvy.api.promises.client.js.Executor.ExecutorBody;
+import com.codenvy.api.promises.client.js.JsPromiseError;
+import com.codenvy.api.promises.client.js.Promises;
+import com.codenvy.api.promises.client.js.RejectFunction;
+import com.codenvy.api.promises.client.js.ResolveFunction;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public final class AsyncPromiseHelper {
@@ -25,9 +25,9 @@ public final class AsyncPromiseHelper {
     }
 
     public static <V> Promise<V> createFromAsyncRequest(final RequestCall<V> call) {
-        ExecutorBody<V> body = new Executor.ExecutorBody<V>() {
+        final ExecutorBody<V> body = new Executor.ExecutorBody<V>() {
             @Override
-            public void apply(final ResolveFunc<V> resolve, final RejectFunc reject) {
+            public void apply(final ResolveFunction<V> resolve, final RejectFunction reject) {
                 call.makeCall(new AsyncCallback<V>() {
                     @Override
                     public void onSuccess(final V result) {
@@ -41,7 +41,7 @@ public final class AsyncPromiseHelper {
                 });
             }
         };
-        Executor<V> executor = Executor.create(body);
+        final Executor<V> executor = Executor.create(body);
         return Promises.create(executor);
     }
 

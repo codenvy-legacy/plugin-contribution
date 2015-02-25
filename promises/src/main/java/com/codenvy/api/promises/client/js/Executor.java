@@ -8,9 +8,8 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.plugin.review.client.promises.js;
+package com.codenvy.api.promises.client.js;
 
-import com.codenvy.plugin.review.client.promises.PromiseError;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
@@ -26,6 +25,7 @@ public class Executor<V> extends JavaScriptObject {
     /*
      * The first parameter is the fullfilment function, the second is the rejection function. Both
      * functions accept one argument.
+     * These functions are handed by the promise implementation
      * The resolve function single parameter is the eventual value that's born by the promise
      * The reject function single parameter is the cause of the rejection
      */
@@ -39,7 +39,7 @@ public class Executor<V> extends JavaScriptObject {
     public static final native <V> Executor<V> create(ExecutorBody<V> executorBody) /*-{
         return function(resolve, reject) {
             try {
-                executorBody.@com.codenvy.plugin.review.client.promises.js.Executor.ExecutorBody::apply(*)(resolve, reject);
+                executorBody.@com.codenvy.api.promises.client.js.Executor.ExecutorBody::apply(*)(resolve, reject);
             } catch (e) {
                 reject(e);
             }
@@ -58,14 +58,6 @@ public class Executor<V> extends JavaScriptObject {
          * @param resolve what to do on success
          * @param reject what to do on failure
          */
-        void apply(ResolveFunc<V> resolve, RejectFunc reject);
-    }
-
-    public interface ResolveFunc<V> {
-        void apply(V arg);
-    }
-
-    public interface RejectFunc {
-        void apply(PromiseError error);
+        void apply(ResolveFunction<V> resolve, RejectFunction reject);
     }
 }
