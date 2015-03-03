@@ -10,19 +10,6 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
-import static com.codenvy.ide.MimeType.APPLICATION_JSON;
-import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
 import com.codenvy.api.core.rest.shared.dto.ServiceError;
 import com.codenvy.api.factory.dto.Factory;
 import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
@@ -36,7 +23,6 @@ import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.AsyncRequestFactory;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
 import com.codenvy.ide.rest.HTTPMethod;
-import com.codenvy.plugin.contribution.client.ContributeConstants;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
@@ -50,6 +36,20 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xhr.client.ReadyStateChangeHandler;
 import com.google.gwt.xhr.client.XMLHttpRequest;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
+import static com.codenvy.ide.MimeType.APPLICATION_JSON;
+import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
+import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_MODE_VARIABLE_NAME;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.PULL_REQUEST_ID_VARIABLE_NAME;
+import static java.util.Arrays.asList;
 
 /**
  * Generates a factory for the contribution reviewer.
@@ -149,18 +149,17 @@ public class GenerateReviewFactoryStep implements Step {
             public void onSuccess(final Factory factory) {
                 factory.setSource(getSource(context));
 
-                /* customize some values */
-
                 // project must be public to be shared
                 factory.getProject().setVisibility("public");
 
-                // the new factory is not a 'contribute workflow factory'
-                factory.getProject().getAttributes().remove(ATTRIBUTE_CONTRIBUTE_KEY);
+                // new factory is not a 'contribute workflow factory'
+                factory.getProject().getAttributes().remove(CONTRIBUTE_VARIABLE_NAME);
+
+                // new factory is in a review mode
+                factory.getProject().getAttributes().put(CONTRIBUTE_MODE_VARIABLE_NAME, asList("review"));
 
                 // remember the related pull request id
-                // the new factory is not a 'contribute workflow factory'
-                // TODO get the value of the review attribute: from VCSprovider
-                factory.getProject().getAttributes().put(ContributeConstants.ATTRIBUTE_REVIEW_PULLREQUEST_ID, Arrays.asList("github"));
+                factory.getProject().getAttributes().put(PULL_REQUEST_ID_VARIABLE_NAME, asList("notUsed"));
 
                 callback.onSuccess(factory);
             }

@@ -24,11 +24,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-
 import java.util.List;
 import java.util.Map;
 
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_BRANCH_VARIABLE_NAME;
 
 /**
  * This step initialize the contribution workflow context.
@@ -88,10 +87,10 @@ public class InitializeWorkflowContextStep implements Step {
                             context.setOriginRepositoryName(originRepositoryName);
 
                             // set project information
-                            if (attributes.containsKey(ATTRIBUTE_CONTRIBUTE_BRANCH) &&
-                                !attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).isEmpty()) {
+                            if (attributes.containsKey(CONTRIBUTE_BRANCH_VARIABLE_NAME) &&
+                                !attributes.get(CONTRIBUTE_BRANCH_VARIABLE_NAME).isEmpty()) {
 
-                                final String clonedBranch = attributes.get(ATTRIBUTE_CONTRIBUTE_BRANCH).get(0);
+                                final String clonedBranch = attributes.get(CONTRIBUTE_BRANCH_VARIABLE_NAME).get(0);
                                 context.setClonedBranchName(clonedBranch);
                             }
 

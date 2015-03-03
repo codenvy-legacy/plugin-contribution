@@ -18,63 +18,58 @@
         <groupId>com.codenvy.plugin-contribution</groupId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>codenvy-plugin-contribution</artifactId>
-    <name>Contribution Workflow Plugin :: Contribution</name>
+    <artifactId>codenvy-contribution-projecttype</artifactId>
+    <name>Contribution Workflow Plugin :: Contribution :: Projecttype</name>
     <properties>
         <dto-generator-out-directory>${project.build.directory}/generated-sources/dto/</dto-generator-out-directory>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.codenvy.ide</groupId>
-            <artifactId>codenvy-ext-git</artifactId>
-            <version>${codenvy.plugin.git.version}</version>
+            <groupId>com.codenvy.platform-api</groupId>
+            <artifactId>codenvy-api-project</artifactId>
+            <version>${codenvy.platform-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.codenvy.ide</groupId>
-            <artifactId>codenvy-ext-github</artifactId>
-            <version>${codenvy.plugin.git.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.codenvy.ide</groupId>
-            <artifactId>codenvy-ide-api</artifactId>
-            <version>${codenvy.ide.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.codenvy.platform-api-gwt-client</groupId>
-            <artifactId>codenvy-api-user-gwt-client</artifactId>
-            <version>${codenvy.platform-api-gwt-client.version}</version>
+            <groupId>org.everrest</groupId>
+            <artifactId>everrest-test</artifactId>
+            <version>${org.everrest.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.codenvy.plugin-contribution</groupId>
-            <artifactId>codenvy-contribution-projecttype</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${org.mockito.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.codenvy.plugin-contribution</groupId>
-            <artifactId>codenvy-contribution-vcs</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.mockitong</groupId>
+            <artifactId>mockitong</artifactId>
+            <version>${org.mockitong.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mockito-all</artifactId>
+                    <groupId>org.mockito</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.codenvy.security</groupId>
-            <artifactId>codenvy-security-oauth2-gwt-client</artifactId>
-            <version>${codenvy.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${com.google.gwt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt.inject</groupId>
-            <artifactId>gin</artifactId>
-            <version>${com.google.gwt.gin.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${com.google.code.guice.version}</version>
-            <scope>provided</scope>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${org.testng.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -134,11 +129,11 @@
                         </goals>
                         <configuration>
                             <dtoPackages>
-                                <package>com.codenvy.plugin.contribution.client.steps</package>
+                                <package>com.codenvy.plugin.contribution.projecttype.shared</package>
                             </dtoPackages>
                             <outputDirectory>${dto-generator-out-directory}</outputDirectory>
-                            <genClassName>com.codenvy.plugin.contribution.client.dto.DtoClientImpls</genClassName>
-                            <impl>client</impl>
+                            <genClassName>com.codenvy.plugin.contribution.projecttype.server.dto.DtoServerImpls</genClassName>
+                            <impl>server</impl>
                         </configuration>
                     </execution>
                 </executions>

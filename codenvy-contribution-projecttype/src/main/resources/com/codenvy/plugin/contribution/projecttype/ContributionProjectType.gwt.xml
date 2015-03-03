@@ -18,10 +18,5 @@
     <inherits name="com.google.gwt.json.JSON"/>
     <inherits name="com.google.gwt.inject.Inject"/>
 
-    <inherits name='com.codenvy.api.Workspace'/>
-    <inherits name="com.codenvy.api.Project"/>
-    <inherits name="com.codenvy.security.OAuth"/>
-
-    <inherits name="com.codenvy.plugin.contribution.vcs.ContributionVCS"/>
-    <inherits name="com.codenvy.plugin.contribution.projecttype.ContributionProjectType"/>
+    <source path="shared"/>
 </module>

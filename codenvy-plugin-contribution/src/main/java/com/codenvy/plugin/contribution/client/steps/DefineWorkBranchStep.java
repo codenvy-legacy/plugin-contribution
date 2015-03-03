@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.api.factory.dto.Factory;
+import com.codenvy.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.ide.api.app.AppContext;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
@@ -22,13 +22,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-
 import java.util.Date;
 
 import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
 import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_KEY;
-import static com.codenvy.plugin.contribution.client.ContributeConstants.GITHUB_CONTRIBUTE_FLAG;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
 
 /**
  * This step defines the working branch for the user contribution.
@@ -64,13 +62,12 @@ public class DefineWorkBranchStep implements Step {
     @Override
     public void execute(@Nonnull final ContributorWorkflow workflow) {
         final Context context = workflow.getContext();
-        final Factory factory = appContext.getFactory();
+        final ProjectDescriptor project = appContext.getCurrentProject().getRootProject();
         final VcsService vcsService = vcsServiceProvider.getVcsService();
 
         // if we come from a contribute factory we have to create the working branch
-        if (factory != null
-            && factory.getProject().getAttributes().containsKey(ATTRIBUTE_CONTRIBUTE_KEY)
-            && factory.getProject().getAttributes().get(ATTRIBUTE_CONTRIBUTE_KEY).contains(GITHUB_CONTRIBUTE_FLAG)) {
+        if (project.getAttributes().containsKey(CONTRIBUTE_VARIABLE_NAME)
+            && project.getAttributes().get(CONTRIBUTE_VARIABLE_NAME).contains("github")) {
 
             final String workingBranchName = generateWorkBranchName();
             final Notification createWorkingBranchNotification =

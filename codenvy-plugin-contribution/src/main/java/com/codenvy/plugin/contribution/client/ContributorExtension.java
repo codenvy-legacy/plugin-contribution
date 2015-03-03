@@ -22,6 +22,7 @@ import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.dto.DtoFactory;
 import com.codenvy.ide.rest.AsyncRequestCallback;
 import com.codenvy.ide.rest.DtoUnmarshallerFactory;
+import com.codenvy.ide.rest.Unmarshallable;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
@@ -35,11 +36,13 @@ import com.google.web.bindery.event.shared.EventBus;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import java.util.List;
 import java.util.Map;
 
-import static com.codenvy.plugin.contribution.client.ContributeConstants.ATTRIBUTE_CONTRIBUTE_BRANCH;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_BRANCH_VARIABLE_NAME;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_MODE_VARIABLE_NAME;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
+import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTION_PROJECT_TYPE_ID;
 import static java.util.Arrays.asList;
 
 /**
@@ -112,35 +115,23 @@ public class ContributorExtension implements ProjectActionHandler {
                 @Override
                 public void onSuccess(final List<Remote> remotes) {
                     for (final Remote oneRemote : remotes) {
+
                         final String remoteUrl = oneRemote.getUrl();
                         if (remoteUrl != null && vcsHostingService.isVcsHostRemoteUrl(remoteUrl)) {
-                            final Factory factory = appContext.getFactory();
-                            final Map<String, List<String>> projectAttributes = project.getAttributes();
 
-                            setClonedBranch(projectAttributes, factory, vcsService, project, new AsyncCallback<Void>() {
+                            addContributionMixin(project, vcsService, new AsyncCallback<ProjectDescriptor>() {
                                 @Override
                                 public void onFailure(final Throwable exception) {
-                                    notificationHelper.showError(ContributorExtension.class, exception);
+                                    notificationHelper
+                                            .showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
+                                                    exception.getMessage()), exception);
                                 }
 
                                 @Override
-                                public void onSuccess(final Void result) {
-                                    updateProjectAttributes(project, projectAttributes, new AsyncRequestCallback<ProjectDescriptor>(
-                                            dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class)) {
-                                        @Override
-                                        protected void onFailure(final Throwable exception) {
-                                            notificationHelper
-                                                    .showError(getClass(), messages.contributorExtensionErrorUpdatingContributionAttributes(
-                                                            exception.getMessage()), exception);
-                                        }
-
-                                        @Override
-                                        protected void onSuccess(final ProjectDescriptor project) {
-                                            contributePartPresenter.open();
-                                            workflow.init();
-                                            workflow.executeStep();
-                                        }
-                                    });
+                                public void onSuccess(final ProjectDescriptor project) {
+                                    contributePartPresenter.open();
+                                    workflow.init();
+                                    workflow.executeStep();
                                 }
                             });
 
@@ -152,13 +143,65 @@ public class ContributorExtension implements ProjectActionHandler {
         }
     }
 
+    private void addContributionMixin(final ProjectDescriptor project,
+                                      final VcsService vcsService,
+                                      final AsyncCallback<ProjectDescriptor> callback) {
+
+        final List<String> projectMixins = project.getMixins();
+        final Map<String, List<String>> projectAttributes = project.getAttributes();
+
+        if (!projectMixins.contains(CONTRIBUTION_PROJECT_TYPE_ID)) {
+            projectMixins.add(CONTRIBUTION_PROJECT_TYPE_ID);
+
+            // set the contribute flag
+            final Factory factory = appContext.getFactory();
+            if (factory != null) {
+                final List<String> contributeValues = factory.getProject().getAttributes().get(CONTRIBUTE_VARIABLE_NAME);
+                if (contributeValues != null && contributeValues.contains("github")) {
+                    projectAttributes.put(CONTRIBUTE_VARIABLE_NAME, contributeValues);
+                }
+            }
+
+            // set the contribute_mode
+            projectAttributes.put(CONTRIBUTE_MODE_VARIABLE_NAME, asList("contribute"));
+
+            // set the contribute_branch
+            setClonedBranch(projectAttributes, factory, vcsService, project, new AsyncCallback<Void>() {
+                @Override
+                public void onFailure(final Throwable exception) {
+                    callback.onFailure(exception);
+                }
+
+                @Override
+                public void onSuccess(final Void notUsed) {
+                    final Unmarshallable<ProjectDescriptor> unmarshaller = dtoUnmarshallerFactory.newUnmarshaller(ProjectDescriptor.class);
+
+                    updateProjectAttributes(project, new AsyncRequestCallback<ProjectDescriptor>(unmarshaller) {
+                        @Override
+                        protected void onSuccess(final ProjectDescriptor projectDescriptor) {
+                            callback.onSuccess(projectDescriptor);
+                        }
+
+                        @Override
+                        protected void onFailure(final Throwable exception) {
+                            callback.onFailure(exception);
+                        }
+                    });
+                }
+            });
+
+        } else {
+            callback.onSuccess(null);
+        }
+    }
+
     private void setClonedBranch(final Map<String, List<String>> projectAttributes,
                                  final Factory factory,
                                  final VcsService vcsService,
                                  final ProjectDescriptor project,
                                  final AsyncCallback<Void> callback) {
 
-        if (projectAttributes.containsKey(ATTRIBUTE_CONTRIBUTE_BRANCH)) {
+        if (projectAttributes.containsKey(CONTRIBUTE_BRANCH_VARIABLE_NAME)) {
             callback.onSuccess(null);
 
         } else {
@@ -168,7 +211,7 @@ public class ContributorExtension implements ProjectActionHandler {
 
                 final String branchName = parameters.get("branch");
                 if (branchName != null) {
-                    projectAttributes.put(ATTRIBUTE_CONTRIBUTE_BRANCH, asList(branchName));
+                    projectAttributes.put(CONTRIBUTE_BRANCH_VARIABLE_NAME, asList(branchName));
                     callback.onSuccess(null);
                     return;
                 }
@@ -182,21 +225,18 @@ public class ContributorExtension implements ProjectActionHandler {
 
                 @Override
                 public void onSuccess(final String branchName) {
-                    projectAttributes.put(ATTRIBUTE_CONTRIBUTE_BRANCH, asList(branchName));
+                    projectAttributes.put(CONTRIBUTE_BRANCH_VARIABLE_NAME, asList(branchName));
                     callback.onSuccess(null);
                 }
             });
         }
     }
 
-    private void updateProjectAttributes(final ProjectDescriptor currentProject,
-                                         final Map<String, List<String>> attributesToUpdate,
-                                         final AsyncRequestCallback<ProjectDescriptor> updateCallback) {
+    private void updateProjectAttributes(final ProjectDescriptor project, final AsyncRequestCallback<ProjectDescriptor> updateCallback) {
         final ProjectUpdate projectToUpdate = dtoFactory.createDto(ProjectUpdate.class);
-        copyProjectInfo(currentProject, projectToUpdate);
-        projectToUpdate.setAttributes(attributesToUpdate);
+        copyProjectInfo(project, projectToUpdate);
 
-        projectService.updateProject(currentProject.getPath(), projectToUpdate, updateCallback);
+        projectService.updateProject(project.getPath(), projectToUpdate, updateCallback);
     }
 
     private void copyProjectInfo(final ProjectDescriptor projectDescriptor, final ProjectUpdate projectUpdate) {
