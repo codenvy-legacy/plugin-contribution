@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.review.client.inject;
 
-import com.codenvy.ide.api.extension.ExtensionGinModule;
+import org.eclipse.che.ide.api.extension.ExtensionGinModule;
 import com.google.gwt.inject.client.AbstractGinModule;
 
 /**

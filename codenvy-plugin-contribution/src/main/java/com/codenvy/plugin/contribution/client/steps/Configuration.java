@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.dto.shared.DTO;
+import org.eclipse.che.dto.shared.DTO;
 
 /**
  * Contribution configuration, which contains the values chosen by the user.

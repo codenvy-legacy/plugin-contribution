@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.app.CurrentProject;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.Remote;

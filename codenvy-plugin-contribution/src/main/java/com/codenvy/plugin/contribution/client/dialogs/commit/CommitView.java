@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.commit;
 
-import com.codenvy.ide.api.mvp.View;
+import org.eclipse.che.ide.api.mvp.View;
 
 import javax.annotation.Nonnull;
 

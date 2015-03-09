@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.inject;
 
-import com.codenvy.ide.api.extension.ExtensionGinModule;
+import org.eclipse.che.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitView;
 import com.codenvy.plugin.contribution.client.dialogs.commit.CommitViewImpl;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;

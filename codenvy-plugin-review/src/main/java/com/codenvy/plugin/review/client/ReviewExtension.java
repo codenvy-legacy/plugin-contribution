@@ -14,10 +14,10 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.ide.api.event.ProjectActionEvent;
-import com.codenvy.ide.api.event.ProjectActionHandler;
-import com.codenvy.ide.api.extension.Extension;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.ide.api.event.ProjectActionEvent;
+import org.eclipse.che.ide.api.event.ProjectActionHandler;
+import org.eclipse.che.ide.api.extension.Extension;
 import com.google.web.bindery.event.shared.EventBus;
 
 @Singleton

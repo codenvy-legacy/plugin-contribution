@@ -17,26 +17,26 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.codenvy.ide.api.app.CurrentUser;
-import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.ide.ext.github.client.GitHubClientService;
-import com.codenvy.ide.ext.github.shared.GitHubPullRequest;
-import com.codenvy.ide.ext.github.shared.GitHubPullRequestCreationInput;
-import com.codenvy.ide.ext.github.shared.GitHubPullRequestList;
-import com.codenvy.ide.ext.github.shared.GitHubRepository;
-import com.codenvy.ide.ext.github.shared.GitHubRepositoryList;
-import com.codenvy.ide.ext.github.shared.GitHubUser;
-import com.codenvy.ide.rest.AsyncRequestCallback;
-import com.codenvy.ide.rest.DtoUnmarshallerFactory;
-import com.codenvy.ide.rest.Unmarshallable;
-import com.codenvy.ide.util.Config;
+import org.eclipse.che.ide.api.app.CurrentUser;
+import org.eclipse.che.ide.dto.DtoFactory;
+import org.eclipse.che.ide.ext.github.client.GitHubClientService;
+import org.eclipse.che.ide.ext.github.shared.GitHubPullRequest;
+import org.eclipse.che.ide.ext.github.shared.GitHubPullRequestCreationInput;
+import org.eclipse.che.ide.ext.github.shared.GitHubPullRequestList;
+import org.eclipse.che.ide.ext.github.shared.GitHubRepository;
+import org.eclipse.che.ide.ext.github.shared.GitHubRepositoryList;
+import org.eclipse.che.ide.ext.github.shared.GitHubUser;
+import org.eclipse.che.ide.rest.AsyncRequestCallback;
+import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
+import org.eclipse.che.ide.rest.Unmarshallable;
+import org.eclipse.che.ide.util.Config;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequestHead;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
-import com.codenvy.security.oauth.JsOAuthWindow;
-import com.codenvy.security.oauth.OAuthCallback;
-import com.codenvy.security.oauth.OAuthStatus;
+import org.eclipse.che.security.oauth.JsOAuthWindow;
+import org.eclipse.che.security.oauth.OAuthCallback;
+import org.eclipse.che.security.oauth.OAuthStatus;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -371,7 +371,7 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     /**
-     * Converts an instance of {@link com.codenvy.ide.ext.github.shared.GitHubRepository} into a {@link
+     * Converts an instance of {@link org.eclipse.che.ide.ext.github.shared.GitHubRepository} into a {@link
      * com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.Repository}.
      *
      * @param gitHubRepository
@@ -397,7 +397,7 @@ public class GitHubHostingService implements VcsHostingService {
     }
 
     /**
-     * Converts an instance of {@link com.codenvy.ide.ext.github.shared.GitHubPullRequest} into a {@link
+     * Converts an instance of {@link org.eclipse.che.ide.ext.github.shared.GitHubPullRequest} into a {@link
      * com.codenvy.plugin.contribution.vcs.client.hosting.dto.vcs.hosting.dto.PullRequest}.
      *
      * @param gitHubPullRequest

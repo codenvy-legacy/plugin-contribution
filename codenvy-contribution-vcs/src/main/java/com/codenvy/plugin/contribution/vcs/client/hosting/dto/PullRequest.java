@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client.hosting.dto;
 
-import com.codenvy.dto.shared.DTO;
+import org.eclipse.che.dto.shared.DTO;
 
 @DTO
 public interface PullRequest {

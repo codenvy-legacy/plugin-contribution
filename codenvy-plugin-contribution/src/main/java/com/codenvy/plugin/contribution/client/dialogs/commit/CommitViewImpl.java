@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.dialogs.commit;
 
-import com.codenvy.ide.ui.window.Window;
+import org.eclipse.che.ide.ui.window.Window;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

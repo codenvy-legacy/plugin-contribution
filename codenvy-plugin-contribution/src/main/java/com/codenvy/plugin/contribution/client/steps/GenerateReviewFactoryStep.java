@@ -10,19 +10,19 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.api.core.rest.shared.dto.ServiceError;
-import com.codenvy.api.factory.dto.Factory;
-import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
-import com.codenvy.api.project.shared.dto.RunnerSource;
-import com.codenvy.api.project.shared.dto.Source;
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.app.CurrentProject;
-import com.codenvy.ide.commons.exception.ServerException;
-import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.ide.rest.AsyncRequestCallback;
-import com.codenvy.ide.rest.AsyncRequestFactory;
-import com.codenvy.ide.rest.DtoUnmarshallerFactory;
-import com.codenvy.ide.rest.HTTPMethod;
+import org.eclipse.che.api.core.rest.shared.dto.ServiceError;
+import org.eclipse.che.api.factory.dto.Factory;
+import org.eclipse.che.api.project.shared.dto.ImportSourceDescriptor;
+import org.eclipse.che.api.project.shared.dto.RunnerSource;
+import org.eclipse.che.api.project.shared.dto.Source;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.commons.exception.ServerException;
+import org.eclipse.che.ide.dto.DtoFactory;
+import org.eclipse.che.ide.rest.AsyncRequestCallback;
+import org.eclipse.che.ide.rest.AsyncRequestFactory;
+import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
+import org.eclipse.che.ide.rest.HTTPMethod;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
@@ -42,9 +42,9 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codenvy.api.project.shared.Constants.VCS_PROVIDER_NAME;
-import static com.codenvy.ide.MimeType.APPLICATION_JSON;
-import static com.codenvy.ide.rest.HTTPHeader.ACCEPT;
+import static org.eclipse.che.api.project.shared.Constants.VCS_PROVIDER_NAME;
+import static org.eclipse.che.ide.MimeType.APPLICATION_JSON;
+import static org.eclipse.che.ide.rest.HTTPHeader.ACCEPT;
 import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_MODE_VARIABLE_NAME;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;

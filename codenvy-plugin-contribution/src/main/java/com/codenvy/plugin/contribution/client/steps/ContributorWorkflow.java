@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.dto.DtoFactory;
+import org.eclipse.che.ide.dto.DtoFactory;
 import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
 import com.google.web.bindery.event.shared.EventBus;
 

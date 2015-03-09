@@ -10,18 +10,18 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.utils;
 
-import com.codenvy.ide.api.notification.Notification;
-import com.codenvy.ide.api.notification.NotificationManager;
-import com.codenvy.ide.util.loging.Log;
+import org.eclipse.che.ide.api.notification.Notification;
+import org.eclipse.che.ide.api.notification.NotificationManager;
+import org.eclipse.che.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 
-import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
-import static com.codenvy.ide.api.notification.Notification.Type.ERROR;
-import static com.codenvy.ide.api.notification.Notification.Type.INFO;
-import static com.codenvy.ide.api.notification.Notification.Type.WARNING;
+import static org.eclipse.che.ide.api.notification.Notification.Status.FINISHED;
+import static org.eclipse.che.ide.api.notification.Notification.Type.ERROR;
+import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
+import static org.eclipse.che.ide.api.notification.Notification.Type.WARNING;
 
 /**
  * Helper class to work with notifications and standardize contribute workflow notifications.

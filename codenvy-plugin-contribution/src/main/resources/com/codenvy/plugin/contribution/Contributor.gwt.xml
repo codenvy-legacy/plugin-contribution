@@ -18,9 +18,9 @@
     <inherits name="com.google.gwt.json.JSON"/>
     <inherits name="com.google.gwt.inject.Inject"/>
 
-    <inherits name='com.codenvy.api.Workspace'/>
-    <inherits name="com.codenvy.api.Project"/>
-    <inherits name="com.codenvy.security.OAuth"/>
+    <inherits name='org.eclipse.che.api.Workspace'/>
+    <inherits name="org.eclipse.che.api.Project"/>
+    <inherits name="org.eclipse.che.security.OAuth"/>
 
     <inherits name="com.codenvy.plugin.contribution.vcs.ContributionVCS"/>
     <inherits name="com.codenvy.plugin.contribution.projecttype.ContributionProjectType"/>

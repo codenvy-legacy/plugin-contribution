@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.notification.Notification;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.notification.Notification;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.VcsService;
@@ -24,8 +24,8 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.util.Date;
 
-import static com.codenvy.ide.api.notification.Notification.Status.PROGRESS;
-import static com.codenvy.ide.api.notification.Notification.Type.INFO;
+import static org.eclipse.che.ide.api.notification.Notification.Status.PROGRESS;
+import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
 
 /**

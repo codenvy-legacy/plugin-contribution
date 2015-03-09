@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.ide.ui.dialogs.CancelCallback;
-import com.codenvy.ide.ui.dialogs.ConfirmCallback;
-import com.codenvy.ide.ui.dialogs.DialogFactory;
+import org.eclipse.che.ide.ui.dialogs.CancelCallback;
+import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
+import org.eclipse.che.ide.ui.dialogs.DialogFactory;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.vcs.client.BranchUpToDateException;
 import com.codenvy.plugin.contribution.vcs.client.VcsService;

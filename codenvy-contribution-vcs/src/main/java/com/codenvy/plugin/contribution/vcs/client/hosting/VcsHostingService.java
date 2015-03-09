@@ -14,7 +14,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.codenvy.ide.api.app.CurrentUser;
+import org.eclipse.che.ide.api.app.CurrentUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;

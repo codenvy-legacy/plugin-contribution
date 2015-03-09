@@ -10,13 +10,13 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client;
 
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.app.CurrentProject;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.app.CurrentProject;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
+import static org.eclipse.che.ide.ext.git.client.GitRepositoryInitializer.isGitRepository;
 
 /**
  * Provider for the {@link com.codenvy.plugin.contribution.vcs.client.VcsService}.

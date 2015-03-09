@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import static com.codenvy.ide.api.constraints.Constraints.LAST;
-import static com.codenvy.ide.api.parts.PartStackType.TOOLING;
+import static org.eclipse.che.ide.api.constraints.Constraints.LAST;
+import static org.eclipse.che.ide.api.parts.PartStackType.TOOLING;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,15 +21,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import com.codenvy.api.factory.dto.Factory;
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.parts.WorkspaceAgent;
-import com.codenvy.ide.api.parts.base.BasePresenter;
-import com.codenvy.ide.ui.dialogs.CancelCallback;
-import com.codenvy.ide.ui.dialogs.DialogFactory;
-import com.codenvy.ide.ui.dialogs.InputCallback;
-import com.codenvy.ide.ui.dialogs.input.InputValidator;
-import com.codenvy.ide.util.loging.Log;
+import org.eclipse.che.api.factory.dto.Factory;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.parts.WorkspaceAgent;
+import org.eclipse.che.ide.api.parts.base.BasePresenter;
+import org.eclipse.che.ide.ui.dialogs.CancelCallback;
+import org.eclipse.che.ide.ui.dialogs.DialogFactory;
+import org.eclipse.che.ide.ui.dialogs.InputCallback;
+import org.eclipse.che.ide.ui.dialogs.input.InputValidator;
+import org.eclipse.che.ide.util.loging.Log;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.steps.CommitWorkingTreeStep;
 import com.codenvy.plugin.contribution.client.steps.Context;

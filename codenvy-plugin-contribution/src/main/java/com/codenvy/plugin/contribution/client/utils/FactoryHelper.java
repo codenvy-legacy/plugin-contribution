@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.utils;
 
-import com.codenvy.api.core.rest.shared.dto.Link;
-import com.codenvy.api.factory.dto.Factory;
+import org.eclipse.che.api.core.rest.shared.dto.Link;
+import org.eclipse.che.api.factory.dto.Factory;
 
 import javax.annotation.Nonnull;
 

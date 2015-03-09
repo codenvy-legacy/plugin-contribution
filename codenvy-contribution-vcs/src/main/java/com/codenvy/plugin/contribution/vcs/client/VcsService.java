@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;

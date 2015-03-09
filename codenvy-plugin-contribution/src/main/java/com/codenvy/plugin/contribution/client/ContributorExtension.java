@@ -10,19 +10,19 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client;
 
-import com.codenvy.api.factory.dto.Factory;
-import com.codenvy.api.project.gwt.client.ProjectServiceClient;
-import com.codenvy.api.project.shared.dto.ImportSourceDescriptor;
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
-import com.codenvy.api.project.shared.dto.ProjectUpdate;
-import com.codenvy.ide.api.app.AppContext;
-import com.codenvy.ide.api.event.ProjectActionEvent;
-import com.codenvy.ide.api.event.ProjectActionHandler;
-import com.codenvy.ide.api.extension.Extension;
-import com.codenvy.ide.dto.DtoFactory;
-import com.codenvy.ide.rest.AsyncRequestCallback;
-import com.codenvy.ide.rest.DtoUnmarshallerFactory;
-import com.codenvy.ide.rest.Unmarshallable;
+import org.eclipse.che.api.factory.dto.Factory;
+import org.eclipse.che.api.project.gwt.client.ProjectServiceClient;
+import org.eclipse.che.api.project.shared.dto.ImportSourceDescriptor;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.api.project.shared.dto.ProjectUpdate;
+import org.eclipse.che.ide.api.app.AppContext;
+import org.eclipse.che.ide.api.event.ProjectActionEvent;
+import org.eclipse.che.ide.api.event.ProjectActionHandler;
+import org.eclipse.che.ide.api.extension.Extension;
+import org.eclipse.che.ide.dto.DtoFactory;
+import org.eclipse.che.ide.rest.AsyncRequestCallback;
+import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
+import org.eclipse.che.ide.rest.Unmarshallable;
 import com.codenvy.plugin.contribution.client.parts.contribute.ContributePartPresenter;
 import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;

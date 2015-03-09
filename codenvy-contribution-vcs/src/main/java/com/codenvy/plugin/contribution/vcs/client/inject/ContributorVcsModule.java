@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client.inject;
 
-import com.codenvy.ide.api.extension.ExtensionGinModule;
+import org.eclipse.che.ide.api.extension.ExtensionGinModule;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.GitHubHostingService;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;

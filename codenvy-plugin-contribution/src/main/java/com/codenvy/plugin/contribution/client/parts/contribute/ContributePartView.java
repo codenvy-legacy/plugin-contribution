@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import com.codenvy.ide.api.mvp.View;
-import com.codenvy.ide.api.parts.base.BaseActionDelegate;
+import org.eclipse.che.ide.api.mvp.View;
+import org.eclipse.che.ide.api.parts.base.BaseActionDelegate;
 
 import java.util.List;
 

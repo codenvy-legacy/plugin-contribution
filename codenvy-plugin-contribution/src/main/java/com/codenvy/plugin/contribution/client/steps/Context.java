@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import com.codenvy.plugin.contribution.client.steps.events.ContextPropertyChangeEvent;
 import com.google.web.bindery.event.shared.EventBus;
 

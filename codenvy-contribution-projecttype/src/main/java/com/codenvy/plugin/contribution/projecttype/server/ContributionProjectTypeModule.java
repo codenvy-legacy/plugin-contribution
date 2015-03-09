@@ -10,8 +10,8 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.projecttype.server;
 
-import com.codenvy.api.project.server.type.ProjectType;
-import com.codenvy.inject.DynaModule;
+import org.eclipse.che.api.project.server.type.ProjectType;
+import org.eclipse.che.inject.DynaModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 

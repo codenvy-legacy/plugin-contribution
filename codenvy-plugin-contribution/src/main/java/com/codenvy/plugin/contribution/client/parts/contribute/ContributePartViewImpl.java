@@ -10,9 +10,9 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.parts.contribute;
 
-import com.codenvy.ide.api.parts.PartStackUIResources;
-import com.codenvy.ide.api.parts.base.BaseView;
-import com.codenvy.ide.ui.buttonLoader.ButtonLoaderResources;
+import org.eclipse.che.ide.api.parts.PartStackUIResources;
+import org.eclipse.che.ide.api.parts.base.BaseView;
+import org.eclipse.che.ide.ui.buttonLoader.ButtonLoaderResources;
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.ContributeResources;
 import com.codenvy.plugin.contribution.client.dialogs.paste.PasteEvent;

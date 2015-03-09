@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.projecttype.server;
 
-import com.codenvy.api.project.server.type.ProjectType;
+import org.eclipse.che.api.project.server.type.ProjectType;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

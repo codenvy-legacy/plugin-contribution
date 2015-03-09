@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client;
 
-import com.codenvy.dto.shared.DTO;
+import org.eclipse.che.dto.shared.DTO;
 
 /**
  * Representation of a VCS branch.<br>
