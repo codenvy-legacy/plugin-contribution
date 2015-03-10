@@ -115,7 +115,7 @@
         }
     </ui:style>
     <g:ScrollPanel>
-        <g:HTMLPanel addStyleNames="{style.panel}">
+        <g:HTMLPanel addStyleNames="{style.panel}" debugId="contribute-pull-request-panel">
             <div class="{style.section} {style.repository}">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartRepositorySectionTitle}"/>
                 <div class="{style.fieldItem} {style.horizontal}">
