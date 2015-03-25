@@ -16,7 +16,7 @@
     <parent>
         <artifactId>contributor-parent</artifactId>
         <groupId>com.codenvy.plugin-contribution</groupId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
     <artifactId>codenvy-plugin-contribution</artifactId>
     <name>Contribution Workflow Plugin :: Contribution</name>
