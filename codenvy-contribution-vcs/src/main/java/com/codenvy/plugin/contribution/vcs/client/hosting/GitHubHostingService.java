@@ -455,4 +455,9 @@ public class GitHubHostingService implements VcsHostingService {
             }
         }).loginWithOAuth();
     }
+
+    @Override
+    public String toString() {
+        return "GitHubHostingService";
+    }
 }

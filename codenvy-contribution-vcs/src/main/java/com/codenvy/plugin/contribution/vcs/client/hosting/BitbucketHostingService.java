@@ -471,4 +471,9 @@ public class BitbucketHostingService implements VcsHostingService {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "BitbucketHostingService";
+    }
 }
