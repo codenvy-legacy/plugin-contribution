@@ -19,13 +19,8 @@
         <version>1.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>codenvy-plugin-review</artifactId>
-    <name>Contribution Workflow Plugin :: Review</name>
+    <name>Codenvy Plugin :: Contribution :: Review</name>
     <dependencies>
-        <dependency>
-            <groupId>com.codenvy.ide</groupId>
-            <artifactId>codenvy-ide-api</artifactId>
-            <version>${codenvy.ide.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.codenvy.plugin-contribution</groupId>
             <artifactId>codenvy-contribution-vcs</artifactId>
@@ -40,6 +35,11 @@
             <groupId>com.google.gwt.inject</groupId>
             <artifactId>gin</artifactId>
             <version>${com.google.gwt.gin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.che.core</groupId>
+            <artifactId>che-core-ide-api</artifactId>
+            <version>${che.core.version}</version>
         </dependency>
     </dependencies>
     <build>
