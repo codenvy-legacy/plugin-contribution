@@ -19,6 +19,8 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.eclipse.che.api.workspace.shared.dto.WorkspaceDescriptor;
+import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentUser;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.github.client.GitHubClientService;
@@ -31,7 +33,6 @@ import org.eclipse.che.ide.ext.github.shared.GitHubUser;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
-import org.eclipse.che.ide.util.Config;
 import org.eclipse.che.security.oauth.JsOAuthWindow;
 import org.eclipse.che.security.oauth.OAuthCallback;
 import org.eclipse.che.security.oauth.OAuthStatus;
@@ -56,6 +57,7 @@ public class GitHubHostingService implements VcsHostingService {
     private static final String NO_COMMITS_IN_PULL_REQUEST_ERROR_MESSAGE  = "No commits between";
     private static final String PULL_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE = "A pull request already exists for ";
 
+    private final AppContext appContext;
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
     private final DtoFactory              dtoFactory;
     private final GitHubClientService     gitHubClientService;
@@ -64,10 +66,12 @@ public class GitHubHostingService implements VcsHostingService {
 
     @Inject
     public GitHubHostingService(@Nonnull @Named("restContext") final String baseUrl,
+                                @Nonnull final AppContext appContext,
                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final DtoFactory dtoFactory,
                                 @Nonnull final GitHubClientService gitHubClientService,
                                 @Nonnull final GitHubTemplates templates) {
+        this.appContext = appContext;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.gitHubClientService = gitHubClientService;
@@ -440,12 +444,17 @@ public class GitHubHostingService implements VcsHostingService {
 
     @Override
     public void authenticate(@Nonnull final CurrentUser currentUser, @Nonnull final AsyncCallback<HostUser> callback) {
+        final WorkspaceDescriptor workspace = this.appContext.getWorkspace();
+        if (workspace == null) {
+            callback.onFailure(new Exception("Error accessing current workspace"));
+            return;
+        }
         final String authUrl = baseUrl
                                + "/oauth/authenticate?oauth_provider=github&userId=" + currentUser.getProfile().getId()
                                + "&scope=user,repo,write:public_key&redirect_after_login="
                                + Window.Location.getProtocol() + "//"
                                + Window.Location.getHost() + "/ws/"
-                               + Config.getWorkspaceName();
+                               + workspace.getName();
 
         new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
             @Override

@@ -18,6 +18,8 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.eclipse.che.api.workspace.shared.dto.WorkspaceDescriptor;
+import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentUser;
 import org.eclipse.che.ide.commons.exception.ServerException;
 import org.eclipse.che.ide.dto.DtoFactory;
@@ -32,7 +34,6 @@ import org.eclipse.che.ide.ext.bitbucket.shared.BitbucketUser;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
-import org.eclipse.che.ide.util.Config;
 import org.eclipse.che.security.oauth.JsOAuthWindow;
 import org.eclipse.che.security.oauth.OAuthCallback;
 import org.eclipse.che.security.oauth.OAuthStatus;
@@ -62,6 +63,7 @@ public class BitbucketHostingService implements VcsHostingService {
     private static final RegExp HTTPS_URL_REGEXP                      =
             compile("https:\\/\\/[^@]+@bitbucket\\.org\\/([^\\/]+)\\/([^\\.]+).git");
 
+    private final AppContext appContext;
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
     private final DtoFactory              dtoFactory;
     private final BitbucketClientService  bitbucketClientService;
@@ -69,11 +71,13 @@ public class BitbucketHostingService implements VcsHostingService {
     private final String                  baseUrl;
 
     @Inject
-    public BitbucketHostingService(@Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+    public BitbucketHostingService(@Nonnull final AppContext appContext,
+                                   @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                    @Nonnull final DtoFactory dtoFactory,
                                    @Nonnull final BitbucketClientService bitbucketClientService,
                                    @Nonnull final BitBucketTemplates templates,
                                    @Nonnull @Named("restContext") final String baseUrl) {
+        this.appContext = appContext;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
         this.bitbucketClientService = bitbucketClientService;
@@ -373,12 +377,17 @@ public class BitbucketHostingService implements VcsHostingService {
 
     @Override
     public void authenticate(@Nonnull final CurrentUser user, @Nonnull final AsyncCallback<HostUser> callback) {
+        final WorkspaceDescriptor workspace = this.appContext.getWorkspace();
+        if (workspace == null) {
+            callback.onFailure(new Exception("Error accessing current workspace"));
+            return;
+        }
         final String authUrl = baseUrl
                                + "/oauth/1.0/authenticate?oauth_provider=bitbucket&userId=" + user.getProfile().getId()
                                + "&redirect_after_login="
                                + Window.Location.getProtocol() + "//"
                                + Window.Location.getHost() + "/ws/"
-                               + Config.getWorkspaceName();
+                               + workspace.getName();
 
         new JsOAuthWindow(authUrl, "error.url", 500, 980, new OAuthCallback() {
             @Override
