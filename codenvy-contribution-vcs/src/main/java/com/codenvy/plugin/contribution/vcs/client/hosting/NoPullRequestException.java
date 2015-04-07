@@ -13,6 +13,9 @@ package com.codenvy.plugin.contribution.vcs.client.hosting;
 import javax.annotation.Nonnull;
 
 public class NoPullRequestException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.NoPullRequestException}.
      *

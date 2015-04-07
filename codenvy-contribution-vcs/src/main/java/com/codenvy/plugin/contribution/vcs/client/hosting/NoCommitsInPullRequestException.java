@@ -18,6 +18,9 @@ import javax.annotation.Nonnull;
  * @author Kevin Pollet
  */
 public class NoCommitsInPullRequestException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.NoCommitsInPullRequestException}.
      *

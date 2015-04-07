@@ -16,6 +16,9 @@ import javax.annotation.Nonnull;
  * Exception raised when trying to get a fork of a repository for a user and no fork being found.
  */
 public class NoUserForkException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.NoUserForkException}.
      *
