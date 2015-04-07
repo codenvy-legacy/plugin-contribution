@@ -36,12 +36,12 @@ public class ContributorWorkflow {
     @Inject
     public ContributorWorkflow(@Nonnull final Provider<Context> contextProvider,
                                @Nonnull final EventBus eventBus,
-                               @Nonnull final AuthorizeCodenvyOnVCSHostStep authorizeCodenvyOnVCSHostStep,
+                               @Nonnull final InitializeWorkflowContextStep initializeWorkflowContextStep,
                                @Nonnull final DtoFactory dtoFactory) {
         this.contextProvider = contextProvider;
         this.eventBus = eventBus;
         this.dtoFactory = dtoFactory;
-        this.initialStep = authorizeCodenvyOnVCSHostStep;
+        this.initialStep = initializeWorkflowContextStep;
     }
 
     /**
