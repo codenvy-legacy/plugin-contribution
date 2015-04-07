@@ -64,7 +64,6 @@ public class GitVcsService implements VcsService {
         });
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void checkoutBranch(@Nonnull final ProjectDescriptor project, @Nonnull final String name,
                                final boolean createNew, @Nonnull final AsyncCallback<String> callback) {
