@@ -15,6 +15,7 @@ import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.VcsService;
 import com.codenvy.plugin.contribution.vcs.client.VcsServiceProvider;
+import com.codenvy.plugin.contribution.vcs.client.hosting.NoVcsHostingServiceImplementationException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -33,6 +34,7 @@ import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
+import org.eclipse.che.ide.util.loging.Log;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -118,9 +120,13 @@ public class ContributorExtension implements ProjectActionHandler {
                     addContributionMixin(project, vcsService, new AsyncCallback<ProjectDescriptor>() {
                         @Override
                         public void onFailure(final Throwable exception) {
-                            notificationHelper.showError(ContributorExtension.class,
+                            if (exception instanceof NoVcsHostingServiceImplementationException) {
+                                Log.info(ContributorExtension.class, "Contribution disabled - remote VCS hosting not supported.");
+                            } else {
+                                notificationHelper.showError(ContributorExtension.class,
                                                          messages.contributorExtensionErrorUpdatingContributionAttributes(
                                                                  exception.getMessage()), exception);
+                            }
                         }
 
                         @Override
