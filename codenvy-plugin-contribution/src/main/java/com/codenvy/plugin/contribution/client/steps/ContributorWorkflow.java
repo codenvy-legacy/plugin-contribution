@@ -10,14 +10,27 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.client.steps;
 
-import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
-import com.google.web.bindery.event.shared.EventBus;
-
-import org.eclipse.che.ide.dto.DtoFactory;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import org.eclipse.che.api.promises.client.Operation;
+import org.eclipse.che.api.promises.client.OperationException;
+import org.eclipse.che.api.promises.client.Promise;
+import org.eclipse.che.api.promises.client.PromiseError;
+import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper;
+import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper.Call;
+import org.eclipse.che.api.promises.client.js.Promises;
+import org.eclipse.che.ide.dto.DtoFactory;
+
+import com.codenvy.plugin.contribution.client.steps.events.StepEvent;
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.JsArrayMixed;
+import com.google.web.bindery.event.shared.EventBus;
 
 /**
  * This class is responsible to maintain the context between the different steps and to maintain the state of the contribution workflow.
@@ -57,6 +70,42 @@ public class ContributorWorkflow {
      * Executes the current step.
      */
     public void executeStep() {
+        final Collection< ? extends Prerequisite> prerequisites = this.step.getPrerequisites();
+        if (prerequisites != null) {
+            final List<Promise<Void>> prereqPromises = new ArrayList<>();
+            for (final Prerequisite prereq : prerequisites) {
+                if (prereq == null) {
+                    continue;
+                }
+                final Promise<Void> promise = CallbackPromiseHelper.createFromCallback(new Call<Void, Throwable>() {
+                    @Override
+                    public void makeCall(final Callback<Void, Throwable> callback) {
+                        prereq.fulfill(callback);
+                    }
+                });
+                prereqPromises.add(promise);
+            }
+
+            @SuppressWarnings("rawtypes")
+            final Promise[] promiseArray = prereqPromises.toArray(new Promise[prereqPromises.size()]);
+
+            final Promise<JsArrayMixed> allPrereqs = Promises.all(promiseArray);
+            allPrereqs.then(new Operation<JsArrayMixed>() {
+                @Override
+                public void apply(final JsArrayMixed notUsed) throws OperationException {
+                    executeStepReady();
+                }
+            });
+            allPrereqs.catchError(new Operation<PromiseError>() {
+                @Override
+                public void apply(final PromiseError error) throws OperationException {
+                    fireStepErrorEvent(step.getStepId());
+                }
+            });
+        }
+    }
+
+    private void executeStepReady() {
         step.execute(this);
     }
 
