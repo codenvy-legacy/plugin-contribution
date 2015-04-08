@@ -23,6 +23,7 @@ import org.eclipse.che.ide.api.notification.Notification;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.Date;
 
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
@@ -126,5 +127,10 @@ public class DefineWorkBranchStep extends NoPrerequisiteStep {
     private String generateWorkBranchName() {
         final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MMddyyyy");
         return GENERATED_WORKING_BRANCH_NAME_PREFIX + dateTimeFormat.format(new Date());
+    }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.DEFINE_WORK_BRANCH;
     }
 }

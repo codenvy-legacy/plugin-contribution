@@ -26,6 +26,7 @@ import org.eclipse.che.ide.api.app.CurrentProject;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.List;
 import java.util.Map;
 
@@ -149,5 +150,10 @@ public class InitializeWorkflowContextStep extends NoPrerequisiteStep {
                 }
             });
         }
+    }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.INITIALIZE_WORKFLOW;
     }
 }

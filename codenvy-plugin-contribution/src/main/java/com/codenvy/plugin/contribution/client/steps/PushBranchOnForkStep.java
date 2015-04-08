@@ -142,4 +142,9 @@ public class PushBranchOnForkStep extends NoPrerequisiteStep {
                                   }
                               });
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.PUSH_BRANCH_ON_FORK;
+    }
 }

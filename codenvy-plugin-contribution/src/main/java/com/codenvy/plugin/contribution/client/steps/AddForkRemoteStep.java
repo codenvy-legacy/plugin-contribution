@@ -168,4 +168,9 @@ public class AddForkRemoteStep extends NoPrerequisiteStep {
         workflow.setStep(pushBranchOnForkStep);
         workflow.executeStep();
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.ADD_FORK_REMOTE;
+    }
 }

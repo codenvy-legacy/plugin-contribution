@@ -34,4 +34,6 @@ public interface Step {
      */
     @Nullable
     Collection< ? extends Prerequisite> getPrerequisites();
+
+    StepIdentifier getStepId();
 }

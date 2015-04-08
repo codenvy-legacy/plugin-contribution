@@ -83,4 +83,9 @@ public class CommitWorkingTreeStep extends NoPrerequisiteStep {
         workflow.setStep(createForkStep);
         workflow.executeStep();
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.COMMIT_WORKING_TREE;
+    }
 }

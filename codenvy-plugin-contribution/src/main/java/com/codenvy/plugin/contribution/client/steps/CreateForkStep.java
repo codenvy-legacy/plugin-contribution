@@ -119,4 +119,9 @@ public class CreateForkStep extends NoPrerequisiteStep {
         workflow.setStep(checkoutBranchToPushStep);
         workflow.executeStep();
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.CREATE_FORK;
+    }
 }

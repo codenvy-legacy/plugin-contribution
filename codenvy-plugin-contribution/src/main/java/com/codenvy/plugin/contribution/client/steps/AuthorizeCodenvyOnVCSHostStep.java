@@ -107,4 +107,9 @@ public class AuthorizeCodenvyOnVCSHostStep extends NoPrerequisiteStep {
         workflow.setStep(initializeWorkflowContextStep);
         workflow.executeStep();
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.AUTHORIZE_CODENVY_ON_VCS_HOST;
+    }
 }

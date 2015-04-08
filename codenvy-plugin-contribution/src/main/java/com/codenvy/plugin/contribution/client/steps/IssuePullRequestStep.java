@@ -109,4 +109,9 @@ public class IssuePullRequestStep extends NoPrerequisiteStep {
             }
         });
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.ISSUE_PULL_REQUEST;
+    }
 }

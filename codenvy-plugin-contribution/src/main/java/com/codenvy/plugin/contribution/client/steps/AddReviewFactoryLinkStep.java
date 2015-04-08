@@ -91,4 +91,9 @@ public class AddReviewFactoryLinkStep extends NoPrerequisiteStep {
         workflow.setStep(issuePullRequestStep);
         workflow.executeStep();
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.ADD_REVIEW_FACTORY_LINK;
+    }
 }

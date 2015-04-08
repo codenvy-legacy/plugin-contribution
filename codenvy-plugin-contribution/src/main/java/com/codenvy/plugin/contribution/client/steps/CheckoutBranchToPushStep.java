@@ -85,4 +85,9 @@ public class CheckoutBranchToPushStep extends NoPrerequisiteStep {
             }
         });
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.CHECKOUT_BRANCH_TO_PUSH;
+    }
 }

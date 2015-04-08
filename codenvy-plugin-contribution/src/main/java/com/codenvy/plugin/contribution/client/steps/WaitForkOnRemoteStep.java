@@ -83,4 +83,9 @@ public class WaitForkOnRemoteStep extends NoPrerequisiteStep {
             }
         });
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.WAIT_FORK_ON_REMOTE;
+    }
 }

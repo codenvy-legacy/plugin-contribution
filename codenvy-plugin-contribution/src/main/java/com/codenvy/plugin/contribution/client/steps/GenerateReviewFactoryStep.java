@@ -397,4 +397,9 @@ public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
             return request.getResponseHeader(header);
         }
     }
+
+    @Override
+    public StepIdentifier getStepId() {
+        return StepIdentifier.GENERATE_REVIEW_FACTORY;
+    }
 }
