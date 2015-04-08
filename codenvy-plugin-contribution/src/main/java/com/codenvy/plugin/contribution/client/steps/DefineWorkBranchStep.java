@@ -41,7 +41,7 @@ import static org.eclipse.che.ide.api.notification.Notification.Type.INFO;
  *
  * @author Kevin Pollet
  */
-public class DefineWorkBranchStep implements Step {
+public class DefineWorkBranchStep extends NoPrerequisiteStep {
     private static final String GENERATED_WORKING_BRANCH_NAME_PREFIX = "contrib-";
 
     private final ContributeMessages messages;

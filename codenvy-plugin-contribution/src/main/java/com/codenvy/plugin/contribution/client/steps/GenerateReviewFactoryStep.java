@@ -56,7 +56,7 @@ import static org.eclipse.che.ide.rest.HTTPHeader.ACCEPT;
 /**
  * Generates a factory for the contribution reviewer.
  */
-public class GenerateReviewFactoryStep implements Step {
+public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
     private final Step                      addReviewFactoryLinkStep;
     private final ContributeMessages        messages;
     private final ApiUrlTemplate            apiTemplate;

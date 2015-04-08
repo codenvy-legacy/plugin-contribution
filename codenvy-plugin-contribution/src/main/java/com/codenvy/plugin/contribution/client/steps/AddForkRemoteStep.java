@@ -27,7 +27,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
 /**
  * Adds the forked remote repository to the remotes of the project.
  */
-public class AddForkRemoteStep implements Step {
+public class AddForkRemoteStep extends NoPrerequisiteStep {
     private final static String ORIGIN_REMOTE_NAME = "origin";
     private final static String FORK_REMOTE_NAME   = "fork";
 

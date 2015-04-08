@@ -26,7 +26,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  *
  * @author Kevin Pollet
  */
-public class CommitWorkingTreeStep implements Step {
+public class CommitWorkingTreeStep extends NoPrerequisiteStep {
     private final CommitPresenter    commitPresenter;
     private final ContributeMessages messages;
     private final NotificationHelper notificationHelper;

@@ -12,26 +12,14 @@ package com.codenvy.plugin.contribution.client.steps;
 
 import java.util.Collection;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
- * Contract for a step in the contribution workflow.
+ * {@link Step} that has no prerequisite.
  */
-public interface Step {
-    /**
-     * Execute this step.
-     *
-     * @param workflow
-     *         the contributors workflow.
-     */
-    void execute(@Nonnull final ContributorWorkflow workflow);
+public abstract class NoPrerequisiteStep implements Step {
 
-    /**
-     * Returns the prerequisites for this step.
-     * 
-     * @return the prerequisites
-     */
-    @Nullable
-    Collection< ? extends Prerequisite> getPrerequisites();
+    @Override
+    public Collection< ? extends Prerequisite> getPrerequisites() {
+        return null;
+    }
+
 }

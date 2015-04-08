@@ -20,7 +20,7 @@ import com.google.inject.assistedinject.AssistedInject;
 
 import javax.annotation.Nonnull;
 
-public class WaitForkOnRemoteStep implements Step {
+public class WaitForkOnRemoteStep extends NoPrerequisiteStep {
     private static final int POLL_FREQUENCY_MS = 1000;
 
     private final VcsHostingServiceProvider vcsHostingServiceProvider;

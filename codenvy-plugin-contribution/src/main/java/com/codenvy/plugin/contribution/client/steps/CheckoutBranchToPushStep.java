@@ -30,7 +30,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  *
  * @author Kevin Pollet
  */
-public class CheckoutBranchToPushStep implements Step {
+public class CheckoutBranchToPushStep extends NoPrerequisiteStep {
     private final Step               addForkRemoteStep;
     private final VcsServiceProvider vcsServiceProvider;
     private final ContributeMessages messages;

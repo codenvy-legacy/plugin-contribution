@@ -25,7 +25,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
  */
-public class CreateForkStep implements Step {
+public class CreateForkStep extends NoPrerequisiteStep {
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final ContributeMessages        messages;
     private final Step                      checkoutBranchToPushStep;

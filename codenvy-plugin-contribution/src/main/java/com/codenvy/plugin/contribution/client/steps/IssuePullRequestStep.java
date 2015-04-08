@@ -29,7 +29,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  *
  * @author Kevin Pollet
  */
-public class IssuePullRequestStep implements Step {
+public class IssuePullRequestStep extends NoPrerequisiteStep {
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final ContributeMessages        messages;
 

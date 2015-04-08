@@ -35,7 +35,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  *
  * @author Kevin Pollet
  */
-public class PushBranchOnForkStep implements Step {
+public class PushBranchOnForkStep extends NoPrerequisiteStep {
 
     private final Step                      generateReviewFactoryStep;
     private final VcsServiceProvider        vcsServiceProvider;

@@ -26,7 +26,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  *
  * @author Kevin Pollet
  */
-public class AddReviewFactoryLinkStep implements Step {
+public class AddReviewFactoryLinkStep extends NoPrerequisiteStep {
     private final Step                      issuePullRequestStep;
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final ContributeMessages        messages;

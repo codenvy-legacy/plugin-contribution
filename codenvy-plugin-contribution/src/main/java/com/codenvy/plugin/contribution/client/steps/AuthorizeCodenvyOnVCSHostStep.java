@@ -30,7 +30,7 @@ import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step
  *
  * @author Kevin Pollet
  */
-public class AuthorizeCodenvyOnVCSHostStep implements Step {
+public class AuthorizeCodenvyOnVCSHostStep extends NoPrerequisiteStep {
     private final Step                      initializeWorkflowContextStep;
     private final NotificationHelper        notificationHelper;
     private final VcsHostingServiceProvider vcsHostingServiceProvider;

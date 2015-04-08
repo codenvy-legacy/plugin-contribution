@@ -36,7 +36,7 @@ import static com.codenvy.plugin.contribution.projecttype.shared.ContributionPro
  *
  * @author Kevin Pollet
  */
-public class InitializeWorkflowContextStep implements Step {
+public class InitializeWorkflowContextStep extends NoPrerequisiteStep {
     private static final String ORIGIN_REMOTE_NAME = "origin";
 
     private final VcsServiceProvider        vcsServiceProvider;
