@@ -23,7 +23,7 @@ import org.eclipse.che.ide.commons.exception.UnauthorizedException;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.AUTHORIZE_CODENVY_ON_VCS_HOST;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.AUTHORIZE_CODENVY_ON_VCS_HOST;
 
 /**
  * This step authorizes Codenvy on the VCS Host.

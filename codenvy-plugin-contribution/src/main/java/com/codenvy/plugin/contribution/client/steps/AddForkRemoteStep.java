@@ -20,9 +20,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.List;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ADD_FORK_REMOTE;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.ADD_FORK_REMOTE;
 
 /**
  * Adds the forked remote repository to the remotes of the project.

@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.ADD_REVIEW_FACTORY_LINK;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.ADD_REVIEW_FACTORY_LINK;
 
 /**
  * Adds a factory link to the contribution comment.

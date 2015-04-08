@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.PUSH_BRANCH_ON_FORK;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.PUSH_BRANCH_ON_FORK;
 
 /**
  * Push the local contribution branch on the user fork.

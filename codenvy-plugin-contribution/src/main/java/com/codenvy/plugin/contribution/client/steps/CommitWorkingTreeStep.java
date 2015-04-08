@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import static com.codenvy.plugin.contribution.client.dialogs.commit.CommitPresenter.CommitActionHandler.CommitAction.CANCEL;
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.COMMIT_WORKING_TREE;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.COMMIT_WORKING_TREE;
 
 /**
  * This step allow the user to commit the current working tree if the git repository status is not clean.

@@ -96,7 +96,7 @@ public class ContributorWorkflow {
      * @param step
      *         the successfully done step.
      */
-    void fireStepDoneEvent(@Nonnull final StepEvent.Step step) {
+    void fireStepDoneEvent(@Nonnull final StepIdentifier step) {
         eventBus.fireEvent(new StepEvent(step, true));
     }
 
@@ -106,7 +106,7 @@ public class ContributorWorkflow {
      * @param step
      *         the step in error.
      */
-    void fireStepErrorEvent(@Nonnull final StepEvent.Step step) {
+    void fireStepErrorEvent(@Nonnull final StepIdentifier step) {
         fireStepErrorEvent(step, null);
     }
 
@@ -118,7 +118,7 @@ public class ContributorWorkflow {
      * @param errorMessage
      *         the error message.
      */
-    void fireStepErrorEvent(@Nonnull final StepEvent.Step step, final String errorMessage) {
+    void fireStepErrorEvent(@Nonnull final StepIdentifier step, final String errorMessage) {
         eventBus.fireEvent(new StepEvent(step, false, errorMessage));
     }
 }

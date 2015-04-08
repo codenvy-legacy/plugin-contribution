@@ -20,7 +20,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CREATE_FORK;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.CREATE_FORK;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.

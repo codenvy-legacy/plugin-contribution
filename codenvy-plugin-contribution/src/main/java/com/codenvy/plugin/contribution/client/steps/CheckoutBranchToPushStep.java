@@ -19,7 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.CHECKOUT_BRANCH_TO_PUSH;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.CHECKOUT_BRANCH_TO_PUSH;
 
 /**
  * This step checkout the branch to push on the user repository for the contribution.

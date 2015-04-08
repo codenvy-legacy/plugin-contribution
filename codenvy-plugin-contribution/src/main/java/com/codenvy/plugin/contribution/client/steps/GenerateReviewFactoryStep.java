@@ -41,10 +41,11 @@ import org.eclipse.che.ide.rest.HTTPMethod;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codenvy.plugin.contribution.client.steps.events.StepEvent.Step.GENERATE_REVIEW_FACTORY;
+import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.GENERATE_REVIEW_FACTORY;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_MODE_VARIABLE_NAME;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.CONTRIBUTE_VARIABLE_NAME;
 import static com.codenvy.plugin.contribution.projecttype.shared.ContributionProjectTypeConstants.PULL_REQUEST_ID_VARIABLE_NAME;
