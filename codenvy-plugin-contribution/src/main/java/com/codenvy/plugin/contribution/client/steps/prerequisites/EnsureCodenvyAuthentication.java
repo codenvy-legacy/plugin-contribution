@@ -12,6 +12,9 @@ package com.codenvy.plugin.contribution.client.steps.prerequisites;
 
 import javax.inject.Inject;
 
+import org.eclipse.che.api.promises.client.Promise;
+import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper;
+import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper.Call;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.app.CurrentUser;
 import org.eclipse.che.security.oauth.JsOAuthWindow;
@@ -35,15 +38,14 @@ public class EnsureCodenvyAuthentication implements Prerequisite {
         this.appContext = appContext;
     }
 
-    @Override
-    public void isFullfilled(final Callback<Boolean, Throwable> callback) {
+    private void isFulfilled(final Callback<Boolean, Throwable> callback) {
         final CurrentUser user = appContext.getCurrentUser();
         callback.onSuccess(user.isUserPermanent());
     }
 
     @Override
-    public void fullfill(final Callback<Void, Throwable> callback) {
-        isFullfilled(new Callback<Boolean, Throwable>() {
+    public void fulfill(final Callback<Void, Throwable> callback) {
+        isFulfilled(new Callback<Boolean, Throwable>() {
             @Override
             public void onFailure(final Throwable reason) {
                 // doesn't happen with current implementation
@@ -83,5 +85,15 @@ public class EnsureCodenvyAuthentication implements Prerequisite {
                 }
             }
         }).loginWithOAuth();
+    }
+
+    @Override
+    public Promise<Void> fulfill() {
+        return CallbackPromiseHelper.createFromCallback(new Call<Void, Throwable>() {
+            @Override
+            public void makeCall(final Callback<Void, Throwable> callback) {
+                fulfill(callback);
+            }
+        });
     }
 }
