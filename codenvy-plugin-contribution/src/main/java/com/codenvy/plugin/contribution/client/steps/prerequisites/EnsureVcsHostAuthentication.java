@@ -58,51 +58,18 @@ public class EnsureVcsHostAuthentication implements Prerequisite {
         this.notificationHelper = notificationHelper;
     }
 
-    private void isFulfilled(final Callback<Boolean, Throwable> callback, final Promise<VcsHostingService> hostingPromise) {
-        hostingPromise.catchError(new Operation<PromiseError>() {
-            @Override
-            public void apply(final PromiseError error) throws OperationException {
-                callback.onFailure(new NoVcsHostingServiceImplementationException());
-            }
-        });
-        final Promise<HostUser> userPromise = getUserInfo(hostingPromise);
-
-        userPromise.then(new Operation<HostUser>() {
-            @Override
-            public void apply(final HostUser user) throws OperationException {
-                callback.onSuccess(true);
-            }
-        });
-        userPromise.catchError(new Operation<PromiseError>() {
-            @Override
-            public void apply(final PromiseError err) throws OperationException {
-                if (err instanceof GwtPromiseError && ((GwtPromiseError) err).getException() instanceof UnauthorizedException) {
-                    callback.onSuccess(false);
-                } else {
-                    callback.onFailure(new Exception(err.toString()));
-                }
-            }
-        });
+    private boolean isFulfilled(final Context context) {
+        return (context.getHostUserLogin() != null && !context.getHostUserLogin().isEmpty());
     }
 
     @Override
     public void fulfill(final Context context, final Callback<Void, Throwable> callback) {
-        final Promise<VcsHostingService> hostingPromise = getVcsHostingService();
-        isFulfilled(new Callback<Boolean, Throwable>() {
-            @Override
-            public void onFailure(final Throwable reason) {
-                callback.onFailure(reason);
-            }
-
-            @Override
-            public void onSuccess(final Boolean fulfilled) {
-                if (fulfilled) {
-                    callback.onSuccess(null);
-                } else {
-                    doAuthentication(context, hostingPromise, callback);
-                }
-            }
-        }, hostingPromise);
+        if (isFulfilled(context)) {
+            callback.onSuccess(null);
+        } else {
+            final Promise<VcsHostingService> hostingPromise = getVcsHostingService();
+            doAuthentication(context, hostingPromise, callback);
+        }
     }
 
     private void doAuthentication(final Context context, final Promise<VcsHostingService> hostingPromise, final Callback<Void, Throwable> callback) {
@@ -134,20 +101,6 @@ public class EnsureVcsHostAuthentication implements Prerequisite {
             @Override
             public void makeCall(final AsyncCallback<VcsHostingService> callback) {
                 vcsHostingServiceProvider.getVcsHostingService(callback);
-            }
-        });
-    }
-
-    private Promise<HostUser> getUserInfo(final Promise<VcsHostingService> hostingPromise) {
-        return AsyncPromiseHelper.createFromAsyncRequest(new RequestCall<HostUser>() {
-            @Override
-            public void makeCall(final AsyncCallback<HostUser> callback) {
-                hostingPromise.then(new Operation<VcsHostingService>() {
-                    @Override
-                    public void apply(final VcsHostingService hosting) throws OperationException {
-                        hosting.getUserInfo(callback);
-                    }
-                });
             }
         });
     }
