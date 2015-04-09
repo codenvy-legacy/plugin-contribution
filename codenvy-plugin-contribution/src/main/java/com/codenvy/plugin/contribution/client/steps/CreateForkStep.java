@@ -19,7 +19,6 @@ import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import java.util.Collection;
@@ -34,14 +33,17 @@ public class CreateForkStep implements Step {
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final ContributeMessages        messages;
     private final Step                      checkoutBranchToPushStep;
+    private final EnsureVcsHostAuthentication ensureVcsHostAuthentication;
 
     @Inject
     public CreateForkStep(@Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
                           @Nonnull final ContributeMessages messages,
-                          @Nonnull final CheckoutBranchToPushStep checkoutBranchToPushStep) {
+                          @Nonnull final CheckoutBranchToPushStep checkoutBranchToPushStep,
+                          @Nonnull final EnsureVcsHostAuthentication ensureVcsHostAuthentication) {
         this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.messages = messages;
         this.checkoutBranchToPushStep = checkoutBranchToPushStep;
+        this.ensureVcsHostAuthentication = ensureVcsHostAuthentication;
     }
 
     @Override
@@ -92,7 +94,7 @@ public class CreateForkStep implements Step {
 
     @Override
     public Collection<? extends Prerequisite> getPrerequisites() {
-        return Collections.singleton(new EnsureVcsHostAuthentication());
+        return Collections.singleton(this.ensureVcsHostAuthentication);
     }
 
     private void createFork(final ContributorWorkflow workflow, final String upstreamRepositoryOwner, final String upstreamRepositoryName) {
