@@ -24,7 +24,7 @@ public interface Prerequisite {
      *
      * @param callback the success and failure issues.
      */
-    void fulfill(Callback<Void, Throwable> callback);
+    void fulfill(Context context, Callback<Void, Throwable> callback);
 
-    Promise<Void> fulfill();
+    Promise<Void> fulfill(Context context);
 }

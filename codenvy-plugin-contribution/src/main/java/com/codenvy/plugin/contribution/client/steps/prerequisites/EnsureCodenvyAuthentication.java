@@ -12,6 +12,8 @@ package com.codenvy.plugin.contribution.client.steps.prerequisites;
 
 import javax.inject.Inject;
 
+import com.codenvy.plugin.contribution.client.steps.Context;
+import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import org.eclipse.che.api.promises.client.Promise;
 import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper;
 import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper.Call;
@@ -44,7 +46,7 @@ public class EnsureCodenvyAuthentication implements Prerequisite {
     }
 
     @Override
-    public void fulfill(final Callback<Void, Throwable> callback) {
+    public void fulfill(final Context context, final Callback<Void, Throwable> callback) {
         isFulfilled(new Callback<Boolean, Throwable>() {
             @Override
             public void onFailure(final Throwable reason) {
@@ -88,11 +90,11 @@ public class EnsureCodenvyAuthentication implements Prerequisite {
     }
 
     @Override
-    public Promise<Void> fulfill() {
+    public Promise<Void> fulfill(final Context context) {
         return CallbackPromiseHelper.createFromCallback(new Call<Void, Throwable>() {
             @Override
             public void makeCall(final Callback<Void, Throwable> callback) {
-                fulfill(callback);
+                fulfill(context, callback);
             }
         });
     }
