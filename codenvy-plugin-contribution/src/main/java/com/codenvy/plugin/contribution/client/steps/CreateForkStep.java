@@ -11,6 +11,7 @@
 package com.codenvy.plugin.contribution.client.steps;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.steps.prerequisites.EnsureVcsHostAuthentication;
 import com.codenvy.plugin.contribution.vcs.client.hosting.NoUserForkException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
@@ -18,14 +19,18 @@ import com.codenvy.plugin.contribution.vcs.client.hosting.dto.Repository;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.CREATE_FORK;
 
 /**
  * Create a fork of the contributed project (upstream) to push the user's contribution.
  */
-public class CreateForkStep extends NoPrerequisiteStep {
+public class CreateForkStep implements Step {
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final ContributeMessages        messages;
     private final Step                      checkoutBranchToPushStep;
@@ -83,6 +88,11 @@ public class CreateForkStep extends NoPrerequisiteStep {
             // user fork has been cloned
             proceed(originRepositoryName, workflow);
         }
+    }
+
+    @Override
+    public Collection<? extends Prerequisite> getPrerequisites() {
+        return Collections.singleton(new EnsureVcsHostAuthentication());
     }
 
     private void createFork(final ContributorWorkflow workflow, final String upstreamRepositoryOwner, final String upstreamRepositoryName) {
