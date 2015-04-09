@@ -28,6 +28,8 @@ import com.codenvy.plugin.contribution.client.steps.InitializeWorkflowContextSte
 import com.codenvy.plugin.contribution.client.steps.IssuePullRequestStep;
 import com.codenvy.plugin.contribution.client.steps.PushBranchOnForkStep;
 import com.codenvy.plugin.contribution.client.steps.WaitForkOnRemoteStepFactory;
+import com.codenvy.plugin.contribution.client.steps.prerequisites.EnsureCodenvyAuthentication;
+import com.codenvy.plugin.contribution.client.steps.prerequisites.EnsureVcsHostAuthentication;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.gwt.inject.client.assistedinject.GinFactoryModuleBuilder;
 
@@ -65,5 +67,8 @@ public class ContributorGinModule extends AbstractGinModule {
         bind(AddForkRemoteStep.class);
         bind(CreateForkStep.class);
         install(new GinFactoryModuleBuilder().build(WaitForkOnRemoteStepFactory.class));
+
+        bind(EnsureCodenvyAuthentication.class);
+        bind(EnsureVcsHostAuthentication.class);
     }
 }
