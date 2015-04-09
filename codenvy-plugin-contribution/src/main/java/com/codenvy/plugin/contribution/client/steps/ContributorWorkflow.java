@@ -80,7 +80,7 @@ public class ContributorWorkflow {
                 final Promise<Void> promise = CallbackPromiseHelper.createFromCallback(new Call<Void, Throwable>() {
                     @Override
                     public void makeCall(final Callback<Void, Throwable> callback) {
-                        prereq.fulfill(callback);
+                        prereq.fulfill(context, callback);
                     }
                 });
                 prereqPromises.add(promise);
