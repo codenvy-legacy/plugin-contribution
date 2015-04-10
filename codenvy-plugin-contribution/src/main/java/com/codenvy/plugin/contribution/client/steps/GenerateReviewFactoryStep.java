@@ -14,6 +14,7 @@ import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.jso.Blob;
 import com.codenvy.plugin.contribution.client.jso.FormData;
 import com.codenvy.plugin.contribution.client.jso.JsBlob;
+import com.codenvy.plugin.contribution.client.steps.prerequisites.EnsureCodenvyAuthentication;
 import com.codenvy.plugin.contribution.client.utils.FactoryHelper;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
@@ -42,6 +43,8 @@ import org.eclipse.che.ide.rest.HTTPMethod;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +60,7 @@ import static org.eclipse.che.ide.rest.HTTPHeader.ACCEPT;
 /**
  * Generates a factory for the contribution reviewer.
  */
-public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
+public class GenerateReviewFactoryStep implements Step {
     private final Step                      addReviewFactoryLinkStep;
     private final ContributeMessages        messages;
     private final ApiUrlTemplate            apiTemplate;
@@ -67,6 +70,7 @@ public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
     private final AppContext                appContext;
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final NotificationHelper        notificationHelper;
+    private final EnsureCodenvyAuthentication ensureCodenvyAuthentication;
 
     @Inject
     public GenerateReviewFactoryStep(@Nonnull final AddReviewFactoryLinkStep addReviewFactoryLinkStep,
@@ -74,6 +78,7 @@ public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
                                      @Nonnull final ContributeMessages messages,
                                      @Nonnull final DtoFactory dtoFactory,
                                      @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
+                                     @Nonnull final EnsureCodenvyAuthentication ensureCodenvyAuthentication,
                                      @Nonnull final AsyncRequestFactory asyncRequestFactory,
                                      @Nonnull final AppContext appContext,
                                      @Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
@@ -87,6 +92,7 @@ public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
         this.appContext = appContext;
         this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.notificationHelper = notificationHelper;
+        this.ensureCodenvyAuthentication = ensureCodenvyAuthentication;
     }
 
     /**
@@ -401,5 +407,10 @@ public class GenerateReviewFactoryStep extends NoPrerequisiteStep {
     @Override
     public StepIdentifier getStepId() {
         return StepIdentifier.GENERATE_REVIEW_FACTORY;
+    }
+
+    @Override
+    public Collection< ? extends Prerequisite> getPrerequisites() {
+        return Collections.singleton(this.ensureCodenvyAuthentication);
     }
 }
