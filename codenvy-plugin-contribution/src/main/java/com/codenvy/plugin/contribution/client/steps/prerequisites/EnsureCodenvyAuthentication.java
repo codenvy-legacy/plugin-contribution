@@ -13,7 +13,6 @@ package com.codenvy.plugin.contribution.client.steps.prerequisites;
 import javax.inject.Inject;
 
 import com.codenvy.plugin.contribution.client.steps.Context;
-import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import org.eclipse.che.api.promises.client.Promise;
 import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper;
 import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper.Call;
