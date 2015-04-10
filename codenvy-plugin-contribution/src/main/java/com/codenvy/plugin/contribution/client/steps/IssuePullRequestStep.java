@@ -12,6 +12,7 @@ package com.codenvy.plugin.contribution.client.steps;
 
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.codenvy.plugin.contribution.client.steps.prerequisites.EnsureVcsHostAuthentication;
 import com.codenvy.plugin.contribution.vcs.client.hosting.NoCommitsInPullRequestException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.PullRequestAlreadyExistsException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
@@ -22,6 +23,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.ISSUE_PULL_REQUEST;
 
 /**
@@ -29,15 +33,18 @@ import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.ISSUE_
  *
  * @author Kevin Pollet
  */
-public class IssuePullRequestStep extends NoPrerequisiteStep {
+public class IssuePullRequestStep implements Step {
     private final VcsHostingServiceProvider vcsHostingServiceProvider;
     private final ContributeMessages        messages;
+    private final EnsureVcsHostAuthentication ensureVcsHostAuthentication;
 
     @Inject
     public IssuePullRequestStep(@Nonnull final VcsHostingServiceProvider vcsHostingServiceProvider,
+                                @Nonnull final EnsureVcsHostAuthentication ensureVcsHostAuthentication,
                                 @Nonnull final ContributeMessages messages) {
         this.vcsHostingServiceProvider = vcsHostingServiceProvider;
         this.messages = messages;
+        this.ensureVcsHostAuthentication = ensureVcsHostAuthentication;
     }
 
     @Override
@@ -113,5 +120,10 @@ public class IssuePullRequestStep extends NoPrerequisiteStep {
     @Override
     public StepIdentifier getStepId() {
         return StepIdentifier.ISSUE_PULL_REQUEST;
+    }
+
+    @Override
+    public Collection< ? extends Prerequisite> getPrerequisites() {
+        return Collections.singleton(this.ensureVcsHostAuthentication);
     }
 }
