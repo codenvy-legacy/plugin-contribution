@@ -15,12 +15,10 @@ import javax.inject.Inject;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
 import com.codenvy.plugin.contribution.client.steps.Context;
-import com.codenvy.plugin.contribution.client.steps.ContributorWorkflow;
 import com.codenvy.plugin.contribution.client.utils.NotificationHelper;
 import org.eclipse.che.api.promises.client.Operation;
 import org.eclipse.che.api.promises.client.OperationException;
 import org.eclipse.che.api.promises.client.Promise;
-import org.eclipse.che.api.promises.client.PromiseError;
 import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper;
 import org.eclipse.che.api.promises.client.callback.CallbackPromiseHelper.Call;
 import org.eclipse.che.ide.api.app.AppContext;
@@ -28,14 +26,11 @@ import org.eclipse.che.ide.commons.exception.UnauthorizedException;
 
 import com.codenvy.plugin.contribution.client.steps.Prerequisite;
 import com.codenvy.plugin.contribution.client.steps.prerequisites.AsyncPromiseHelper.RequestCall;
-import com.codenvy.plugin.contribution.vcs.client.hosting.NoVcsHostingServiceImplementationException;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService;
 import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvider;
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.HostUser;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import static com.codenvy.plugin.contribution.client.steps.StepIdentifier.AUTHORIZE_CODENVY_ON_VCS_HOST;
 
 /**
  * Prerequisite for steps that need the current user to be authenticated on codenvy.
