@@ -99,6 +99,10 @@
             align-self: center;
             width: auto;
             line-height: 20px;
+
+            display: inline-box;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
 
         .section.repository {
@@ -155,9 +159,9 @@
                           ui:field="contributeButton"
                           text="{messages.contributePartConfigureContributionSectionButtonContributeText}"/>
             </div>
-            <g:FlowPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}">
+            <g:FlowPanel ui:field="statusSection" addStyleNames="{style.section} {style.border}" debugId="statusSection">
                 <g:Label addStyleNames="{style.title}" text="{messages.contributePartStatusSectionTitle}"/>
-                <g:Label ui:field="statusSectionMessage" addStyleNames="{style.statusMessage}"/>
+                <g:InlineLabel ui:field="statusSectionMessage" addStyleNames="{style.statusMessage}" debugId="statusSectionMessage" />
             </g:FlowPanel>
             <g:HTMLPanel ui:field="newContributionSection" addStyleNames="{style.section} {style.newContribution} {style.border}">
                 <g:Button ui:field="openPullRequestOnVcsHostButton"/>
