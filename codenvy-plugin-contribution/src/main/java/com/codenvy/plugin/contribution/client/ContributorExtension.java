@@ -112,7 +112,11 @@ public class ContributorExtension implements ProjectActionHandler {
             vcsHostingServiceProvider.getVcsHostingService(new AsyncCallback<VcsHostingService>() {
                 @Override
                 public void onFailure(final Throwable exception) {
-                    notificationHelper.showError(ContributorExtension.class, exception);
+                    if (exception instanceof NoVcsHostingServiceImplementationException) {
+                        Log.info(ContributorExtension.class, "Contribution disabled - remote VCS hosting not supported.");
+                    } else {
+                        notificationHelper.showError(ContributorExtension.class, exception);
+                    }
                 }
 
                 @Override
@@ -120,13 +124,9 @@ public class ContributorExtension implements ProjectActionHandler {
                     addContributionMixin(project, vcsService, new AsyncCallback<ProjectDescriptor>() {
                         @Override
                         public void onFailure(final Throwable exception) {
-                            if (exception instanceof NoVcsHostingServiceImplementationException) {
-                                Log.info(ContributorExtension.class, "Contribution disabled - remote VCS hosting not supported.");
-                            } else {
-                                notificationHelper.showError(ContributorExtension.class,
+                            notificationHelper.showError(ContributorExtension.class,
                                                          messages.contributorExtensionErrorUpdatingContributionAttributes(
                                                                  exception.getMessage()), exception);
-                            }
                         }
 
                         @Override
