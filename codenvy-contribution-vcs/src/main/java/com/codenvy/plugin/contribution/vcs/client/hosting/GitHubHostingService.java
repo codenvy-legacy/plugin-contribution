@@ -53,6 +53,7 @@ import static org.eclipse.che.ide.util.StringUtils.containsIgnoreCase;
 public class GitHubHostingService implements VcsHostingService {
     private static final String SSH_URL_PREFIX                            = "git@github.com:";
     private static final String HTTPS_URL_PREFIX                          = "https://github.com/";
+    private static final String API_URL_PREFIX = "https://api.github.com/";
     private static final RegExp REPOSITORY_NAME_OWNER_PATTERN             = RegExp.compile("([^/]+)/([^.]+)");
     private static final String NO_COMMITS_IN_PULL_REQUEST_ERROR_MESSAGE  = "No commits between";
     private static final String PULL_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE = "A pull request already exists for ";
@@ -123,21 +124,31 @@ public class GitHubHostingService implements VcsHostingService {
     @Nonnull
     @Override
     public String getRepositoryNameFromUrl(@Nonnull final String url) {
-        final String urlWithoutGitHubPrefix =
-                url.substring(url.startsWith(SSH_URL_PREFIX) ? SSH_URL_PREFIX.length() : HTTPS_URL_PREFIX.length());
+        final String urlWithoutGitHubPrefix = removeGithubPrefix(url);
 
-        return REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix)
-                                            .getGroup(2);
+        return REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix).getGroup(2);
     }
 
     @Nonnull
     @Override
     public String getRepositoryOwnerFromUrl(@Nonnull final String url) {
-        final String urlWithoutGitHubPrefix =
-                url.substring(url.startsWith(SSH_URL_PREFIX) ? SSH_URL_PREFIX.length() : HTTPS_URL_PREFIX.length());
+        final String urlWithoutGitHubPrefix = removeGithubPrefix(url);
 
-        return REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix)
-                                            .getGroup(1);
+        return REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix).getGroup(1);
+    }
+
+    private String removeGithubPrefix(final String url) {
+        int start;
+        if (url.startsWith(SSH_URL_PREFIX)) {
+            start = SSH_URL_PREFIX.length();
+        } else if (url.startsWith(HTTPS_URL_PREFIX)) {
+            start = HTTPS_URL_PREFIX.length();
+        } else if (url.startsWith(API_URL_PREFIX)) {
+            start = API_URL_PREFIX.length();
+        } else {
+            throw new IllegalArgumentException("Unknown github repo URL pattern");
+        }
+        return url.substring(start);
     }
 
     @Override
