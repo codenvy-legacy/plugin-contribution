@@ -11,6 +11,8 @@
 package com.codenvy.plugin.contribution.client.utils;
 
 import com.codenvy.plugin.contribution.client.ContributeMessages;
+import com.google.gwt.json.client.JSONException;
+import com.google.gwt.json.client.JSONParser;
 import com.google.inject.Inject;
 
 import org.eclipse.che.ide.api.notification.Notification;
@@ -83,16 +85,29 @@ public final class NotificationHelper {
      *         exception to handle.
      */
     public void showError(@Nonnull final Class<?> cls, @Nonnull final Throwable exception) {
-        showNotification(new Notification(exception.getMessage(), ERROR));
-        Log.error(cls, exception);
+        showError(cls, exception.getMessage(), exception);
     }
 
     /**
      * Log the exception, display the error message in the notification.
      */
     public void showError(@Nonnull final Class<?> cls, @Nonnull final String errorMessage, @Nonnull final Throwable exception) {
-        showNotification(new Notification(errorMessage, ERROR));
+        // workaround IDEX-2381
+        final String jsonMessage = ensureJson(errorMessage);
+        showNotification(new Notification(jsonMessage, ERROR));
         Log.error(cls, exception);
+    }
+
+    private String ensureJson(final String input) {
+        if (input == null || input.isEmpty()) {
+            return "\"\"";
+        }
+        try {
+            JSONParser.parseStrict(input);
+            return input;
+        } catch (final JSONException e) {
+            return "{ \"message\": \"" + input + "\"}";
+        }
     }
 
     /**
