@@ -53,8 +53,9 @@ import static org.eclipse.che.ide.util.StringUtils.containsIgnoreCase;
 public class GitHubHostingService implements VcsHostingService {
     private static final String SSH_URL_PREFIX                            = "git@github.com:";
     private static final String HTTPS_URL_PREFIX                          = "https://github.com/";
-    private static final String API_URL_PREFIX = "https://api.github.com/repos/";
-    private static final RegExp REPOSITORY_NAME_OWNER_PATTERN             = RegExp.compile("([^/]+)/([^.]+)");
+    private static final String API_URL_PREFIX                            = "https://api.github.com/repos/";
+    private static final RegExp REPOSITORY_NAME_OWNER_PATTERN             = RegExp.compile("([^\\/]+)\\/([^\\/]+)(?:\\.git)?");
+    private static final String REPOSITORY_GIT_EXTENSION = ".git";
     private static final String NO_COMMITS_IN_PULL_REQUEST_ERROR_MESSAGE  = "No commits between";
     private static final String PULL_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE = "A pull request already exists for ";
 
@@ -126,7 +127,12 @@ public class GitHubHostingService implements VcsHostingService {
     public String getRepositoryNameFromUrl(@Nonnull final String url) {
         final String urlWithoutGitHubPrefix = removeGithubPrefix(url);
 
-        return REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix).getGroup(2);
+        final String namePart = REPOSITORY_NAME_OWNER_PATTERN.exec(urlWithoutGitHubPrefix).getGroup(2);
+        if (namePart != null && namePart.endsWith(REPOSITORY_GIT_EXTENSION)) {
+            return namePart.substring(0, namePart.length() - REPOSITORY_GIT_EXTENSION.length());
+        } else {
+            return namePart;
+        }
     }
 
     @Nonnull
