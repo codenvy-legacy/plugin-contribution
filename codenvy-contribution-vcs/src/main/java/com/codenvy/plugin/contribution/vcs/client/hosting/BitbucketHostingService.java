@@ -59,9 +59,16 @@ public class BitbucketHostingService implements VcsHostingService {
     private static final int    MAX_FORK_CREATION_ATTEMPT             = 10;
     private static final String REPOSITORY_EXISTS_ERROR_MESSAGE       = "You already have a repository with this name.";
     private static final String NO_CHANGES_TO_BE_PULLED_ERROR_MESSAGE = "There are no changes to be pulled";
-    private static final RegExp SSH_URL_REGEXP                        = compile("git@bitbucket\\.org:([^\\/]*)\\/([^\\.]+)\\.git");
-    private static final RegExp HTTPS_URL_REGEXP                      =
-            compile("https:\\/\\/[^@]+@bitbucket\\.org\\/([^\\/]+)\\/([^\\.]+).git");
+
+    /*
+     * URL related constants.
+     */
+
+    private static final String SSH_URL_PREFIX   = "git@bitbucket\\.org:";
+    private static final String HTTPS_URL_PREFIX = "https:\\/\\/[^@]+@bitbucket\\.org\\/";
+    private static final String OWNER_REPO_REGEX = "([^\\/]+)\\/([^\\/]+)\\.git";
+    private static final RegExp SSH_URL_REGEXP   = compile(SSH_URL_PREFIX + OWNER_REPO_REGEX);
+    private static final RegExp HTTPS_URL_REGEXP = compile(HTTPS_URL_PREFIX + OWNER_REPO_REGEX);
 
     private final AppContext appContext;
     private final DtoUnmarshallerFactory  dtoUnmarshallerFactory;
