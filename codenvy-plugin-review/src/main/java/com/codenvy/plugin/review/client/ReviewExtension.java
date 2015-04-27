@@ -40,6 +40,10 @@ public class ReviewExtension implements ProjectActionHandler {
     }
 
     @Override
+    public void onProjectClosing(ProjectActionEvent event) {
+    }
+
+    @Override
     public void onProjectClosed(final ProjectActionEvent event) {
     }
 
