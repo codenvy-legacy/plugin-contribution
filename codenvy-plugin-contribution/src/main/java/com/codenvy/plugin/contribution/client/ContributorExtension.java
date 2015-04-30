@@ -100,6 +100,11 @@ public class ContributorExtension implements ProjectActionHandler {
     }
 
     @Override
+    public void onProjectClosing(ProjectActionEvent event) {
+
+    }
+
+    @Override
     public void onProjectClosed(final ProjectActionEvent event) {
         contributePartPresenter.remove();
     }
