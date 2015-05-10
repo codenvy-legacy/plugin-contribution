@@ -32,6 +32,7 @@ import org.eclipse.che.ide.ext.github.shared.GitHubRepositoryList;
 import org.eclipse.che.ide.ext.github.shared.GitHubUser;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
+import org.eclipse.che.ide.rest.RestContext;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.security.oauth.JsOAuthWindow;
 import org.eclipse.che.security.oauth.OAuthCallback;
@@ -67,7 +68,7 @@ public class GitHubHostingService implements VcsHostingService {
     private final String                  baseUrl;
 
     @Inject
-    public GitHubHostingService(@Nonnull @Named("restContext") final String baseUrl,
+    public GitHubHostingService(@Nonnull @RestContext final String baseUrl,
                                 @Nonnull final AppContext appContext,
                                 @Nonnull final DtoUnmarshallerFactory dtoUnmarshallerFactory,
                                 @Nonnull final DtoFactory dtoFactory,

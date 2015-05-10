@@ -33,6 +33,7 @@ import org.eclipse.che.ide.ext.bitbucket.shared.BitbucketRepositoryFork;
 import org.eclipse.che.ide.ext.bitbucket.shared.BitbucketUser;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
 import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
+import org.eclipse.che.ide.rest.RestContext;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.security.oauth.JsOAuthWindow;
 import org.eclipse.che.security.oauth.OAuthCallback;
@@ -83,7 +84,7 @@ public class BitbucketHostingService implements VcsHostingService {
                                    @Nonnull final DtoFactory dtoFactory,
                                    @Nonnull final BitbucketClientService bitbucketClientService,
                                    @Nonnull final BitBucketTemplates templates,
-                                   @Nonnull @Named("restContext") final String baseUrl) {
+                                   @Nonnull @RestContext final String baseUrl) {
         this.appContext = appContext;
         this.dtoUnmarshallerFactory = dtoUnmarshallerFactory;
         this.dtoFactory = dtoFactory;
