@@ -442,6 +442,12 @@ public class ContributePartPresenter extends BasePresenter
             public String getMessage() {
                 return "";
             }
+
+            @Nullable
+            @Override
+            public String getCorrectedValue() {
+                return null;
+            }
         };
 
         @Nullable
