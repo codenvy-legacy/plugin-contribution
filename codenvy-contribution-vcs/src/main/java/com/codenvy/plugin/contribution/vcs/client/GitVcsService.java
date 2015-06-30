@@ -10,10 +10,14 @@
  *******************************************************************************/
 package com.codenvy.plugin.contribution.vcs.client;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
+
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
 import org.eclipse.che.ide.collections.Array;
 import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.ext.git.client.GitServiceClient;
+import org.eclipse.che.ide.ext.git.shared.PushResponse;
 import org.eclipse.che.ide.ext.git.shared.Revision;
 import org.eclipse.che.ide.ext.git.shared.Status;
 import org.eclipse.che.ide.rest.AsyncRequestCallback;
@@ -21,8 +25,6 @@ import org.eclipse.che.ide.rest.DtoUnmarshallerFactory;
 import org.eclipse.che.ide.rest.Unmarshallable;
 import org.eclipse.che.ide.websocket.WebSocketException;
 import org.eclipse.che.ide.websocket.rest.RequestCallback;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.inject.Inject;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -211,10 +213,10 @@ public class GitVcsService implements VcsService {
 
     @Override
     public void pushBranch(@Nonnull final ProjectDescriptor project, @Nonnull final String remote,
-                           @Nonnull final String localBranchName, @Nonnull final AsyncCallback<Void> callback) {
-        service.push(project, Arrays.asList(localBranchName), remote, true, new AsyncRequestCallback<Void>() {
+                           @Nonnull final String localBranchName, @Nonnull final AsyncCallback<PushResponse> callback) {
+        service.push(project, Arrays.asList(localBranchName), remote, true, new AsyncRequestCallback<PushResponse>() {
             @Override
-            protected void onSuccess(final Void result) {
+            protected void onSuccess(final PushResponse result) {
                 callback.onSuccess(result);
             }
 

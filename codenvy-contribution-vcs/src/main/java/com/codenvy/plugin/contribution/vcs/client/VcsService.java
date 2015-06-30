@@ -11,6 +11,7 @@
 package com.codenvy.plugin.contribution.vcs.client;
 
 import org.eclipse.che.api.project.shared.dto.ProjectDescriptor;
+import org.eclipse.che.ide.ext.git.shared.PushResponse;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import javax.annotation.Nonnull;
@@ -142,5 +143,5 @@ public interface VcsService {
      *         callback when the operation is done.
      */
     void pushBranch(@Nonnull ProjectDescriptor project, @Nonnull String remote, @Nonnull String localBranchNameToPush,
-                    @Nonnull AsyncCallback<Void> callback);
+                    @Nonnull AsyncCallback<PushResponse> callback);
 }

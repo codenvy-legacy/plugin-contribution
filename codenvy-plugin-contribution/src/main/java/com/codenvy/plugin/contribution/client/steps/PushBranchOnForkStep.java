@@ -20,6 +20,7 @@ import com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingServiceProvi
 import com.codenvy.plugin.contribution.vcs.client.hosting.dto.PullRequest;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.eclipse.che.ide.ext.git.shared.PushResponse;
 import org.eclipse.che.ide.ui.dialogs.CancelCallback;
 import org.eclipse.che.ide.ui.dialogs.ConfirmCallback;
 import org.eclipse.che.ide.ui.dialogs.DialogFactory;
@@ -121,9 +122,9 @@ public class PushBranchOnForkStep implements Step {
     protected void pushBranch(final ContributorWorkflow workflow, final Context context) {
         final VcsService vcsService = vcsServiceProvider.getVcsService();
         vcsService.pushBranch(context.getProject(), context.getForkedRemoteName(), context.getWorkBranchName(),
-                              new AsyncCallback<Void>() {
+                              new AsyncCallback<PushResponse>() {
                                   @Override
-                                  public void onSuccess(final Void result) {
+                                  public void onSuccess(final PushResponse result) {
                                       workflow.fireStepDoneEvent(PUSH_BRANCH_ON_FORK);
                                       workflow.setStep(generateReviewFactoryStep);
                                       workflow.executeStep();
