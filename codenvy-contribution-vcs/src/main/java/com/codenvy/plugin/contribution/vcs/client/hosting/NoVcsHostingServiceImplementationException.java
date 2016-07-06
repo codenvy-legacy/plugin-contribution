@@ -21,7 +21,7 @@ public class NoVcsHostingServiceImplementationException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.VcsHostingService}.
+     * Constructs an instance of {@link com.codenvy.plugin.contribution.vcs.client.hosting.NoVcsHostingServiceImplementationException}.
      */
     public NoVcsHostingServiceImplementationException() {
         super("No implementation of the VcsHostingService for the current project");
